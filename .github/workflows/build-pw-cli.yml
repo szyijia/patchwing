@@ -41,106 +41,264 @@ env:
   WORKSPACE_DIR: .
 
 jobs:
-  # ─── Job 1：三平台并行编译 pw 二进制 ──────────────────────────────────
-  build:
-    name: Build pw (${{ matrix.platform }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: macos-latest
-            platform: darwin-arm64
-            output: pw-darwin-arm64
-          - os: macos-13
-            platform: darwin-x64
-            output: pw-darwin-x64
-          - os: ubuntu-latest
-            platform: linux-x64
-            output: pw-linux-x64
-          - os: windows-latest
-            platform: windows-x64
-            output: pw-windows-x64.exe
-
+  # ──────────────────────────────────────────────────────────────────────
+  # Job 1：macOS 编译（darwin-arm64 + darwin-x64）
+  # 在 macos-14（Apple Silicon, arm64）单机上完成两个产物：
+  #   - darwin-arm64：原生 dart compile exe
+  #   - darwin-x64  ：下载 x64 Dart SDK + Rosetta 2，直接产出 x64 Mach-O
+  # 注意：dart compile exe --target-arch x64 在 macOS 上不支持，必须走 Rosetta。
+  # ──────────────────────────────────────────────────────────────────────
+  build-macos:
+    name: Build pw (macOS arm64 + x64)
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Dart
+      - name: 安装 Dart SDK（arm64, 原生）
         uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
 
-      - name: Read CLI version
+      - name: 获取 CLI 版本号
         id: version
         shell: bash
         run: |
-          VER=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
-          echo "version=${VER}" >> "$GITHUB_OUTPUT"
-          echo "CLI 版本: ${VER}"
+          VERSION=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "📦 CLI Version: ${VERSION}"
 
-      - name: Resolve dependencies (workspace root)
+      - name: 安装依赖（workspace 根）
         shell: bash
         run: |
           cd "${WORKSPACE_DIR}"
           dart pub get --no-precompile
 
-      - name: Compile pw (${{ matrix.platform }})
+      # ---- 编译 darwin-arm64（原生） ----
+      - name: 编译 darwin-arm64
         shell: bash
         run: |
           mkdir -p build/cli
-          cd "${CLI_PKG_DIR}"
-          dart compile exe bin/patchwing.dart \
-            -o "${{ github.workspace }}/build/cli/${{ matrix.output }}" \
+          dart compile exe "${CLI_PKG_DIR}/bin/patchwing.dart" \
+            -o "${{ github.workspace }}/build/cli/pw-darwin-arm64" \
             -D version=${{ steps.version.outputs.version }}
+          chmod +x build/cli/pw-darwin-arm64
+          echo "✅ darwin-arm64 编译完成"
+          file build/cli/pw-darwin-arm64
 
-      - name: Verify binary
+      # ---- 安装 Rosetta 2（用于 x64 Dart SDK） ----
+      - name: 安装 Rosetta 2
+        run: sudo softwareupdate --install-rosetta --agree-to-license
+
+      - name: 下载与本机同版本的 x64 Dart SDK
         shell: bash
         run: |
-          ls -lh "build/cli/${{ matrix.output }}"
-          file "build/cli/${{ matrix.output }}" || true
+          DART_VERSION=$(dart --version 2>&1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "当前 Dart 版本: ${DART_VERSION}"
+          curl -sSL "https://storage.googleapis.com/dart-archive/channels/stable/release/${DART_VERSION}/sdk/dartsdk-macos-x64-release.zip" \
+            -o /tmp/dart-x64.zip
+          unzip -q /tmp/dart-x64.zip -d /tmp/dart-x64
+          echo "✅ x64 Dart SDK 下载完成"
+          file /tmp/dart-x64/dart-sdk/bin/dart
 
-      - name: Upload build artifact (intra-workflow)
+      - name: 编译 darwin-x64（Rosetta 2 + x64 Dart SDK）
+        shell: bash
+        run: |
+          # 先用 x64 Dart SDK 重做一次 pub get（保证 .dart_tool 与 x64 SDK 兼容）
+          /tmp/dart-x64/dart-sdk/bin/dart pub get --no-precompile
+          /tmp/dart-x64/dart-sdk/bin/dart compile exe "${CLI_PKG_DIR}/bin/patchwing.dart" \
+            -o "${{ github.workspace }}/build/cli/pw-darwin-x64" \
+            -D version=${{ steps.version.outputs.version }}
+          chmod +x build/cli/pw-darwin-x64
+          echo "✅ darwin-x64 编译完成"
+          file build/cli/pw-darwin-x64
+
+      - name: 上传 darwin-arm64
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.output }}
-          path: build/cli/${{ matrix.output }}
+          name: pw-darwin-arm64
+          path: build/cli/pw-darwin-arm64
           retention-days: 7
 
-  # ─── Job 2：汇总并上传到 MinIO ────────────────────────────────────────
-  publish:
-    name: Publish to MinIO
-    needs: build
-    runs-on: ubuntu-latest
-    # 只有手动触发或 tag 推送才发布；普通 push 仅编译验证
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+      - name: 上传 darwin-x64
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-darwin-x64
+          path: build/cli/pw-darwin-x64
+          retention-days: 7
 
+  # ──────────────────────────────────────────────────────────────────────
+  # Job 2：Linux x64 编译（原生）
+  # ──────────────────────────────────────────────────────────────────────
+  build-linux-x64:
+    name: Build pw (linux-x64)
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Read CLI version
-        id: version
-        run: |
-          VER=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
-          echo "version=${VER}" >> "$GITHUB_OUTPUT"
+      - name: 安装 Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
 
-      - name: Download all build artifacts
+      - name: 获取 CLI 版本号
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: 安装依赖（workspace 根）
+        shell: bash
+        run: |
+          cd "${WORKSPACE_DIR}"
+          dart pub get --no-precompile
+
+      - name: 编译 linux-x64
+        shell: bash
+        run: |
+          mkdir -p build/cli
+          dart compile exe "${CLI_PKG_DIR}/bin/patchwing.dart" \
+            -o "${{ github.workspace }}/build/cli/pw-linux-x64" \
+            -D version=${{ steps.version.outputs.version }}
+          chmod +x build/cli/pw-linux-x64
+          echo "✅ linux-x64 编译完成"
+          file build/cli/pw-linux-x64
+
+      - name: 上传 linux-x64
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-linux-x64
+          path: build/cli/pw-linux-x64
+          retention-days: 7
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Job 3：Linux arm64 编译（Docker + QEMU 模拟）
+  # ──────────────────────────────────────────────────────────────────────
+  build-linux-arm64:
+    name: Build pw (linux-arm64)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 设置 QEMU（用于 arm64 模拟）
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: 获取 CLI 版本号
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: 编译 linux-arm64（Docker QEMU）
+        shell: bash
+        run: |
+          mkdir -p build/cli
+          docker run --rm \
+            --platform linux/arm64 \
+            -v "${{ github.workspace }}:/app" \
+            -w /app \
+            dart:stable \
+            bash -c "dart pub get --no-precompile && dart compile exe ${CLI_PKG_DIR}/bin/patchwing.dart -o build/cli/pw-linux-arm64 -D version=${{ steps.version.outputs.version }} && chmod +x build/cli/pw-linux-arm64"
+          echo "✅ linux-arm64 编译完成"
+          file build/cli/pw-linux-arm64
+
+      - name: 上传 linux-arm64
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-linux-arm64
+          path: build/cli/pw-linux-arm64
+          retention-days: 7
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Job 4：Windows x64 编译（原生）
+  # ──────────────────────────────────────────────────────────────────────
+  build-windows:
+    name: Build pw (windows-x64)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 安装 Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: 获取 CLI 版本号
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: 安装依赖（workspace 根）
+        shell: bash
+        run: |
+          cd "${WORKSPACE_DIR}"
+          dart pub get --no-precompile
+
+      - name: 编译 windows-x64
+        shell: bash
+        run: |
+          mkdir -p build/cli
+          dart compile exe "${CLI_PKG_DIR}/bin/patchwing.dart" \
+            -o "${{ github.workspace }}/build/cli/pw-windows-x64.exe" \
+            -D version=${{ steps.version.outputs.version }}
+
+      - name: 上传 windows-x64
+        uses: actions/upload-artifact@v4
+        with:
+          name: pw-windows-x64.exe
+          path: build/cli/pw-windows-x64.exe
+          retention-days: 7
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Job 5：发布到 MinIO CDN
+  # 仅在手动触发或 v* tag 推送时执行；普通 push 仅编译验证
+  # ──────────────────────────────────────────────────────────────────────
+  publish:
+    name: Publish to MinIO
+    needs: [build-macos, build-linux-x64, build-linux-arm64, build-windows]
+    runs-on: ubuntu-latest
+    if: always() && !cancelled() && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 获取 CLI 版本号
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "📦 CLI Version: ${VERSION}"
+
+      - name: 下载所有平台 artifact
         uses: actions/download-artifact@v4
         with:
-          path: build/cli
-          merge-multiple: true
+          path: artifacts/
 
-      - name: List artifacts
-        run: ls -lh build/cli/
+      - name: 列出产物
+        shell: bash
+        run: |
+          echo "=== 编译产物 ==="
+          find artifacts/ -type f | sort
+          echo ""
+          find artifacts/ -type f -exec ls -lh {} \;
 
-      - name: Setup MinIO Client (mc)
+      - name: 安装 MinIO Client (mc)
         run: |
           curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
           chmod +x /usr/local/bin/mc
           mc --version
 
-      - name: Configure MinIO alias
+      - name: 配置 MinIO alias
         env:
           MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
           MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
@@ -148,45 +306,63 @@ jobs:
         run: |
           mc alias set patchwing "$MINIO_ENDPOINT" "$MINIO_ACCESS_KEY" "$MINIO_SECRET_KEY"
 
-      - name: Upload to versioned path
+      - name: 上传到 MinIO（versioned + latest）
         env:
           MINIO_BUCKET: ${{ secrets.MINIO_BUCKET || 'patchwing' }}
           VERSION: ${{ steps.version.outputs.version }}
+          UPLOAD_LATEST: ${{ github.event.inputs.upload_latest }}
+        shell: bash
         run: |
           set -euo pipefail
-          for f in build/cli/pw-*; do
-            [[ -f "$f" ]] || continue
-            name=$(basename "$f")
-            echo "→ Upload: $name → cli/${VERSION}/${name}"
-            mc cp "$f" "patchwing/${MINIO_BUCKET}/cli/${VERSION}/${name}"
-          done
+          # 确保 bucket 存在
+          mc mb --ignore-existing "patchwing/${MINIO_BUCKET}"
 
-      - name: Sync to latest path
-        if: github.event.inputs.upload_latest != 'false'
-        env:
-          MINIO_BUCKET: ${{ secrets.MINIO_BUCKET || 'patchwing' }}
-        run: |
-          set -euo pipefail
-          for f in build/cli/pw-*; do
-            [[ -f "$f" ]] || continue
-            name=$(basename "$f")
-            echo "→ Upload: $name → cli/latest/${name}"
-            mc cp "$f" "patchwing/${MINIO_BUCKET}/cli/latest/${name}"
-          done
+          UPLOADED=0
+          for dir in artifacts/pw-*/; do
+            for bin_file in "${dir}"pw-*; do
+              [ -f "$bin_file" ] || continue
+              FILENAME=$(basename "$bin_file")
+              echo "→ Upload: ${FILENAME} → cli/${VERSION}/"
+              mc cp "$bin_file" "patchwing/${MINIO_BUCKET}/cli/${VERSION}/${FILENAME}"
 
-      - name: Print CDN URLs
+              # 默认同步到 latest；workflow_dispatch 时若显式传 false 则跳过
+              if [ "${UPLOAD_LATEST:-true}" != "false" ]; then
+                echo "→ Upload: ${FILENAME} → cli/latest/"
+                mc cp "$bin_file" "patchwing/${MINIO_BUCKET}/cli/latest/${FILENAME}"
+              fi
+              UPLOADED=$((UPLOADED + 1))
+            done
+          done
+          echo ""
+          echo "✅ 共上传 ${UPLOADED} 个文件"
+
+      - name: 打印 CDN 下载地址
         env:
           VERSION: ${{ steps.version.outputs.version }}
+        shell: bash
         run: |
           echo ""
           echo "✅ Published Patchwing CLI v${VERSION}"
           echo ""
           echo "Versioned URLs:"
-          for p in darwin-arm64 darwin-x64 linux-x64 windows-x64.exe; do
+          for p in darwin-arm64 darwin-x64 linux-x64 linux-arm64 windows-x64.exe; do
             echo "  https://cdn.patchwing.net/patchwing/cli/${VERSION}/pw-${p}"
           done
           echo ""
           echo "Latest URLs:"
-          for p in darwin-arm64 darwin-x64 linux-x64 windows-x64.exe; do
+          for p in darwin-arm64 darwin-x64 linux-x64 linux-arm64 windows-x64.exe; do
             echo "  https://cdn.patchwing.net/patchwing/cli/latest/pw-${p}"
           done
+
+      - name: 构建结果汇总
+        shell: bash
+        run: |
+          echo "## 🛠️ Patchwing CLI v${{ steps.version.outputs.version }} 编译结果"
+          echo ""
+          echo "| 平台 | 状态 |"
+          echo "|------|------|"
+          echo "| darwin-arm64 | ${{ needs.build-macos.result }} |"
+          echo "| darwin-x64   | ${{ needs.build-macos.result }} |"
+          echo "| linux-x64    | ${{ needs.build-linux-x64.result }} |"
+          echo "| linux-arm64  | ${{ needs.build-linux-arm64.result }} |"
+          echo "| windows-x64  | ${{ needs.build-windows.result }} |"
