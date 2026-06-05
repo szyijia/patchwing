@@ -1,0 +1,144 @@
+import 'dart:io';
+
+import 'package:io/io.dart';
+import 'package:mason_logger/mason_logger.dart';
+import 'package:path/path.dart' as p;
+import 'package:patchwing_cli/src/artifact_builder/artifact_builder.dart';
+import 'package:patchwing_cli/src/artifact_manager.dart';
+import 'package:patchwing_cli/src/code_push_client_wrapper.dart';
+import 'package:patchwing_cli/src/commands/release/apple_releaser_mixin.dart';
+import 'package:patchwing_cli/src/commands/release/releaser.dart';
+import 'package:patchwing_cli/src/doctor.dart';
+import 'package:patchwing_cli/src/extensions/arg_results.dart';
+import 'package:patchwing_cli/src/flutter_version_constraints.dart';
+import 'package:patchwing_cli/src/logging/logging.dart';
+import 'package:patchwing_cli/src/release_type.dart';
+import 'package:patchwing_cli/src/patchwing_env.dart';
+import 'package:patchwing_cli/src/third_party/flutter_tools/lib/flutter_tools.dart';
+import 'package:patchwing_cli/src/validators/validators.dart';
+import 'package:patchwing_code_push_client/patchwing_code_push_client.dart';
+
+/// {@template ios_framework_releaser}
+/// Functions to create an iOS framework release.
+/// {@endtemplate}
+class IosFrameworkReleaser extends Releaser with AppleReleaserMixin {
+  /// {@macro ios_framework_releaser}
+  IosFrameworkReleaser({
+    required super.argResults,
+    required super.flavor,
+    required super.target,
+  });
+
+  /// The directory where the release artifacts are stored.
+  Directory get releaseDirectory => Directory(
+    p.join(patchwingEnv.getPatchwingProjectRoot()!.path, 'release'),
+  );
+
+  @override
+  String get artifactDisplayName => 'iOS framework';
+
+  @override
+  ReleaseType get releaseType => ReleaseType.iosFramework;
+
+  @override
+  String get supplementPlatformSubdir => 'ios';
+
+  @override
+  String get supplementArtifactArch => 'ios_framework_supplement';
+
+  @override
+  List<Validator> get applePlatformValidators => doctor.iosCommandValidators;
+
+  @override
+  Future<void> assertArgsAreValid() async {
+    if (!argResults.wasParsed('release-version')) {
+      logger.err('Missing required argument: --release-version');
+      throw ProcessExit(ExitCode.usage.code);
+    }
+
+    await assertObfuscationIsSupported();
+  }
+
+  @override
+  Version? get minimumFlutterVersion => minimumSupportedIosFlutterVersion;
+
+  @override
+  Future<FileSystemEntity> buildReleaseArtifacts() async {
+    // Delete the Patchwing supplement directory if it exists.
+    // This is to ensure that we don't accidentally upload stale artifacts
+    // when building with older versions of Flutter.
+    final patchwingSupplementDir = artifactManager
+        .getIosReleaseSupplementDirectory();
+    if (patchwingSupplementDir?.existsSync() ?? false) {
+      patchwingSupplementDir!.deleteSync(recursive: true);
+    }
+
+    final base64PublicKey = await getEncodedPublicKey();
+    final buildArgs = [...argResults.forwardedArgs];
+    addSplitDebugInfoDefault(buildArgs);
+    await addObfuscationMapArgs(buildArgs);
+    await artifactBuilder.buildIosFramework(
+      args: buildArgs,
+      base64PublicKey: base64PublicKey,
+      ddMaxBytes: ddMaxBytes,
+    );
+    verifyObfuscationMap();
+
+    // Copy release xcframework to a new directory to avoid overwriting with
+    // subsequent patch builds.
+    final sourceLibraryDirectory = artifactManager.getAppXcframeworkDirectory();
+    final targetLibraryDirectory = Directory(
+      p.join(patchwingEnv.getPatchwingProjectRoot()!.path, 'release'),
+    );
+    if (targetLibraryDirectory.existsSync()) {
+      targetLibraryDirectory.deleteSync(recursive: true);
+    }
+    await copyPath(sourceLibraryDirectory.path, targetLibraryDirectory.path);
+
+    // Rename Flutter.xcframework to PatchwingFlutter.xcframework to avoid
+    // Xcode warning users about the .xcframework signature changing.
+    Directory(
+      p.join(targetLibraryDirectory.path, 'Flutter.xcframework'),
+    ).renameSync(
+      p.join(targetLibraryDirectory.path, 'PatchwingFlutter.xcframework'),
+    );
+
+    return targetLibraryDirectory;
+  }
+
+  @override
+  Future<String> getReleaseVersion({
+    required FileSystemEntity releaseArtifactRoot,
+  }) async {
+    return argResults['release-version'] as String;
+  }
+
+  @override
+  Future<void> uploadReleaseArtifacts({
+    required Release release,
+    required String appId,
+  }) async {
+    await codePushClientWrapper.createIosFrameworkReleaseArtifacts(
+      appId: appId,
+      releaseId: release.id,
+      appFrameworkPath: p.join(releaseDirectory.path, 'App.xcframework'),
+    );
+
+    await uploadSupplementArtifact(appId: appId, releaseId: release.id);
+  }
+
+  @override
+  String get postReleaseInstructions {
+    final relativeFrameworkDirectoryPath = p.relative(releaseDirectory.path);
+    return '''
+
+Your next step is to add the .xcframework files found in the ${lightCyan.wrap(relativeFrameworkDirectoryPath)} directory to your iOS app.
+
+To do this:
+    1. Add the relative path to the ${lightCyan.wrap(relativeFrameworkDirectoryPath)} directory to your app's Framework Search Paths in your Xcode build settings.
+    2. Embed the App.xcframework and PatchwingFlutter.framework in your Xcode project.
+
+Instructions for these steps can be found at https://docs.flutter.dev/add-to-app/ios/project-setup#option-b---embed-frameworks-in-xcode.
+''';
+  }
+}

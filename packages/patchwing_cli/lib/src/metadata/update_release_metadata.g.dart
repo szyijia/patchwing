@@ -1,0 +1,60 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+// ignore_for_file: implicit_dynamic_parameter, require_trailing_commas, cast_nullable_to_non_nullable, lines_longer_than_80_chars, strict_raw_type, unnecessary_lambdas
+
+part of 'update_release_metadata.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+UpdateReleaseMetadata _$UpdateReleaseMetadataFromJson(
+  Map<String, dynamic> json,
+) => $checkedCreate(
+  'UpdateReleaseMetadata',
+  json,
+  ($checkedConvert) {
+    final val = UpdateReleaseMetadata(
+      releasePlatform: $checkedConvert(
+        'release_platform',
+        (v) => ReleasePlatform.fromJson(v as String),
+      ),
+      flutterVersionOverride: $checkedConvert(
+        'flutter_version_override',
+        (v) => v as String?,
+      ),
+      environment: $checkedConvert(
+        'environment',
+        (v) => BuildEnvironmentMetadata.fromJson(v as Map<String, dynamic>),
+      ),
+      includesPublicKey: $checkedConvert(
+        'includes_public_key',
+        (v) => v as bool?,
+      ),
+      generatedApks: $checkedConvert('generated_apks', (v) => v as bool?),
+      buildTraceSummary: $checkedConvert(
+        'build_trace_summary',
+        (v) => v as Map<String, dynamic>?,
+      ),
+    );
+    return val;
+  },
+  fieldKeyMap: const {
+    'releasePlatform': 'release_platform',
+    'flutterVersionOverride': 'flutter_version_override',
+    'includesPublicKey': 'includes_public_key',
+    'generatedApks': 'generated_apks',
+    'buildTraceSummary': 'build_trace_summary',
+  },
+);
+
+Map<String, dynamic> _$UpdateReleaseMetadataToJson(
+  UpdateReleaseMetadata instance,
+) => <String, dynamic>{
+  'release_platform': instance.releasePlatform.toJson(),
+  'flutter_version_override': instance.flutterVersionOverride,
+  'generated_apks': instance.generatedApks,
+  'includes_public_key': instance.includesPublicKey,
+  'environment': instance.environment.toJson(),
+  'build_trace_summary': instance.buildTraceSummary,
+};

@@ -1,0 +1,192 @@
+name: Build & Publish Patchwing CLI
+
+# 用途：编译 pw 二进制（macOS / Linux / Windows）并上传到 MinIO（CDN）
+#
+# 触发：
+#   - 手动触发（workflow_dispatch）
+#   - 推送到 main 且修改了 CLI 源码
+#   - 推送 v* tag（用于发布正式版本）
+#
+# 产物路径（CDN）：
+#   https://cdn.patchwing.net/patchwing/cli/<version>/pw-<platform>[.exe]
+#   https://cdn.patchwing.net/patchwing/cli/latest/pw-<platform>[.exe]
+#
+# 必需的 Secrets（在 GitHub repo Settings → Secrets and variables → Actions）：
+#   MINIO_ENDPOINT       例如 https://minio.example.com
+#   MINIO_ACCESS_KEY
+#   MINIO_SECRET_KEY
+#   MINIO_BUCKET         默认 patchwing（可选；不设则用 patchwing）
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_latest:
+        description: '是否同步到 latest 目录'
+        required: false
+        default: 'true'
+        type: choice
+        options: ['true', 'false']
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths:
+      - 'packages/patchwing_cli/**'
+      - 'packages/patchwing_code_push_client/**'
+      - 'packages/patchwing_code_push_protocol/**'
+      - 'pubspec.yaml'
+      - '.github/workflows/build-pw-cli.yml'
+
+env:
+  CLI_PKG_DIR: packages/patchwing_cli
+  WORKSPACE_DIR: .
+
+jobs:
+  # ─── Job 1：三平台并行编译 pw 二进制 ──────────────────────────────────
+  build:
+    name: Build pw (${{ matrix.platform }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            platform: darwin-arm64
+            output: pw-darwin-arm64
+          - os: macos-13
+            platform: darwin-x64
+            output: pw-darwin-x64
+          - os: ubuntu-latest
+            platform: linux-x64
+            output: pw-linux-x64
+          - os: windows-latest
+            platform: windows-x64
+            output: pw-windows-x64.exe
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Read CLI version
+        id: version
+        shell: bash
+        run: |
+          VER=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          echo "version=${VER}" >> "$GITHUB_OUTPUT"
+          echo "CLI 版本: ${VER}"
+
+      - name: Resolve dependencies (workspace root)
+        shell: bash
+        run: |
+          cd "${WORKSPACE_DIR}"
+          dart pub get --no-precompile
+
+      - name: Compile pw (${{ matrix.platform }})
+        shell: bash
+        run: |
+          mkdir -p build/cli
+          cd "${CLI_PKG_DIR}"
+          dart compile exe bin/patchwing.dart \
+            -o "${{ github.workspace }}/build/cli/${{ matrix.output }}" \
+            -D version=${{ steps.version.outputs.version }}
+
+      - name: Verify binary
+        shell: bash
+        run: |
+          ls -lh "build/cli/${{ matrix.output }}"
+          file "build/cli/${{ matrix.output }}" || true
+
+      - name: Upload build artifact (intra-workflow)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.output }}
+          path: build/cli/${{ matrix.output }}
+          retention-days: 7
+
+  # ─── Job 2：汇总并上传到 MinIO ────────────────────────────────────────
+  publish:
+    name: Publish to MinIO
+    needs: build
+    runs-on: ubuntu-latest
+    # 只有手动触发或 tag 推送才发布；普通 push 仅编译验证
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read CLI version
+        id: version
+        run: |
+          VER=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          echo "version=${VER}" >> "$GITHUB_OUTPUT"
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: build/cli
+          merge-multiple: true
+
+      - name: List artifacts
+        run: ls -lh build/cli/
+
+      - name: Setup MinIO Client (mc)
+        run: |
+          curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
+          chmod +x /usr/local/bin/mc
+          mc --version
+
+      - name: Configure MinIO alias
+        env:
+          MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
+          MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
+          MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
+        run: |
+          mc alias set patchwing "$MINIO_ENDPOINT" "$MINIO_ACCESS_KEY" "$MINIO_SECRET_KEY"
+
+      - name: Upload to versioned path
+        env:
+          MINIO_BUCKET: ${{ secrets.MINIO_BUCKET || 'patchwing' }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          for f in build/cli/pw-*; do
+            [[ -f "$f" ]] || continue
+            name=$(basename "$f")
+            echo "→ Upload: $name → cli/${VERSION}/${name}"
+            mc cp "$f" "patchwing/${MINIO_BUCKET}/cli/${VERSION}/${name}"
+          done
+
+      - name: Sync to latest path
+        if: github.event.inputs.upload_latest != 'false'
+        env:
+          MINIO_BUCKET: ${{ secrets.MINIO_BUCKET || 'patchwing' }}
+        run: |
+          set -euo pipefail
+          for f in build/cli/pw-*; do
+            [[ -f "$f" ]] || continue
+            name=$(basename "$f")
+            echo "→ Upload: $name → cli/latest/${name}"
+            mc cp "$f" "patchwing/${MINIO_BUCKET}/cli/latest/${name}"
+          done
+
+      - name: Print CDN URLs
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          echo ""
+          echo "✅ Published Patchwing CLI v${VERSION}"
+          echo ""
+          echo "Versioned URLs:"
+          for p in darwin-arm64 darwin-x64 linux-x64 windows-x64.exe; do
+            echo "  https://cdn.patchwing.net/patchwing/cli/${VERSION}/pw-${p}"
+          done
+          echo ""
+          echo "Latest URLs:"
+          for p in darwin-arm64 darwin-x64 linux-x64 windows-x64.exe; do
+            echo "  https://cdn.patchwing.net/patchwing/cli/latest/pw-${p}"
+          done

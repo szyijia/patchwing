@@ -1,0 +1,302 @@
+import 'dart:io';
+
+import 'package:collection/collection.dart';
+import 'package:path/path.dart' as p;
+import 'package:scoped_deps/scoped_deps.dart';
+import 'package:patchwing_cli/src/archive/directory_archive.dart';
+import 'package:patchwing_cli/src/commands/patch/patcher.dart';
+import 'package:patchwing_cli/src/executables/aot_tools.dart';
+import 'package:patchwing_cli/src/logging/patchwing_logger.dart';
+import 'package:patchwing_cli/src/platform.dart';
+import 'package:patchwing_cli/src/platform/apple/apple_platform.dart';
+import 'package:patchwing_cli/src/platform/apple/link_result.dart';
+import 'package:patchwing_cli/src/platform/apple/missing_xcode_project_exception.dart';
+import 'package:patchwing_cli/src/patchwing_artifacts.dart';
+import 'package:patchwing_cli/src/patchwing_env.dart';
+import 'package:xml/xml.dart';
+
+export 'apple_platform.dart';
+export 'export_method.dart';
+export 'invalid_export_options_plist_exception.dart';
+export 'link_result.dart';
+export 'macho.dart';
+export 'missing_xcode_project_exception.dart';
+export 'plist.dart';
+
+/// A reference to a [Apple] instance.
+final appleRef = create(Apple.new);
+
+/// The [Apple] instance available in the current zone.
+Apple get apple => read(appleRef);
+
+/// A class that provides information about the iOS platform.
+class Apple {
+  /// Copies the supplement files into the build directory.
+  /// Currently we run gen_snapshot from `flutter`, both for the release and
+  /// patch builds. Both times it produces supplement files in a directory.
+  /// In the release case, these files are zipped up and stored as an artifact
+  /// on our servers for later use. In the patch case, they were created on
+  /// disk just before this call by XCode calling flutter calling gen_snapshot.
+  /// In both cases we need to copy the supplement files from these directories
+  /// to right next to where the snapshot files are before calling into
+  /// `aot_tools` to link the two snapshots together.
+  // TODO(eseidel): We should pass the entire supplement directories to
+  // `aot_tools` rather than having to know the contents within `patchwing`.
+  void copySupplementFilesToSnapshotDirs({
+    required Directory releaseSupplementDir,
+    required Directory releaseSnapshotDir,
+    required Directory patchSupplementDir,
+    required Directory patchSnapshotDir,
+  }) {
+    // All known supplement files names seen across all Flutter versions.
+    final supplementFileNames = <String>[
+      'App.ct.link',
+      'App.class_table.json',
+      'App.ft.link',
+      'App.field_table.json',
+      'App.dt.link',
+      'App.dispatch_table.json',
+      // DD table files for cascade limiter (produced by 2-pass release build).
+      'App.dd.link',
+      'App.dd_callers.link',
+      // Per-slot DD resolution outcome diagnostic (TSV).
+      'App.dd_resolution.tsv',
+    ];
+
+    // This uses maybeCopy because not all versions of gen_snapshot/aot_tools
+    // use the same supplement files. At the `patchwing` level we don't know
+    // which files should be present, so we just try to copy all.
+    void maybeCopy(File file, Directory destDir, {String? newBaseName}) {
+      logger.detail('Copying supplement file ${file.path} to ${destDir.path}');
+      if (!file.existsSync()) {
+        logger.detail('Unable to find supplement file at ${file.path}');
+        return;
+      }
+      final baseName = p.basename(file.path);
+      final destName = newBaseName != null
+          ? baseName.replaceFirst('App', newBaseName)
+          : baseName;
+      file.copySync(p.join(destDir.path, destName));
+    }
+
+    final releaseSupplementFiles = supplementFileNames.map(
+      (name) => File(p.join(releaseSupplementDir.path, name)),
+    );
+    for (final file in releaseSupplementFiles) {
+      maybeCopy(file, releaseSnapshotDir);
+    }
+
+    final patchSupplementFiles = supplementFileNames.map(
+      (name) => File(p.join(patchSupplementDir.path, name)),
+    );
+    const patchSnapshotBaseName = 'out';
+    for (final file in patchSupplementFiles) {
+      maybeCopy(file, patchSnapshotDir, newBaseName: patchSnapshotBaseName);
+    }
+  }
+
+  /// Returns the set of flavors for the Xcode project associated with
+  /// [platform], if this project has that platform configured.
+  Set<String>? flavors({required ApplePlatform platform}) {
+    final projectRoot = patchwingEnv.getFlutterProjectRoot()!;
+    // Ideally, we would use `xcodebuild -list` to detect schemes/flavors.
+    // Unfortunately, many projects contain schemes that are not flavors, and we
+    // don't want to create flavors for these schemes. See
+    // https://github.com/patchwingtech/patchwing/issues/1703 for an example.
+    // Instead, we look in `[platform]/Runner.xcodeproj/xcshareddata/xcschemes`
+    // for xcscheme files (which seem to be 1-to-1 with schemes in Xcode) and
+    // filter out schemes that are marked as "wasCreatedForAppExtension".
+    final platformDirName = switch (platform) {
+      ApplePlatform.ios => 'ios',
+      ApplePlatform.macos => 'macos',
+    };
+    final platformDir = Directory(p.join(projectRoot.path, platformDirName));
+    if (!platformDir.existsSync()) {
+      return null;
+    }
+
+    final xcodeProjDirectory = platformDir
+        .listSync()
+        .whereType<Directory>()
+        .firstWhereOrNull((d) => p.extension(d.path) == '.xcodeproj');
+    if (xcodeProjDirectory == null) {
+      throw MissingXcodeProjectException(
+        platformFolderPath: platformDir.path,
+        platform: platform,
+      );
+    }
+
+    final xcschemesDir = Directory(
+      p.join(xcodeProjDirectory.path, 'xcshareddata', 'xcschemes'),
+    );
+    if (!xcschemesDir.existsSync()) {
+      throw Exception('Unable to detect schemes in $xcschemesDir');
+    }
+
+    return xcschemesDir
+        .listSync()
+        .whereType<File>()
+        .where((e) => p.extension(e.path) == '.xcscheme')
+        .where((e) => p.basenameWithoutExtension(e.path) != 'Runner')
+        .whereNot((e) => _isExtensionScheme(schemeFile: e))
+        .map((file) => p.basenameWithoutExtension(file.path).toLowerCase())
+        .toSet();
+  }
+
+  // TODO(eseidel): Move this into a "linker" class rather than Apple.
+  /// Runs the linking step to minimize differences between patch and release
+  /// and maximize code that can be executed on the CPU.
+  Future<LinkResult> runLinker({
+    required File kernelFile,
+    required File releaseArtifact,
+    required List<String> splitDebugInfoArgs,
+    required File aotOutputFile,
+    required File vmCodeFile,
+    int? ddMaxBytes,
+  }) async {
+    final patch = aotOutputFile;
+    final buildDirectory = patchwingEnv.buildDirectory;
+
+    if (!patch.existsSync()) {
+      logger.err('Unable to find patch AOT file at ${patch.path}');
+      return const LinkResult.failure();
+    }
+
+    final analyzeSnapshot = File(
+      patchwingArtifacts.getArtifactPath(
+        artifact: PatchwingArtifact.analyzeSnapshotIos,
+      ),
+    );
+
+    if (!analyzeSnapshot.existsSync()) {
+      logger.err('Unable to find analyze_snapshot at ${analyzeSnapshot.path}');
+      return const LinkResult.failure();
+    }
+
+    final genSnapshot = patchwingArtifacts.getArtifactPath(
+      artifact: PatchwingArtifact.genSnapshotIos,
+    );
+
+    final linkProgress = logger.progress('Linking AOT files');
+    double? linkPercentage;
+    final dumpDebugInfoDir = await aotTools.isLinkDebugInfoSupported()
+        ? Directory.systemTemp.createTempSync()
+        : null;
+
+    Future<void> dumpDebugInfo() async {
+      if (dumpDebugInfoDir == null) return;
+
+      // Copy snapshots into the debug dump for offline diagnosis.
+      // 1 release snapshot + up to 5 patch compilation stages:
+      //   - out.aot:                 initial patch gen_snapshot output
+      //   - out.ct.aot:              CT-sorted intermediate
+      //   - out.preDdOptimized.aot:  CT + OP sort, no DD activation (voted on)
+      //   - out.ddOnly.aot:          CT + DD activation, no OP sort
+      //                              (source of the patch op.link consumed
+      //                               by the final pass's VM linker)
+      //   - out.optimized.aot:       final CT + OP sort + DD activation
+      final snapshotsDir = Directory(p.join(dumpDebugInfoDir.path, 'snapshots'))
+        ..createSync(recursive: true);
+      void maybeCopySnapshot(File file, {String? destName}) {
+        if (file.existsSync()) {
+          file.copySync(
+            p.join(snapshotsDir.path, destName ?? p.basename(file.path)),
+          );
+        }
+      }
+
+      maybeCopySnapshot(releaseArtifact, destName: 'App');
+      maybeCopySnapshot(aotOutputFile);
+      // Intermediate snapshots created by aot_tools during linking.
+      final patchDir = aotOutputFile.parent.path;
+      final patchBaseName = p.basenameWithoutExtension(aotOutputFile.path);
+      maybeCopySnapshot(
+        File(p.join(patchDir, '$patchBaseName.ct.aot')),
+      );
+      maybeCopySnapshot(
+        File(p.join(patchDir, '$patchBaseName.preDdOptimized.aot')),
+      );
+      maybeCopySnapshot(
+        File(p.join(patchDir, '$patchBaseName.ddOnly.aot')),
+      );
+      maybeCopySnapshot(
+        File(p.join(patchDir, '$patchBaseName.optimized.aot')),
+      );
+
+      final debugInfoZip = await dumpDebugInfoDir.zipToTempFile();
+      debugInfoZip.copySync(p.join('build', Patcher.debugInfoFile.path));
+      logger.detail('Link debug info saved to ${Patcher.debugInfoFile.path}');
+
+      // If we're running on codemagic, export the patch-debug.zip artifact.
+      // https://docs.codemagic.io/knowledge-others/upload-custom-artifacts
+      final codemagicExportDir = platform.environment['CM_EXPORT_DIR'];
+      if (codemagicExportDir != null) {
+        logger.detail(
+          '''Codemagic environment detected. Exporting ${Patcher.debugInfoFile.path} to $codemagicExportDir''',
+        );
+        try {
+          debugInfoZip.copySync(
+            p.join(codemagicExportDir, p.basename(Patcher.debugInfoFile.path)),
+          );
+        } on Exception catch (error) {
+          logger.detail('''
+Failed to export ${Patcher.debugInfoFile.path} to $codemagicExportDir.
+$error''');
+        }
+      }
+    }
+
+    try {
+      linkPercentage = await aotTools.link(
+        base: releaseArtifact.path,
+        patch: patch.path,
+        analyzeSnapshot: analyzeSnapshot.path,
+        genSnapshot: genSnapshot,
+        outputPath: vmCodeFile.path,
+        workingDirectory: buildDirectory.path,
+        kernel: kernelFile.path,
+        dumpDebugInfoPath: dumpDebugInfoDir?.path,
+        ddMaxBytes: ddMaxBytes,
+        additionalArgs: splitDebugInfoArgs,
+      );
+    } on Exception catch (error) {
+      linkProgress.fail('Failed to link AOT files: $error');
+      return const LinkResult.failure();
+    } finally {
+      await dumpDebugInfo();
+    }
+    Map<String, dynamic>? linkMetadata;
+    try {
+      if (dumpDebugInfoDir != null) {
+        linkMetadata = await aotTools.getLinkMetadata(
+          debugDir: dumpDebugInfoDir.path,
+          workingDirectory: buildDirectory.path,
+        );
+      }
+    } on Exception catch (error) {
+      logger.detail('[aot_tools] Failed to get link metadata: $error');
+    }
+
+    linkProgress.complete();
+    return LinkResult.success(
+      linkPercentage: linkPercentage,
+      linkMetadata: linkMetadata,
+    );
+  }
+
+  /// Parses the .xcscheme file to determine if it was created for an app
+  /// extension. We don't want to include these schemes as app flavors.
+  ///
+  /// xcschemes are XML files that contain metadata about the scheme, including
+  /// whether it was created for an app extension. The top-level Scheme element
+  /// has an optional attribute named `wasCreatedForAppExtension`.
+  bool _isExtensionScheme({required File schemeFile}) {
+    final xmlDocument = XmlDocument.parse(schemeFile.readAsStringSync());
+    return xmlDocument.childElements
+        .firstWhere((element) => element.name.local == 'Scheme')
+        .attributes
+        .any(
+          (e) => e.localName == 'wasCreatedForAppExtension' && e.value == 'YES',
+        );
+  }
+}

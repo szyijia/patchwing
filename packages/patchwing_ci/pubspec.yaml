@@ -1,0 +1,27 @@
+name: patchwing_ci
+description: >-
+  CI tooling for Dart and Flutter monorepos. Generates GitHub Actions
+  workflows, resolves affected packages via dependency graphs, and
+  verifies path filters stay in sync.
+version: 0.2.4
+homepage: https://patchwing.dev
+repository: https://github.com/patchwingtech/patchwing/tree/main/packages/patchwing_ci
+topics: [ci, github-actions, monorepo, patchwing]
+resolution: workspace
+
+executables:
+  patchwing_ci:
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  args: ^2.6.0
+  meta: ^1.16.0
+  path: ^1.9.0
+  pub_semver: ^2.1.0
+  yaml: ^3.1.0
+
+dev_dependencies:
+  test: ^1.31.1
+  very_good_analysis: ^10.2.0

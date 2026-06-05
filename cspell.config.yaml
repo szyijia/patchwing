@@ -1,0 +1,175 @@
+$schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json
+version: "0.2"
+ignorePaths:
+  ["coverage", "bin/cache", "third_party", "build", "*.xcscheme", "fixtures"]
+words:
+  - aabs
+  - aapt
+  - aarch
+  - aars # Android Archive
+  - agentic
+  - aidl # Android AIDL interface definition files
+  - allprojects # From gradle files
+  - altool
+  - ANDROIDD
+  - apigee
+  - Apks
+  - appbundle
+  - archs
+  - armeabi
+  - Azul
+  - backboardd
+  - bdero
+  - bintools
+  - bitcode
+  - bitrise # Bitrise CI platform
+  - bryanoltman
+  - bundletool
+  - Dalvik # Android Dalvik VM / DEX file format
+  - canvaskit
+  - carryforward
+  - ccache
+  - cipd
+  - codegen
+  - codemagic
+  - codesign
+  - codesigned
+  - codesigning
+  - deflavored
+  - develocity
+  - devicectl
+  - dorny # From .github dir, doesn't show up in "**" check?
+  - dyld
+  - dylib
+  - endtemplate
+  - Entra
+  - eseidel
+  - exitcode
+  - exportoptions
+  - felangel
+  - FLUSHALL
+  - genhtml
+  - genkey # From .github/workflows/e2e.yaml
+  - gradlew
+  - hotreload
+  - idevicesyslog
+  - incrbyfloat # From ./packages/redis_client
+  - ints
+  - iokit
+  - iphoneos
+  - isatty
+  - keyalg # From .github/workflows/e2e.yaml
+  - keypass # From .github/workflows/e2e.yaml
+  - keysize # From .github/workflows/e2e.yaml
+  - keytool # From .github/workflows/e2e.yaml
+  - lerping
+  - libapp
+  - libflutter
+  - libimobiledevice
+  - libimobiledeviceglue
+  - libplist
+  - libusbmuxd
+  - lldb
+  - LOCALAPPDATA
+  - logcat
+  - longpaths
+  - lproj
+  - madd # From ./packages/redis_client
+  - mbps
+  - metacharacters
+  - mget # From ./packages/redis_client
+  - metadatas
+  - mktemp
+  - mmap # Unix system call — referenced in RELEASE_NOTES (libapp.so mmap-from-APK)
+  - mocktail
+  - mset # From ./packages/redis_client
+  - multioption
+  - noaudio # From .github dir, doesn't show up in "**" check?
+  - NOAUTH
+  - nonobvious # From analysis_options.yaml
+  - nserror
+  - Oltman
+  - orri # Arm64 instruction, Or Register with Immediate
+  - parseable
+  - patchability
+  - pana
+  - pbxproj
+  - pinact # Third-party action-pinning tool referenced in patchwing_ci
+  - Perfetto # Chrome trace viewer at ui.perfetto.dev
+  - pkcs
+  - podfile
+  - podspec
+  - pointycastle
+  - precache
+  - previewable
+  - PRNG
+  - proguard # Android ProGuard shrinker/obfuscator
+  - propertylistserialization
+  - propertylistserialization
+  - protos # Protocol buffer generated files
+  - pubspec
+  - pwsh
+  - quantiles
+  - rdata
+  - reactivecircus # From .github dir, doesn't show up in "**" check?
+  - readlink
+  - reimplementation
+  - reinit
+  - requirepass # From .github dir, doesn't show up in "**" check?
+  - reusables
+  - spawnee
+  - Retryable
+  - RSAPKCS
+  - sdcard # From .github/workflows/e2e.yaml
+  - sgit # From .github/license_check/action.yaml
+  - patchwingtech
+  - sideload
+  - sideloadable
+  - sideloaded
+  - sideloading
+  - signup
+  - SIGSTOP
+  - storepass # From .github/workflows/e2e.yaml
+  - storyboardc
+  - subpackages
+  - symbolication
+  - syskeys # From adb.dart
+  - subosito # From .github dir, doesn't show up in "**" check?
+  - swiftshader # From .github dir, doesn't show up in "**" check?
+  - sysroot
+  - tdigest
+  - temurin # From .github dir, doesn't show up in "**" check?
+  - timebase # Mach timebase (mach_timebase_info)
+  - udevadm # From .github/workflows/e2e.yaml
+  - udid # Unique Device Identifier
+  - unanalyzed
+  - unawaited
+  - unmockable
+  - unobfuscated
+  - unpadded
+  - Unpatchable
+  - unsets
+  - unskipped
+  - upvote
+  - usbmuxd
+  - USERPROFILE
+  - VCRUNTIME
+  - Verdana
+  - vmcode
+  - winsize
+  - worktrees
+  - writeln
+  - WRONGPASS
+  - xcarchive
+  - xcarchives
+  - xcframework
+  - xcodebuild
+  - xcodeproj
+  - xcresult
+  - xcresulttool
+  - xcrun
+  - xcscheme
+  - xcschemes
+  - xcshareddata
+  - xcworkspace
+  - xlink

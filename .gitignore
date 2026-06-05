@@ -1,0 +1,46 @@
+# See https://www.dartlang.org/guides/libraries/private-files
+# Files and directories created by pub
+.dart_tool/
+.packages
+build/
+
+# Test related files
+# Coverage directories used by Flutter & Dart tests
+logs/
+coverage/
+coverage_badge.svg
+
+# Cached files
+bin/cache/
+
+# Misc
+.DS_Store
+.claude/
+
+# ──────────────────────────────────────────────────────────────────
+# Patchwing additions
+# ──────────────────────────────────────────────────────────────────
+
+# Patchwing CLI compiled binary (built by `dart compile exe`, also produced
+# by GitHub Actions and published to MinIO CDN).
+packages/patchwing_cli/pw
+packages/patchwing_cli/pw.exe
+packages/patchwing_cli/bin/*.dill
+packages/patchwing_cli/bin/test_script
+
+# Multi-platform CLI build outputs (CI workflow `.github/workflows/build-pw-cli.yml`)
+build/cli/
+pw-darwin-arm64
+pw-darwin-x64
+pw-linux-x64
+pw-windows-x64
+pw-windows-x64.exe
+
+# Vendored Flutter / engine artifacts (downloaded by `pw init` from
+# GitHub / CDN at runtime; must NOT be committed to this repo).
+vendor/
+
+# IDE / OS
+.idea/
+*.iml
+Thumbs.db

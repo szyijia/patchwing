@@ -1,0 +1,179 @@
+import 'dart:io';
+
+import 'package:archive/archive_io.dart';
+import 'package:crypto/crypto.dart';
+import 'package:io/io.dart';
+import 'package:mason_logger/mason_logger.dart';
+import 'package:path/path.dart' as p;
+import 'package:patchwing_cli/src/archive_analysis/android_archive_differ.dart';
+import 'package:patchwing_cli/src/artifact_builder/artifact_builder.dart';
+import 'package:patchwing_cli/src/artifact_manager.dart';
+import 'package:patchwing_cli/src/code_push_client_wrapper.dart';
+import 'package:patchwing_cli/src/commands/patch/patch.dart';
+import 'package:patchwing_cli/src/extensions/arg_results.dart';
+import 'package:patchwing_cli/src/logging/logging.dart';
+import 'package:patchwing_cli/src/patch_diff_checker.dart';
+import 'package:patchwing_cli/src/platform/platform.dart';
+import 'package:patchwing_cli/src/release_type.dart';
+import 'package:patchwing_cli/src/patchwing_android_artifacts.dart';
+import 'package:patchwing_cli/src/patchwing_env.dart';
+import 'package:patchwing_cli/src/patchwing_validator.dart';
+import 'package:patchwing_cli/src/third_party/flutter_tools/lib/flutter_tools.dart';
+import 'package:patchwing_code_push_client/patchwing_code_push_client.dart';
+
+/// {@template aar_patcher}
+/// Functions to patch an AAR release.
+/// {@endtemplate}
+class AarPatcher extends Patcher {
+  /// {@macro aar_patcher}
+  AarPatcher({
+    required super.argResults,
+    required super.argParser,
+    required super.flavor,
+    required super.target,
+  });
+
+  /// The build number of the aar (1.0). Forwarded to the --build-number
+  /// argument of the flutter build aar command.
+  String get buildNumber => argResults['build-number'] as String;
+
+  @override
+  String get primaryReleaseArtifactArch => 'aar';
+
+  @override
+  String? get supplementaryReleaseArtifactArch => 'aar_supplement';
+
+  @override
+  ReleaseType get releaseType => ReleaseType.aar;
+
+  @override
+  Future<void> assertPreconditions() async {
+    try {
+      await patchwingValidator.validatePreconditions(
+        checkUserIsAuthenticated: true,
+        checkPatchwingInitialized: true,
+      );
+    } on PreconditionFailedException catch (e) {
+      throw ProcessExit(e.exitCode.code);
+    }
+
+    if (patchwingEnv.androidPackageName == null) {
+      logger.err('Could not find androidPackage in pubspec.yaml.');
+      throw ProcessExit(ExitCode.config.code);
+    }
+  }
+
+  @override
+  Future<DiffStatus> assertUnpatchableDiffs({
+    required ReleaseArtifact releaseArtifact,
+    required File releaseArchive,
+    required File patchArchive,
+  }) => patchDiffChecker.confirmUnpatchableDiffsIfNecessary(
+    localArchive: patchArchive,
+    releaseArchive: releaseArchive,
+    archiveDiffer: const AndroidArchiveDiffer(),
+    allowAssetChanges: allowAssetDiffs,
+    allowNativeChanges: allowNativeDiffs,
+  );
+
+  @override
+  Future<File> buildPatchArtifact({String? releaseVersion}) async {
+    final buildArgs = [...argResults.forwardedArgs, ...extraBuildArgs];
+    await artifactBuilder.buildAar(
+      buildNumber: buildNumber,
+      args: buildArgs,
+      base64PublicKey: argResults.encodedPublicKey,
+    );
+
+    return File(
+      PatchwingAndroidArtifacts.aarArtifactPath(
+        buildNumber: buildNumber,
+        packageName: patchwingEnv.androidPackageName!,
+      ),
+    );
+  }
+
+  @override
+  Future<Map<Arch, PatchArtifactBundle>> createPatchArtifacts({
+    required String appId,
+    required int releaseId,
+    required File releaseArtifact,
+    Directory? supplementDirectory,
+  }) async {
+    final releaseArtifacts = await codePushClientWrapper.getReleaseArtifacts(
+      appId: appId,
+      releaseId: releaseId,
+      architectures: AndroidArch.availableAndroidArchs,
+      platform: releaseType.releasePlatform,
+    );
+
+    final releaseArtifactPaths = <Arch, String>{};
+    final downloadReleaseArtifactProgress = logger.progress(
+      'Downloading release artifacts',
+    );
+
+    for (final releaseArtifact in releaseArtifacts.entries) {
+      try {
+        final releaseArtifactFile = await artifactManager.downloadFile(
+          Uri.parse(releaseArtifact.value.url),
+        );
+        releaseArtifactPaths[releaseArtifact.key] = releaseArtifactFile.path;
+      } on Exception catch (error) {
+        downloadReleaseArtifactProgress.fail('$error');
+        throw ProcessExit(ExitCode.software.code);
+      }
+    }
+
+    downloadReleaseArtifactProgress.complete();
+
+    final extractedAarDirectory = await patchwingAndroidArtifacts.extractAar(
+      packageName: patchwingEnv.androidPackageName!,
+      buildNumber: buildNumber,
+      unzipFn: extractFileToDisk,
+    );
+    final patchArtifactBundles = <Arch, PatchArtifactBundle>{};
+
+    final createDiffProgress = logger.progress('Creating artifacts');
+    for (final releaseArtifactPath in releaseArtifactPaths.entries) {
+      final arch = releaseArtifactPath.key;
+      final artifactPath = p.join(
+        extractedAarDirectory.path,
+        'jni',
+        arch.androidBuildPath,
+        'libapp.so',
+      );
+      logger.detail('Creating artifact for $artifactPath');
+      final patchArtifact = File(artifactPath);
+      final hash = sha256.convert(await patchArtifact.readAsBytes()).toString();
+      final hashSignature = await signHash(hash);
+
+      try {
+        final diffPath = await artifactManager.createDiff(
+          releaseArtifactPath: releaseArtifactPath.value,
+          patchArtifactPath: artifactPath,
+        );
+        patchArtifactBundles[arch] = PatchArtifactBundle(
+          arch: arch.arch,
+          path: diffPath,
+          hash: hash,
+          size: await File(diffPath).length(),
+          hashSignature: hashSignature,
+        );
+      } on Exception catch (error) {
+        createDiffProgress.fail('$error');
+        throw ProcessExit(ExitCode.software.code);
+      }
+    }
+    createDiffProgress.complete();
+
+    return patchArtifactBundles;
+  }
+
+  @override
+  Future<String> extractReleaseVersionFromArtifact(File artifact) {
+    // Not implemented - release version must be specified by the user.
+    throw UnimplementedError(
+      'Release version must be specified using --release-version.',
+    );
+  }
+}
