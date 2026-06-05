@@ -1,6 +1,6 @@
 name: patchwing_cli
 description: Command-line tool to interact with Patchwing's services.
-version: 1.6.106
+version: 1.0.0
 repository: https://github.com/patchwingtech/patchwing
 resolution: workspace
 

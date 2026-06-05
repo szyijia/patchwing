@@ -65,8 +65,12 @@ jobs:
         shell: bash
         run: |
           VERSION=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+          BUILD_VERSION="${VERSION}+${SHORT_SHA}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "build_version=${BUILD_VERSION}" >> "$GITHUB_OUTPUT"
           echo "📦 CLI Version: ${VERSION}"
+          echo "🔖 Build Version (注入到二进制): ${BUILD_VERSION}"
 
       - name: 安装依赖（workspace 根）
         shell: bash
@@ -81,7 +85,7 @@ jobs:
           mkdir -p build/cli
           dart compile exe "${CLI_PKG_DIR}/bin/patchwing.dart" \
             -o "${{ github.workspace }}/build/cli/pw-darwin-arm64" \
-            -D version=${{ steps.version.outputs.version }}
+            -D PATCHWING_BUILD_VERSION=${{ steps.version.outputs.build_version }}
           chmod +x build/cli/pw-darwin-arm64
           echo "✅ darwin-arm64 编译完成"
           file build/cli/pw-darwin-arm64
@@ -108,7 +112,7 @@ jobs:
           /tmp/dart-x64/dart-sdk/bin/dart pub get --no-precompile
           /tmp/dart-x64/dart-sdk/bin/dart compile exe "${CLI_PKG_DIR}/bin/patchwing.dart" \
             -o "${{ github.workspace }}/build/cli/pw-darwin-x64" \
-            -D version=${{ steps.version.outputs.version }}
+            -D PATCHWING_BUILD_VERSION=${{ steps.version.outputs.build_version }}
           chmod +x build/cli/pw-darwin-x64
           echo "✅ darwin-x64 编译完成"
           file build/cli/pw-darwin-x64
@@ -147,7 +151,10 @@ jobs:
         shell: bash
         run: |
           VERSION=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+          BUILD_VERSION="${VERSION}+${SHORT_SHA}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "build_version=${BUILD_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: 安装依赖（workspace 根）
         shell: bash
@@ -161,7 +168,7 @@ jobs:
           mkdir -p build/cli
           dart compile exe "${CLI_PKG_DIR}/bin/patchwing.dart" \
             -o "${{ github.workspace }}/build/cli/pw-linux-x64" \
-            -D version=${{ steps.version.outputs.version }}
+            -D PATCHWING_BUILD_VERSION=${{ steps.version.outputs.build_version }}
           chmod +x build/cli/pw-linux-x64
           echo "✅ linux-x64 编译完成"
           file build/cli/pw-linux-x64
@@ -193,7 +200,10 @@ jobs:
         shell: bash
         run: |
           VERSION=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+          BUILD_VERSION="${VERSION}+${SHORT_SHA}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "build_version=${BUILD_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: 编译 linux-arm64（Docker QEMU）
         shell: bash
@@ -204,7 +214,7 @@ jobs:
             -v "${{ github.workspace }}:/app" \
             -w /app \
             dart:stable \
-            bash -c "dart pub get --no-precompile && dart compile exe ${CLI_PKG_DIR}/bin/patchwing.dart -o build/cli/pw-linux-arm64 -D version=${{ steps.version.outputs.version }} && chmod +x build/cli/pw-linux-arm64"
+            bash -c "dart pub get --no-precompile && dart compile exe ${CLI_PKG_DIR}/bin/patchwing.dart -o build/cli/pw-linux-arm64 -D PATCHWING_BUILD_VERSION=${{ steps.version.outputs.build_version }} && chmod +x build/cli/pw-linux-arm64"
           echo "✅ linux-arm64 编译完成"
           file build/cli/pw-linux-arm64
 
@@ -235,7 +245,10 @@ jobs:
         shell: bash
         run: |
           VERSION=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+          BUILD_VERSION="${VERSION}+${SHORT_SHA}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "build_version=${BUILD_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: 安装依赖（workspace 根）
         shell: bash
@@ -249,7 +262,7 @@ jobs:
           mkdir -p build/cli
           dart compile exe "${CLI_PKG_DIR}/bin/patchwing.dart" \
             -o "${{ github.workspace }}/build/cli/pw-windows-x64.exe" \
-            -D version=${{ steps.version.outputs.version }}
+            -D PATCHWING_BUILD_VERSION=${{ steps.version.outputs.build_version }}
 
       - name: 上传 windows-x64
         uses: actions/upload-artifact@v4
@@ -276,8 +289,12 @@ jobs:
         shell: bash
         run: |
           VERSION=$(grep '^version:' "${CLI_PKG_DIR}/pubspec.yaml" | awk '{print $2}')
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+          BUILD_VERSION="${VERSION}+${SHORT_SHA}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "build_version=${BUILD_VERSION}" >> "$GITHUB_OUTPUT"
           echo "📦 CLI Version: ${VERSION}"
+          echo "🔖 Build Version: ${BUILD_VERSION}"
 
       - name: 下载所有平台 artifact
         uses: actions/download-artifact@v4
@@ -335,6 +352,17 @@ jobs:
           done
           echo ""
           echo "✅ 共上传 ${UPLOADED} 个文件"
+
+          # ---- 写入 version.txt（供 pw 自身和 install 脚本做版本检查使用）----
+          # 内容必须与编译时通过 -D PATCHWING_BUILD_VERSION 注入的字符串一致，
+          # 即 "<pubspec_version>+<short_sha>"，pw 端 isLatest() 会做精确字符串比对。
+          BUILD_VERSION="${VERSION}+$(echo "${GITHUB_SHA}" | cut -c1-7)"
+          echo -n "${BUILD_VERSION}" > /tmp/version.txt
+          echo "→ Upload: version.txt (= ${BUILD_VERSION}) → cli/${VERSION}/ & cli/latest/"
+          mc cp /tmp/version.txt "patchwing/${MINIO_BUCKET}/cli/${VERSION}/version.txt"
+          if [ "${UPLOAD_LATEST:-true}" != "false" ]; then
+            mc cp /tmp/version.txt "patchwing/${MINIO_BUCKET}/cli/latest/version.txt"
+          fi
 
       - name: 打印 CDN 下载地址
         env:

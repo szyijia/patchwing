@@ -18,8 +18,8 @@ depending on the engine revision.  Most artifacts are served from the standard
 storage bucket to add support for code push.
 </p>
 <p>
-See <a href='https://docs.patchwing.dev/architecture'>
-https://docs.patchwing.dev/architecture</a> for more information.
+See <a href='https://docs.patchwing.net/architecture'>
+https://docs.patchwing.net/architecture</a> for more information.
 </p>
 <p>
 Source code can be found here:
@@ -30,7 +30,7 @@ https://github.com/patchwingtech/patchwing/tree/main/packages/artifact_proxy</a>
 <p>
 If you're seeing problems with your Patchwing install, or are interested in
 replicating this proxy, please reach out to us over Discord.
-<a href='https://patchwing.dev/contact'>https://patchwing.dev/contact</a>
+<a href='https://www.patchwing.net/contact'>https://www.patchwing.net/contact</a>
 </p>
 </body>
 </html>

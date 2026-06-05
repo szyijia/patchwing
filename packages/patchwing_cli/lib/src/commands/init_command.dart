@@ -85,7 +85,7 @@ Please make sure you are running "patchwing init" from within your Flutter proje
         .getOrganizationMemberships();
     if (organizationMemberships.isEmpty) {
       logger.err(
-        '''You do not have any organizations. This should never happen. Please contact us on Discord or send us an email at contact@patchwing.dev.''',
+        '''You do not have any organizations. This should never happen. Please contact us on Discord or send us an email at contact@patchwing.net.''',
       );
       return ExitCode.software.code;
     }
@@ -347,7 +347,7 @@ Reference the following commands to get started:
 🚀 To push an update use: "${lightCyan.wrap('patchwing patch')}".
 👀 To preview a release use: "${lightCyan.wrap('patchwing preview')}".
 
-For more information about Patchwing, visit ${link(uri: Uri.parse('https://patchwing.dev'))}''',
+For more information about Patchwing, visit ${link(uri: Uri.parse('https://www.patchwing.net'))}''',
     );
 
     await doctor.runValidators(

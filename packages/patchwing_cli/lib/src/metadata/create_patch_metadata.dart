@@ -13,7 +13,7 @@ part 'create_patch_metadata.g.dart';
 ///
 /// We do not collect Personally Identifying Information (e.g. no paths,
 /// argument lists, etc.) in accordance with our privacy policy:
-/// https://patchwing.dev/privacy/
+/// https://www.patchwing.net/privacy/
 /// {@endtemplate}
 @JsonSerializable()
 class CreatePatchMetadata extends Equatable {

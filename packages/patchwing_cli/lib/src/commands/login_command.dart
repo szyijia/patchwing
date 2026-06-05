@@ -76,7 +76,7 @@ class LoginCommand extends PatchwingCommand {
     try {
       await auth.login(prompt: prompt);
     } on UserNotFoundException catch (error) {
-      final consoleUri = Uri.https('console.patchwing.dev');
+      final consoleUri = Uri.https('console.patchwing.net');
       logger
         ..err('''
 We could not find a Patchwing account for ${error.email}.''')

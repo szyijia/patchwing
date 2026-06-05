@@ -29,7 +29,7 @@ class ArtifactManifestClient {
 
   Future<ArtifactsManifest> _fetchManifest(String revision) async {
     final url = Uri.parse(
-      'https://storage.googleapis.com/download.patchwing.dev/patchwing/$revision/artifacts_manifest.yaml',
+      'https://storage.googleapis.com/cdn.patchwing.net/patchwing/$revision/artifacts_manifest.yaml',
     );
     final response = await _httpClient.get(url);
     if (response.statusCode != HttpStatus.ok) {

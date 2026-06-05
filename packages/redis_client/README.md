@@ -74,4 +74,4 @@ See our [license philosophy](https://github.com/patchwingtech/handbook/blob/main
 [pub_badge]: https://img.shields.io/pub/v/patchwing_redis_client.svg
 [pub_link]: https://pub.dev/packages/patchwing_redis_client
 [redis_link]: https://redis.io
-[patchwing_link]: https://patchwing.dev
+[patchwing_link]: https://www.patchwing.net

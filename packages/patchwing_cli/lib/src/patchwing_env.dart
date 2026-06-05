@@ -360,7 +360,7 @@ class PatchwingEnv {
   /// `AUTH_SERVICE_URL` environment variable.
   /// TODO(patchwing): Configure your own auth service host
   Uri get authServiceUri => Uri.parse(
-    platform.environment['AUTH_SERVICE_URL'] ?? 'https://auth.patchwing.dev',
+    platform.environment['AUTH_SERVICE_URL'] ?? 'https://auth.patchwing.net',
   );
 
   /// The expected JWT issuer for Patchwing-issued tokens. Can be overridden
@@ -368,7 +368,7 @@ class PatchwingEnv {
   /// TODO(patchwing): Configure your own JWT issuer
   String get jwtIssuer =>
       platform.environment['PATCHWING_JWT_ISSUER'] ??
-      'https://auth.patchwing.dev';
+      'https://auth.patchwing.net';
 
   /// The base URL for the Patchwing code push server that overrides the default
   /// used by [CodePushClient]. If none is provided, [CodePushClient] will use

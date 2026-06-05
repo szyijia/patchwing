@@ -184,7 +184,7 @@ dependencyResolutionManagement {
 +       }
 +       maven {
 -           url 'https://storage.googleapis.com/download.flutter.io'
-+           url 'https://download.patchwing.dev/download.flutter.io'
++           url 'https://cdn.patchwing.net/download.flutter.io'
 +       }
     }
 }

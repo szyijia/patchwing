@@ -5,15 +5,15 @@ The Patchwing CodePush Protocol is a Dart library which contains common interfac
 ### Regenerating from the OpenAPI spec
 
 Everything under `lib/src/` is generated from the public Patchwing
-CodePush OpenAPI spec at [api.patchwing.dev/openapi.json](https://api.patchwing.dev/openapi.json)
-(also served as [openapi.yaml](https://api.patchwing.dev/openapi.yaml)
+CodePush OpenAPI spec at [api.patchwing.net/openapi.json](https://api.patchwing.net/openapi.json)
+(also served as [openapi.yaml](https://api.patchwing.net/openapi.yaml)
 for easier human review) by
 [space_gen](https://github.com/eseidel/space_gen). To regenerate
 against the latest published spec:
 
 ```sh
 dart run packages/patchwing_code_push_protocol/tool/gen.dart \
-  -i https://api.patchwing.dev/openapi.json \
+  -i https://api.patchwing.net/openapi.json \
   -o packages/patchwing_code_push_protocol
 ```
 

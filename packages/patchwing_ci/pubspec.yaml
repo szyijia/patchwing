@@ -4,7 +4,7 @@ description: >-
   workflows, resolves affected packages via dependency graphs, and
   verifies path filters stay in sync.
 version: 0.2.4
-homepage: https://patchwing.dev
+homepage: https://www.patchwing.net
 repository: https://github.com/patchwingtech/patchwing/tree/main/packages/patchwing_ci
 topics: [ci, github-actions, monorepo, patchwing]
 resolution: workspace

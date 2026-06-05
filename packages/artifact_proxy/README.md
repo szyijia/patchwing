@@ -29,14 +29,14 @@ poison the cache of your main Flutter checkout.
 
 If run into 404s when fetching artifacts, ensure that the expected manifest
 exists at
-https://storage.googleapis.com/download.patchwing.dev/patchwing/$engineRevision/artifacts_manifest.yaml.
+https://storage.googleapis.com/cdn.patchwing.net/patchwing/$engineRevision/artifacts_manifest.yaml.
 
 If it does, you may need to update the artifact list in `config.dart` and, if
 the artifact is one we're providing, add it in `tool/generate_manifest.sh`
 
 To do so, you will need to determine the artifact URLs. Follow these steps:
 
-- Adjust patchwing_cli to point to http://localhost:8080 instead of https://download.patchwing.dev:
+- Adjust patchwing_cli to point to http://localhost:8080 instead of https://cdn.patchwing.net:
 
   - packages\patchwing_cli\lib\src\patchwing_process.dart
 
@@ -47,7 +47,7 @@ To do so, you will need to determine the artifact URLs. Follow these steps:
         if (executable == 'flutter') {
         // If this ever changes we also need to update the `patchwing` shell
         // wrapper which downloads runs Flutter to fetch artifacts the first time.
-    -      return {'FLUTTER_STORAGE_BASE_URL': 'https://download.patchwing.dev'};
+    -      return {'FLUTTER_STORAGE_BASE_URL': 'https://cdn.patchwing.net'};
     +      return {'FLUTTER_STORAGE_BASE_URL': 'http://localhost:8080'};
         }
 
@@ -55,7 +55,7 @@ To do so, you will need to determine the artifact URLs. Follow these steps:
     }
     ```
 
-- Adjust third_party Flutter to point to http://localhost:8080 instead of https://download.patchwing.dev:
+- Adjust third_party Flutter to point to http://localhost:8080 instead of https://cdn.patchwing.net:
 
   - third_party\flutter\bin\internal\shared.sh
 
@@ -72,7 +72,7 @@ To do so, you will need to determine the artifact URLs. Follow these steps:
     PATCHWING_ENGINE_VERSION=`cat "$FLUTTER_PATH/bin/internal/engine.version"`
     echo "Patchwing Engine • revision $PATCHWING_ENGINE_VERSION"
     # Install Patchwing Flutter Artifacts
-    -  FLUTTER_STORAGE_BASE_URL=https://download.patchwing.dev $FLUTTER_PATH/bin/flutter --version
+    -  FLUTTER_STORAGE_BASE_URL=https://cdn.patchwing.net $FLUTTER_PATH/bin/flutter --version
     +  FLUTTER_STORAGE_BASE_URL=http://localhost:8080 $FLUTTER_PATH/bin/flutter --version
     }
     ```
@@ -107,4 +107,4 @@ To generate a new `artifact_manifest.yaml` for a specific flutter_revision use t
 ./tools/generate_manifest.sh <flutter_engine_revision> > artifact_manifest.yaml
 ```
 
-Then upload the `artifact_manifest.yaml` to `download.patchwing.dev/patchwing/<patchwing_engine_revision>/artifacts_manifest.yaml`
+Then upload the `artifact_manifest.yaml` to `cdn.patchwing.net/patchwing/<patchwing_engine_revision>/artifacts_manifest.yaml`

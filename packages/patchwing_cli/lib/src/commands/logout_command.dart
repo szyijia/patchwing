@@ -22,7 +22,7 @@ class LogoutCommand extends PatchwingCommand {
       return ExitCode.success.code;
     }
 
-    final logoutProgress = logger.progress('Logging out of patchwing.dev');
+    final logoutProgress = logger.progress('Logging out of www.patchwing.net');
     await auth.logout();
     logoutProgress.complete();
 

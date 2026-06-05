@@ -1,7 +1,7 @@
 name: patchwing_redis_client
 description: A lightweight Dart client library for communicating with a Redis server. Built by Patchwing.
 version: 0.0.13
-homepage: https://patchwing.dev
+homepage: https://www.patchwing.net
 repository: https://github.com/patchwingtech/patchwing/tree/main/packages/redis_client
 topics: [redis, cache, patchwing]
 resolution: workspace

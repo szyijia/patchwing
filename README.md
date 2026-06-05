@@ -3,7 +3,7 @@
 [![Discord](https://img.shields.io/discord/1030243211995791380?style=for-the-badge&logo=discord&color=blue)](https://discord.gg/patchwing)
 <a href="https://www.producthunt.com/posts/patchwing-code-push?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-patchwing&#0045;code&#0045;push" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=449946&theme=neutral" alt="Patchwing&#0032;Code&#0032;Push - Flutter&#0032;over&#0032;the&#0032;air&#0032;updates | Product Hunt" style="width: 128px; height: 27px;" width="128" height="27" /></a>
 
-[![patchwing ci](https://api.patchwing.dev/api/v1/github/patchwingtech/patchwing/badge.svg)](https://console.patchwing.dev/ci)
+[![patchwing ci](https://api.patchwing.net/api/v1/github/patchwingtech/patchwing/badge.svg)](https://console.patchwing.net/ci)
 [![ci](https://github.com/patchwingtech/patchwing/actions/workflows/main.yaml/badge.svg)](https://github.com/patchwingtech/patchwing/actions/workflows/main.yaml)
 [![e2e](https://github.com/patchwingtech/patchwing/actions/workflows/e2e.yaml/badge.svg)](https://github.com/patchwingtech/patchwing/actions/workflows/e2e.yaml)
 [![codecov](https://codecov.io/gh/patchwingtech/patchwing/branch/main/graph/badge.svg)](https://codecov.io/gh/patchwingtech/patchwing)
@@ -12,7 +12,7 @@
 
 ## Getting Started
 
-Visit https://docs.patchwing.dev to get started.
+Visit https://docs.patchwing.net to get started.
 
 ## Packages
 
@@ -89,4 +89,4 @@ Patchwing projects are licensed for use under either Apache License, Version 2.0
 
 See our license philosophy for more information on why we license files this
 way:
-https://handbook.patchwing.dev/engineering/#licensing-philosophy
+https://www.patchwing.net/engineering/#licensing-philosophy

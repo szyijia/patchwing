@@ -57,7 +57,7 @@ jobs:
     timeout-minutes: 30
 
     env:
-      PATCHWING_HOSTED_URL: https://api-dev.patchwing.dev
+      PATCHWING_HOSTED_URL: https://api-dev.patchwing.net
 
     steps:
       - name: 📚 Git Checkout
@@ -139,7 +139,7 @@ jobs:
     timeout-minutes: 20
 
     env:
-      PATCHWING_HOSTED_URL: ${{ matrix.branch == 'stable' && 'https://api.patchwing.dev' || 'https://api-dev.patchwing.dev' }}
+      PATCHWING_HOSTED_URL: ${{ matrix.branch == 'stable' && 'https://api.patchwing.net' || 'https://api-dev.patchwing.net' }}
 
     steps:
       - name: 📚 Git Checkout

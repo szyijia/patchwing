@@ -83,7 +83,7 @@ class PatchwingValidator {
           '''If you already have an account, run ${lightCyan.wrap('patchwing login')} to sign in.''',
         )
         ..info(
-          '''If you don't have a Patchwing account, go to ${link(uri: Uri.parse('https://console.patchwing.dev'))} to create one.''',
+          '''If you don't have a Patchwing account, go to ${link(uri: Uri.parse('https://console.patchwing.net'))} to create one.''',
         );
       throw UserNotAuthorizedException();
     }

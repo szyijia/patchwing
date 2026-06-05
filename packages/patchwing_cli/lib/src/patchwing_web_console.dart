@@ -2,7 +2,7 @@
 class PatchwingWebConsole {
   /// Returns a [Uri] for the Patchwing Web Console.
   static Uri uri(String path) {
-    return Uri.parse('https://console.patchwing.dev/$path');
+    return Uri.parse('https://console.patchwing.net/$path');
   }
 
   /// Returns a [Uri] for the Patchwing Web Console login page.

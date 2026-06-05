@@ -52,4 +52,4 @@ See our [license philosophy](https://github.com/patchwingtech/handbook/blob/main
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
 [mit_link]: https://opensource.org/licenses/MIT
-[patchwing_link]: https://patchwing.dev
+[patchwing_link]: https://www.patchwing.net

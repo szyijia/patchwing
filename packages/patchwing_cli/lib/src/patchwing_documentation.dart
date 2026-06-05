@@ -2,7 +2,7 @@
 import 'package:mason_logger/mason_logger.dart';
 
 /// Link to the Patchwing documentation page.
-const docsUrl = 'https://docs.patchwing.dev';
+const docsUrl = 'https://docs.patchwing.net';
 
 /// Link to the Flutter version page on the Patchwing documentation.
 const flutterVersionUrl = '$docsUrl/getting-started/flutter-version';

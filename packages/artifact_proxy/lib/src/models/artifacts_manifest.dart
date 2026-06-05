@@ -10,7 +10,7 @@ part 'artifacts_manifest.g.dart';
 ///
 /// ```yaml
 /// flutter_engine_revision: ec975089acb540fc60752606a3d3ba809dd1528b
-/// storage_bucket: download.patchwing.dev
+/// storage_bucket: cdn.patchwing.net
 /// artifact_overrides:
 ///   # artifacts.zip
 ///   - flutter_infra_release/flutter/$engine/android-arm-64-release/artifacts.zip

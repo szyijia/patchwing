@@ -118,18 +118,17 @@ class PatchwingCliCommandRunner extends CompletionCommandRunner<int> {
       final localEngineArgsAreNotNull = localEngineArgs.every(
         (arg) => arg != null,
       );
-      EngineConfig engineConfig;
+      // 是否用户显式指定了 --local-engine 三件套（决定后续是走
+      // PatchwingLocalEngineArtifacts 还是 PatchwingCachedArtifacts）。
+      final EngineConfig? explicitEngineConfig;
       if (localEngineArgsAreNotNull) {
-        engineConfig = EngineConfig(
+        explicitEngineConfig = EngineConfig(
           localEngineSrcPath: localEngineSrcPath,
           localEngine: localEngine,
           localEngineHost: localEngineHost,
         );
       } else if (localEngineArgsAreNull) {
-        // 用户未手动指定 --local-engine，自动使用 EngineManager 解析
-        // 优先使用本地 vendor engine，其次从 CDN 下载
-        final resolved = await const EngineManager().resolveEngineConfig();
-        engineConfig = resolved ?? const EngineConfig.empty();
+        explicitEngineConfig = null; // 走 EngineManager 自动解析
       } else {
         // Only some local engine args were provided, this is invalid.
         throw ArgumentError(
@@ -138,34 +137,60 @@ class PatchwingCliCommandRunner extends CompletionCommandRunner<int> {
       }
 
       final jsonMode = topLevelResults['json'] == true;
+      final process = PatchwingProcess();
 
-      // In JSON mode, suppress verbose logging — it writes to stdout and
-      // would corrupt the JSON output. Verbose output still goes to the
-      // log file via PatchwingLogger.detail.
-      if (!jsonMode && topLevelResults['verbose'] == true) {
-        logger.level = Level.verbose;
+      // 注意：EngineManager.resolveEngineConfig() 内部会调用
+      // logger.progress(...)（走 ScopedRef），因此必须在 runScoped 内部调用。
+      // 这里我们分两步：
+      //   (1) 外层 runScoped 提供 logger / process / engineManager 等基础 ref；
+      //   (2) 在外层内部异步解析 engineConfig，再用一个内层 runScoped 注入
+      //       engineConfigRef + patchwingArtifactsRef，最后运行 runCommand。
+      Future<int?> resolveAndRun() async {
+        // In JSON mode, suppress verbose logging — it writes to stdout and
+        // would corrupt the JSON output. Verbose output still goes to the
+        // log file via PatchwingLogger.detail.
+        if (!jsonMode && topLevelResults['verbose'] == true) {
+          logger.level = Level.verbose;
+        }
+
+        final EngineConfig engineConfig;
+        if (explicitEngineConfig != null) {
+          engineConfig = explicitEngineConfig;
+        } else {
+          // 用户未手动指定 --local-engine，自动使用 EngineManager 解析
+          // 优先使用本地 vendor engine，其次从 CDN 下载
+          final resolved = await const EngineManager().resolveEngineConfig();
+          engineConfig = resolved ?? const EngineConfig.empty();
+        }
+
+        final patchwingArtifacts = engineConfig.localEngineSrcPath != null
+            ? const PatchwingLocalEngineArtifacts()
+            : const PatchwingCachedArtifacts();
+
+        return runScoped<Future<int?>>(
+          () => runCommand(topLevelResults),
+          values: {
+            engineConfigRef.overrideWith(() => engineConfig),
+            patchwingArtifactsRef.overrideWith(() => patchwingArtifacts),
+          },
+        );
       }
 
-      final process = PatchwingProcess();
-      final patchwingArtifacts = engineConfig.localEngineSrcPath != null
-          ? const PatchwingLocalEngineArtifacts()
-          : const PatchwingCachedArtifacts();
-      // Suppress ANSI escape codes when the user has opted into a
-      // non-interactive output mode. When stdout/stderr aren't TTYs the io
-      // package already disables ANSI automatically.
-      Future<int?> runWithRefs() => runScoped<Future<int?>>(
-        () => runCommand(topLevelResults),
+      Future<int?> runWithBaseRefs() => runScoped<Future<int?>>(
+        resolveAndRun,
         values: {
-          engineConfigRef.overrideWith(() => engineConfig),
           engineManagerRef.overrideWith(EngineManager.new),
           isJsonModeRef.overrideWith(() => jsonMode),
           processRef.overrideWith(() => process),
-          patchwingArtifactsRef.overrideWith(() => patchwingArtifacts),
         },
       );
+
+      // Suppress ANSI escape codes when the user has opted into a
+      // non-interactive output mode. When stdout/stderr aren't TTYs the io
+      // package already disables ANSI automatically.
       final exitCode = jsonMode
-          ? await overrideAnsiOutput<Future<int?>>(false, runWithRefs)
-          : await runWithRefs();
+          ? await overrideAnsiOutput<Future<int?>>(false, runWithBaseRefs)
+          : await runWithBaseRefs();
       return exitCode ?? ExitCode.success.code;
     } on FormatException catch (e, stackTrace) {
       // On format errors, show the commands error message, root usage and

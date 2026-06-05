@@ -35,7 +35,7 @@ flutter doctor --verbose
 patchwing doctor --verbose
 
 # Point to the development environment
-echo "base_url: https://api-dev.patchwing.dev" >>patchwing.yaml
+echo "base_url: https://api-dev.patchwing.net" >>patchwing.yaml
 
 # Extract the app_id from the "patchwing.yaml"
 APP_ID=$(cat patchwing.yaml | grep 'app_id:' | awk '{print $2}')

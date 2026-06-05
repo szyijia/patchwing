@@ -27,7 +27,7 @@ Organization organizationForTest({
 @visibleForTesting
 PrivateUser privateUserForTest({
   int id = 42,
-  String email = 'test@patchwing.dev',
+  String email = 'test@patchwing.net',
   String jwtIssuer = 'https://accounts.google.com',
   bool hasActiveSubscription = false,
   String? displayName,
