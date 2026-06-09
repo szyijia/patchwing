@@ -118,7 +118,10 @@ class Cache {
   final List<CachedArtifact> _artifacts = [];
 
   /// The storage base url.
-  String get storageBaseUrl => 'https://cdn.patchwing.net';
+  ///
+  /// 透传 [PatchwingEnv.storageBaseUrl]，使 `--storage-url` / 环境变量 /
+  /// `patchwing.yaml` 的覆盖配置对 [CachedArtifact] 子类生效。
+  String get storageBaseUrl => patchwingEnv.storageBaseUrl;
 
   /// The storage bucket host.
   String get storageBucket => 'patchwing';

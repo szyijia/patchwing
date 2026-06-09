@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
 import 'package:mason_logger/mason_logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:scoped_deps/scoped_deps.dart';
 import 'package:patchwing_cli/src/executables/executables.dart';
 import 'package:patchwing_cli/src/extensions/version.dart';
+import 'package:patchwing_cli/src/formatters/file_size_formatter.dart';
 import 'package:patchwing_cli/src/flutter_version_constraints.dart';
 import 'package:patchwing_cli/src/logging/logging.dart';
 import 'package:patchwing_cli/src/platform.dart';
@@ -48,57 +50,133 @@ class PatchwingFlutter {
   /// to run `patchwing cache clean` to start over.
   Future<void> installRevision({required String revision}) async {
     final targetDirectory = Directory(_workingDirectory(revision: revision));
-    if (targetDirectory.existsSync()) {
+    final flutterExecutable = File(
+      p.join(
+        targetDirectory.path,
+        'bin',
+        platform.isWindows ? 'flutter.bat' : 'flutter',
+      ),
+    );
+    if (flutterExecutable.existsSync()) {
       // In mock/dev mode, if the directory already exists with all resources
       // pre-populated, skip the git clone and flutter precache steps.
       logger.detail(
-        'Flutter revision $revision already installed at ${targetDirectory.path}, skipping precache.',
+        'Flutter revision $revision already installed at '
+        '${targetDirectory.path}, skipping precache.',
       );
       return;
     }
 
-    final version = await getVersionForRevision(flutterRevision: revision);
+    if (targetDirectory.existsSync()) {
+      logger.detail(
+        'Flutter revision $revision exists but ${flutterExecutable.path} '
+        'is missing; reinstalling.',
+      );
+      await targetDirectory.delete(recursive: true);
+    }
 
-    final installProgress = logger.progress(
-      'Installing Flutter $version (${shortRevisionString(revision)})',
+    final version = await getVersionForRevision(flutterRevision: revision);
+    final versionLabel = version ?? 'SDK';
+
+    final cloneProgress = logger.progress(
+      'Cloning Flutter SDK $versionLabel (${shortRevisionString(revision)})',
     );
 
     try {
-      // Clone the Patchwing Flutter repo into the target directory.
-      await git.clone(
-        url: flutterGitUrl,
+      // Clone the Patchwing Flutter repo into the target directory. Dart SDK
+      // and Flutter artifacts are not bootstrapped here; they come from the
+      // resumable Flutter cache tarball in FlutterCacheBootstrap, which has
+      // byte-level progress and avoids Flutter public mirrors.
+      await _cloneFlutterRepository(
         outputDirectory: targetDirectory.path,
-        args: ['--filter=tree:0', '--no-checkout'],
+        progress: cloneProgress,
       );
+      cloneProgress.complete('Flutter SDK clone completed');
 
-      // Checkout the correct revision.
+      final checkoutProgress = logger.progress(
+        'Checking out Flutter ${shortRevisionString(revision)}',
+      );
       await git.checkout(directory: targetDirectory.path, revision: revision);
-      installProgress.complete();
+      checkoutProgress.complete();
     } catch (error) {
       final short = shortRevisionString(revision);
-      installProgress.fail('Failed to install Flutter $version ($short)');
+      cloneProgress.fail('Failed to install Flutter $versionLabel ($short)');
       logger.err('$error');
       rethrow;
     }
 
-    final precacheProgress = logger.progress(
-      'Downloading Dart SDK',
-    );
+    final dartProgress = logger.progress('Downloading Dart SDK');
+    try {
+      await _downloadDartSdk(
+        targetDirectory: targetDirectory,
+        progress: dartProgress,
+      );
+      dartProgress.complete();
+    } on Exception catch (error) {
+      dartProgress.fail('Failed to download Dart SDK');
+      throw CacheCorruptedException('Failed to download Dart SDK: $error.');
+    }
+  }
 
-    // Patchwing 使用 local engine，不需要从 CDN 下载 engine artifacts。
-    // 直接运行 update_dart_sdk.sh 只下载 Dart SDK，避免 Flutter tool 启动时
-    // 尝试下载我们魔改 engine revision 对应的 artifacts（CDN 上不存在）。
-    final updateDartSdkScript = platform.isWindows
-        ? p.join(targetDirectory.path, 'bin', 'internal', 'update_dart_sdk.ps1')
-        : p.join(targetDirectory.path, 'bin', 'internal', 'update_dart_sdk.sh');
+  Future<void> _cloneFlutterRepository({
+    required String outputDirectory,
+    required Progress progress,
+  }) async {
+    final args = [
+      'clone',
+      '--filter=tree:0',
+      '--no-checkout',
+      '--progress',
+      flutterGitUrl,
+      outputDirectory,
+    ];
+    final process = await Process.start('git', args);
+    final stderr = StringBuffer();
+    var lastPercent = '';
+    var lastUpdate = DateTime.fromMillisecondsSinceEpoch(0);
 
-    // 确保 bin/cache 目录存在
-    final cacheDir = Directory(p.join(targetDirectory.path, 'bin', 'cache'));
-    if (!cacheDir.existsSync()) {
-      cacheDir.createSync(recursive: true);
+    void handleChunk(String chunk) {
+      stderr.write(chunk);
+      for (final part in chunk.split(RegExp(r'[\r\n]+'))) {
+        final line = part.trim();
+        if (line.isEmpty) continue;
+        final now = DateTime.now();
+        final percent = RegExp(r'(\d{1,3})%').firstMatch(line)?.group(1);
+        if (percent == null &&
+            now.difference(lastUpdate) < const Duration(milliseconds: 800)) {
+          continue;
+        }
+        if (percent != null && percent == lastPercent) continue;
+        if (percent != null) lastPercent = percent;
+        lastUpdate = now;
+        progress.update(
+          _percentProgressMessage('Installing Flutter SDK', line),
+        );
+      }
     }
 
-    // 先运行 update_engine_version.sh 生成 engine.stamp（update_dart_sdk.sh 的 fallback 需要）
+    final stderrSub = process.stderr
+        .transform(utf8.decoder)
+        .listen(handleChunk);
+    final stdoutSub = process.stdout
+        .transform(utf8.decoder)
+        .listen((chunk) => logger.detail(chunk.trim()));
+    final exitCode = await process.exitCode;
+    await stderrSub.cancel();
+    await stdoutSub.cancel();
+
+    if (exitCode != 0) {
+      throw ProcessException('git', args, stderr.toString(), exitCode);
+    }
+  }
+
+  Future<void> _downloadDartSdk({
+    required Directory targetDirectory,
+    required Progress progress,
+  }) async {
+    final cacheDir = Directory(p.join(targetDirectory.path, 'bin', 'cache'));
+    if (!cacheDir.existsSync()) cacheDir.createSync(recursive: true);
+
     final updateEngineScript = platform.isWindows
         ? p.join(
             targetDirectory.path,
@@ -112,36 +190,158 @@ class PatchwingFlutter {
             'internal',
             'update_engine_version.sh',
           );
-
-    await process.run(
+    final updateEngineResult = await process.run(
       platform.isWindows ? 'powershell' : 'bash',
       [updateEngineScript],
       workingDirectory: targetDirectory.path,
       useVendedFlutter: false,
     );
+    if (updateEngineResult.exitCode != ExitCode.success.code) {
+      throw ProcessException(
+        updateEngineScript,
+        const [],
+        '${updateEngineResult.stderr}',
+        updateEngineResult.exitCode,
+      );
+    }
 
-    final PatchwingProcessResult result;
+    final engineVersionFile = File(
+      p.join(
+        targetDirectory.path,
+        'bin',
+        'internal',
+        'dart_sdk_engine.version',
+      ),
+    );
+    final engineStampFile = File(p.join(cacheDir.path, 'engine.stamp'));
+    final engineVersion =
+        (engineVersionFile.existsSync()
+                ? engineVersionFile.readAsStringSync()
+                : engineStampFile.readAsStringSync())
+            .trim();
+    final stampFile = File(p.join(cacheDir.path, 'engine-dart-sdk.stamp'));
+    final dartSdkDir = Directory(p.join(cacheDir.path, 'dart-sdk'));
+    if (dartSdkDir.existsSync() &&
+        stampFile.existsSync() &&
+        stampFile.readAsStringSync().trim() == engineVersion) {
+      progress.update(
+        'Downloading Dart SDK [████████████████████] 100.0% (cached)',
+      );
+      return;
+    }
+
+    final zipName = _dartSdkZipName();
+    final baseUrl =
+        platform.environment['FLUTTER_STORAGE_BASE_URL'] ??
+        'https://storage.googleapis.com';
+    final url = Uri.parse(
+      '$baseUrl/flutter_infra_release/flutter/$engineVersion/$zipName',
+    );
+    final zipFile = File(p.join(cacheDir.path, zipName));
+    final response = await http.Client().send(http.Request('GET', url));
+    if (response.statusCode != HttpStatus.ok) {
+      throw ProcessException('GET', ['$url'], 'HTTP ${response.statusCode}');
+    }
+
+    final totalBytes = response.contentLength;
+    var downloadedBytes = 0;
+    var lastPercent = -1;
+    var lastUpdate = DateTime.fromMillisecondsSinceEpoch(0);
+    final sink = zipFile.openWrite();
+    void update({bool force = false}) {
+      final now = DateTime.now();
+      final percent = totalBytes == null || totalBytes <= 0
+          ? -1
+          : ((downloadedBytes / totalBytes) * 100).floor();
+      if (!force &&
+          percent == lastPercent &&
+          now.difference(lastUpdate) < const Duration(milliseconds: 500)) {
+        return;
+      }
+      lastPercent = percent;
+      lastUpdate = now;
+      progress.update(
+        _downloadProgressMessage(
+          'Downloading Dart SDK',
+          downloadedBytes,
+          totalBytes,
+        ),
+      );
+    }
+
     try {
-      result = await process.run(
-        platform.isWindows ? 'powershell' : 'bash',
-        [updateDartSdkScript],
-        workingDirectory: targetDirectory.path,
-        useVendedFlutter: false,
-      );
-    } on Exception catch (error) {
-      precacheProgress.fail('Failed to download Dart SDK');
-      throw CacheCorruptedException(
-        'Failed to download Dart SDK: $error.',
+      update(force: true);
+      await for (final chunk in response.stream) {
+        downloadedBytes += chunk.length;
+        sink.add(chunk);
+        update();
+      }
+      await sink.flush();
+    } finally {
+      await sink.close();
+    }
+    update(force: true);
+
+    final oldDartSdkDir = Directory('${dartSdkDir.path}.old');
+    if (oldDartSdkDir.existsSync()) oldDartSdkDir.deleteSync(recursive: true);
+    if (dartSdkDir.existsSync()) dartSdkDir.renameSync(oldDartSdkDir.path);
+    final unzip = await Process.run('unzip', [
+      '-o',
+      '-q',
+      zipFile.path,
+      '-d',
+      cacheDir.path,
+    ]);
+    zipFile.deleteSync();
+    if (unzip.exitCode != 0) {
+      if (oldDartSdkDir.existsSync()) oldDartSdkDir.renameSync(dartSdkDir.path);
+      throw ProcessException(
+        'unzip',
+        [zipFile.path],
+        '${unzip.stderr}',
+        unzip.exitCode,
       );
     }
-    if (result.exitCode != ExitCode.success.code) {
-      precacheProgress.fail('Failed to download Dart SDK');
-      final stderr = '${result.stderr}'.trim();
-      throw CacheCorruptedException(
-        'update_dart_sdk exited with code ${result.exitCode}: $stderr.',
-      );
+    if (oldDartSdkDir.existsSync()) oldDartSdkDir.deleteSync(recursive: true);
+    stampFile.writeAsStringSync(engineVersion);
+  }
+
+  String _dartSdkZipName() {
+    if (platform.isMacOS) {
+      final arch =
+          Process.runSync('sysctl', [
+                '-n',
+                'hw.optional.arm64',
+              ]).stdout.toString().trim() ==
+              '1'
+          ? 'arm64'
+          : 'x64';
+      return 'dart-sdk-darwin-$arch.zip';
     }
-    precacheProgress.complete();
+    if (platform.isLinux) return 'dart-sdk-linux-x64.zip';
+    return 'dart-sdk-windows-x64.zip';
+  }
+
+  String _percentProgressMessage(String label, String line) {
+    final percentText = RegExp(r'(\d{1,3})%').firstMatch(line)?.group(1);
+    if (percentText == null) return '$label: $line';
+    final percent = int.parse(percentText).clamp(0, 100);
+    const width = 20;
+    final filled = ((percent / 100) * width).floor();
+    final bar = '${'█' * filled}${'░' * (width - filled)}';
+    return '$label [$bar] ${percent.toStringAsFixed(1)}% - $line';
+  }
+
+  String _downloadProgressMessage(String label, int downloaded, int? total) {
+    if (total == null || total <= 0)
+      return '$label (${formatBytes(downloaded)})';
+    final ratio = downloaded / total;
+    final percent = (ratio * 100).clamp(0, 100).toStringAsFixed(1);
+    const width = 20;
+    final filled = (ratio * width).clamp(0, width).floor();
+    final bar = '${'█' * filled}${'░' * (width - filled)}';
+    return '$label [$bar] $percent% '
+        '(${formatBytes(downloaded)} / ${formatBytes(total)})';
   }
 
   /// Whether the current revision is unmodified.

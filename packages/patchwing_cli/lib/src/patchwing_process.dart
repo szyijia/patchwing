@@ -5,6 +5,7 @@ import 'package:mason_logger/mason_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:scoped_deps/scoped_deps.dart';
 import 'package:patchwing_cli/src/engine_config.dart';
+import 'package:patchwing_cli/src/flutter_cache_bootstrap.dart';
 import 'package:patchwing_cli/src/logging/logging.dart';
 import 'package:patchwing_cli/src/platform.dart';
 import 'package:patchwing_cli/src/patchwing_env.dart';
@@ -72,6 +73,9 @@ class PatchwingProcess {
     String? workingDirectory,
     bool useVendedFlutter = true,
   }) async {
+    if (useVendedFlutter && executable == 'flutter') {
+      await flutterCacheBootstrap.ensureReady();
+    }
     final resolvedEnvironment = _resolveEnvironment(
       environment,
       executable: executable,
@@ -150,7 +154,10 @@ class PatchwingProcess {
     bool? runInShell,
     String? workingDirectory,
     ProcessStartMode mode = ProcessStartMode.normal,
-  }) {
+  }) async {
+    if (useVendedFlutter && executable == 'flutter') {
+      await flutterCacheBootstrap.ensureReady();
+    }
     final resolvedEnvironment = environment ?? {};
     if (useVendedFlutter) {
       // Note: this will overwrite existing environment values.
@@ -263,13 +270,21 @@ $stderr''');
   }
 
   Map<String, String> _environmentOverrides({required String executable}) {
-    // Patchwing 使用本机 vendor/flutter，并通过 --local-engine 指向本地预编译
-    // 引擎产物，不需要从远程 CDN 下载 flutter_infra_release 引擎二进制。
-    // 因此这里不再覆写 FLUTTER_STORAGE_BASE_URL，避免误导 flutter 工具去
-    // patchwing CDN 拉取不存在的产物（404）。
-    // 如果用户本地设置了 FLUTTER_STORAGE_BASE_URL（例如国内镜像
-    // https://storage.flutter-io.cn），将自动沿用其设置。
-    return {};
+    // 把 Patchwing 的 storage CDN 强制注入给子进程（flutter / dart / gradle）。
+    //
+    // 这样 `flutter precache` 等命令拉 `flutter_infra_release/...` 时会走我们
+    // 自家的 CDN 而不是用户系统镜像（如 storage.flutter-io.cn）—— 否则会因为
+    // 魔改 engine commit 在官方/镜像源上不存在而 404。
+    //
+    // 优先级遵守 [PatchwingEnv.storageBaseUri]：
+    //   --storage-url > PATCHWING_STORAGE_URL > yaml > 默认。
+    //
+    // 注意：这里我们覆盖用户的 FLUTTER_STORAGE_BASE_URL 是有意为之 ——
+    // 该变量常被用户设为 Flutter 公共镜像，但 Patchwing 魔改 engine/artifacts
+    // 必须走 Patchwing storage，否则会拼到 storage.flutter-io.cn 后 404。
+    return {
+      'FLUTTER_STORAGE_BASE_URL': patchwingEnv.storageBaseUrl,
+    };
   }
 }
 

@@ -69,9 +69,19 @@ class PatchwingCliCommandRunner extends CompletionCommandRunner<int> {
         'local-engine-host',
         hide: true,
         help: 'The build of the local engine to use as the host platform.',
+      )
+      ..addOption(
+        'storage-url',
+        help:
+            'Override the base URL used to download Patchwing artifacts '
+            '(engine, aot-tools, patch tool, flutter SDK cache). '
+            'Defaults to https://cdn.patchwing.net. '
+            'Can also be set via PATCHWING_STORAGE_URL env var or the '
+            '`storage_base_url` field in patchwing.yaml.',
       );
 
     addCommand(AccountCommand());
+    addCommand(AppsRootCommand());
     addCommand(CacheCommand());
     addCommand(CreateCommand());
     addCommand(DoctorCommand());
@@ -106,6 +116,7 @@ class PatchwingCliCommandRunner extends CompletionCommandRunner<int> {
           topLevelResults['local-engine-src-path'] as String?;
       final localEngine = topLevelResults['local-engine'] as String?;
       final localEngineHost = topLevelResults['local-engine-host'] as String?;
+      final storageUrlOverride = topLevelResults['storage-url'] as String?;
 
       final localEngineArgs = [
         localEngineSrcPath,
@@ -156,11 +167,13 @@ class PatchwingCliCommandRunner extends CompletionCommandRunner<int> {
         final EngineConfig engineConfig;
         if (explicitEngineConfig != null) {
           engineConfig = explicitEngineConfig;
-        } else {
-          // 用户未手动指定 --local-engine，自动使用 EngineManager 解析
-          // 优先使用本地 vendor engine，其次从 CDN 下载
+        } else if (_commandRequiresEngineConfig(topLevelResults)) {
+          // 只有会调用 vended Flutter / local-engine 的命令才解析或下载 engine。
+          // 纯 API 命令（login/apps/releases list 等）不能因为 engine/CDN 问题失败。
           final resolved = await const EngineManager().resolveEngineConfig();
           engineConfig = resolved ?? const EngineConfig.empty();
+        } else {
+          engineConfig = const EngineConfig.empty();
         }
 
         final patchwingArtifacts = engineConfig.localEngineSrcPath != null
@@ -182,6 +195,7 @@ class PatchwingCliCommandRunner extends CompletionCommandRunner<int> {
           engineManagerRef.overrideWith(EngineManager.new),
           isJsonModeRef.overrideWith(() => jsonMode),
           processRef.overrideWith(() => process),
+          cliStorageUrlOverrideRef.overrideWith(() => storageUrlOverride),
         },
       );
 
@@ -254,6 +268,24 @@ ${lightCyan.wrap('patchwing release android -- --no-pub lib/main.dart')}''';
         ..info(e.usage);
       return ExitCode.usage.code;
     }
+  }
+
+  bool _commandRequiresEngineConfig(ArgResults topLevelResults) {
+    if (topLevelResults['version'] == true) return false;
+
+    final commandResults = topLevelResults.command;
+    if (commandResults?.rest.any((arg) => arg == '--help' || arg == '-h') ??
+        false) {
+      return false;
+    }
+
+    final command = commandResults?.name;
+    return switch (command) {
+      'create' => false,
+      'doctor' || 'init' || 'patch' || 'preview' || 'release' => true,
+      'flutter' => commandResults?.command?.name == 'config',
+      _ => false,
+    };
   }
 
   @override

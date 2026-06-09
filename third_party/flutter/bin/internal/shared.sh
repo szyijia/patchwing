@@ -48,8 +48,11 @@ function update_flutter {
     git -C "$FLUTTER_PATH" -c advice.detachedHead=false checkout "$FLUTTER_VERSION"
     PATCHWING_ENGINE_VERSION=`cat "$FLUTTER_PATH/bin/internal/engine.version"`
     echo "Patchwing Engine • revision $PATCHWING_ENGINE_VERSION"
-    # TODO(patchwing): Replace with your own artifact CDN/storage URL
-    FLUTTER_STORAGE_BASE_URL=https://download.shorebird.dev $FLUTTER_PATH/bin/flutter --version
+    # 走 Patchwing 自家 CDN，不依赖 storage.flutter-io.cn / download.shorebird.dev。
+    # 允许用户通过 PATCHWING_STORAGE_URL / FLUTTER_STORAGE_BASE_URL 覆写。
+    : "${PATCHWING_STORAGE_URL:=https://cdn.patchwing.net}"
+    FLUTTER_STORAGE_BASE_URL="${FLUTTER_STORAGE_BASE_URL:-$PATCHWING_STORAGE_URL}" \
+      "$FLUTTER_PATH/bin/flutter" --version
   fi
 }
 

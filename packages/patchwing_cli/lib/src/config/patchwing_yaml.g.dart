@@ -18,6 +18,7 @@ PatchwingYaml _$PatchwingYamlFromJson(Map json) => $checkedCreate(
         'app_id',
         'flavors',
         'base_url',
+        'storage_base_url',
         'auto_update',
         'patch_verification',
       ],
@@ -29,6 +30,7 @@ PatchwingYaml _$PatchwingYamlFromJson(Map json) => $checkedCreate(
         (v) => (v as Map?)?.map((k, e) => MapEntry(k as String, e as String)),
       ),
       baseUrl: $checkedConvert('base_url', (v) => v as String?),
+      storageBaseUrl: $checkedConvert('storage_base_url', (v) => v as String?),
       autoUpdate: $checkedConvert('auto_update', (v) => v as bool?),
       patchVerification: $checkedConvert(
         'patch_verification',
@@ -40,6 +42,7 @@ PatchwingYaml _$PatchwingYamlFromJson(Map json) => $checkedCreate(
   fieldKeyMap: const {
     'appId': 'app_id',
     'baseUrl': 'base_url',
+    'storageBaseUrl': 'storage_base_url',
     'autoUpdate': 'auto_update',
     'patchVerification': 'patch_verification',
   },
@@ -51,6 +54,7 @@ Map<String, dynamic> _$PatchwingYamlToJson(
   'app_id': instance.appId,
   'flavors': instance.flavors,
   'base_url': instance.baseUrl,
+  'storage_base_url': instance.storageBaseUrl,
   'auto_update': instance.autoUpdate,
   'patch_verification': _$PatchVerificationEnumMap[instance.patchVerification],
 };

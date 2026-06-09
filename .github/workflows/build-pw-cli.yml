@@ -364,6 +364,24 @@ jobs:
             mc cp /tmp/version.txt "patchwing/${MINIO_BUCKET}/cli/latest/version.txt"
           fi
 
+          # ---- 上传 bin/internal/*.version（shorebird 同构：与 pw 二进制配套分发）----
+          # pw 启动时会读取 <patchwingRoot>/bin/internal/{engine,flutter}.version 来锁定
+          # 魔改后的 flutter SDK / engine 的 commit。这两个文件由仓库内固化，必须随
+          # 二进制一起发到 CDN，由 install.sh / install.ps1 下载到 ~/.patchwing/bin/internal/。
+          INTERNAL_DIR="bin/internal"
+          for vfile in engine.version flutter.version; do
+            SRC="${INTERNAL_DIR}/${vfile}"
+            if [ ! -f "${SRC}" ]; then
+              echo "❌ 仓库缺少 ${SRC}，无法继续发布。请先在仓库中固化该文件。"
+              exit 1
+            fi
+            echo "→ Upload: ${vfile} (= $(cat "${SRC}")) → cli/${VERSION}/internal/ & cli/latest/internal/"
+            mc cp "${SRC}" "patchwing/${MINIO_BUCKET}/cli/${VERSION}/internal/${vfile}"
+            if [ "${UPLOAD_LATEST:-true}" != "false" ]; then
+              mc cp "${SRC}" "patchwing/${MINIO_BUCKET}/cli/latest/internal/${vfile}"
+            fi
+          done
+
       - name: 打印 CDN 下载地址
         env:
           VERSION: ${{ steps.version.outputs.version }}

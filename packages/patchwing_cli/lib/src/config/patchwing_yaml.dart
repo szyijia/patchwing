@@ -23,6 +23,7 @@ class PatchwingYaml {
     required this.appId,
     this.flavors,
     this.baseUrl,
+    this.storageBaseUrl,
     this.autoUpdate,
     this.patchVerification,
   });
@@ -55,6 +56,21 @@ class PatchwingYaml {
 
   /// The base url used to check for updates.
   final String? baseUrl;
+
+  /// 自定义 artifact 存储基础 URL（CDN 根，不带尾部 `/`）。
+  ///
+  /// 仅影响**预编译产物下载**（engine artifact、aot-tools、patch 工具，以及
+  /// flutter SDK cache tarball）。不会影响 [baseUrl]（auth / code-push）。
+  ///
+  /// 优先级（高到低）：
+  ///   1. `--storage-url` CLI 全局参数；
+  ///   2. `PATCHWING_STORAGE_URL` 环境变量；
+  ///   3. patchwing.yaml 的 `storage_base_url` 字段（即本字段）；
+  ///   4. 内置默认 `https://cdn.patchwing.net`。
+  ///
+  /// 例：`storage_base_url: https://cdn.patchwing.net`
+  @JsonKey(name: 'storage_base_url')
+  final String? storageBaseUrl;
 
   /// Whether or not to automatically update the app.
   final bool? autoUpdate;

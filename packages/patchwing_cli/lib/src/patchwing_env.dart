@@ -3,7 +3,6 @@ import 'dart:io' hide Platform;
 import 'dart:isolate';
 
 import 'package:checked_yaml/checked_yaml.dart';
-import 'package:cli_util/cli_util.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
@@ -11,7 +10,6 @@ import 'package:scoped_deps/scoped_deps.dart';
 import 'package:patchwing_cli/src/config/patchwing_yaml.dart';
 import 'package:patchwing_cli/src/json_output.dart';
 import 'package:patchwing_cli/src/platform.dart';
-import 'package:patchwing_cli/src/patchwing_cli_command_runner.dart';
 import 'package:patchwing_code_push_client/patchwing_code_push_client.dart';
 
 /// Exception thrown when the Patchwing cache appears to be corrupted.
@@ -38,6 +36,26 @@ final patchwingEnvRef = create(PatchwingEnv.new);
 /// The [PatchwingEnv] instance available in the current zone.
 PatchwingEnv get patchwingEnv => read(patchwingEnvRef);
 
+/// Scoped override for the `--storage-url` CLI flag.
+///
+/// `command_runner` 解析到 `--storage-url=...` 时，会通过 [runScoped] 把这个
+/// ref 覆写为 CLI 传入值，[PatchwingEnv.storageBaseUri] 在解析时优先读取它。
+/// 默认（未传 CLI 参数时）为 `null`，此时回落到 env / yaml / 内置默认。
+final cliStorageUrlOverrideRef = create<String?>(() => null);
+
+/// The CLI `--storage-url` override, or `null` if the flag was not provided.
+///
+/// 该 getter 在不存在 scoped 上下文（例如顶层 `dart run` 测试）时会安全回退
+/// 到 `null`，避免抛 `read called in a scope which does not contain ...`。
+String? get cliStorageUrlOverride {
+  try {
+    return read(cliStorageUrlOverrideRef);
+  } on Object {
+    // No scope active – treat as "user did not pass --storage-url".
+    return null;
+  }
+}
+
 /// {@template patchwing_env}
 /// A class that provides access to patchwing environment metadata.
 /// {@endtemplate}
@@ -59,8 +77,12 @@ class PatchwingEnv {
   final String? _flutterProjectRootOverride;
 
   /// The application config directory for the Patchwing CLI.
+  ///
+  /// Keep user-visible state under the Patchwing root (`~/.patchwing` for
+  /// installed binaries) so cleanup, credentials, logs, and cache all live in
+  /// one predictable tree.
   Directory get configDirectory {
-    return Directory(applicationConfigHome(executableName));
+    return patchwingRoot;
   }
 
   /// The directory where patchwing logs are stored.
@@ -384,12 +406,66 @@ class PatchwingEnv {
     }
   }
 
+  /// 默认的 artifact 存储 CDN 根。
+  ///
+  /// 仅在所有显式来源（CLI / env / yaml）都未提供时使用。
+  static const String defaultStorageBaseUrl = 'https://cdn.patchwing.net';
+
+  /// 当前生效的 artifact 存储 CDN 根（不含尾部 `/`）。
+  ///
+  /// 优先级（高到低）：
+  ///  1. `--storage-url` CLI 全局参数（[cliStorageUrlOverride]）；
+  ///  2. `PATCHWING_STORAGE_URL` 环境变量；
+  ///  3. `patchwing.yaml` 的 `storage_base_url` 字段；
+  ///  4. 内置默认 [defaultStorageBaseUrl]。
+  ///
+  /// 注意：这里不能读取 `FLUTTER_STORAGE_BASE_URL`。该变量常被用户设为
+  /// `storage.flutter-io.cn` 等 Flutter 公共镜像，只适合 Flutter 官方 artifacts，
+  /// 不适合 Patchwing 私有产物（engine/flutter-cache/patch tool）。
+  ///
+  /// 该 getter 不会抛异常——任何一级解析失败都会回落到下一级。
+  Uri get storageBaseUri {
+    String? raw;
+    final cli = cliStorageUrlOverride;
+    if (cli != null && cli.isNotEmpty) {
+      raw = cli;
+    } else {
+      final envUrl = platform.environment['PATCHWING_STORAGE_URL'];
+      if (envUrl != null && envUrl.isNotEmpty) {
+        raw = envUrl;
+      } else {
+        try {
+          final yamlUrl = getPatchwingYaml()?.storageBaseUrl;
+          if (yamlUrl != null && yamlUrl.isNotEmpty) {
+            raw = yamlUrl;
+          }
+        } on Exception {
+          // Ignore yaml parse errors here; fall through to default.
+        }
+      }
+    }
+    raw ??= defaultStorageBaseUrl;
+    // 去掉尾部 `/` 以便与 `${storageBaseUri}/path/to/artifact` 这类拼接对齐。
+    while (raw!.endsWith('/')) {
+      raw = raw.substring(0, raw.length - 1);
+    }
+    return Uri.parse(raw);
+  }
+
+  /// String form of [storageBaseUri], without trailing slash.
+  String get storageBaseUrl => storageBaseUri.toString();
+
   /// Whether the CLI can accept user input via stdin.
   ///
-  /// Returns `false` when stdin is not a terminal, when running on CI, or
-  /// when the user has opted into non-interactive output via `--json`.
+  /// Returns `false` when stdin/stdout is not a terminal, when running on CI,
+  /// or when the user has opted into non-interactive output via `--json`.
+  ///
+  /// 同时检查 stdout 是否是 TTY，是为了与 mason_logger.prompt() 内部行为对齐：
+  /// 当 stdout 被管道/tee 接管时，prompt() 会因为无法控制 echo 而抛
+  /// "Interactive input was required ..." 错误。提前返回 false 让上层走
+  /// non-interactive 默认值分支，避免崩溃。
   bool get canAcceptUserInput =>
-      stdin.hasTerminal && !isRunningOnCI && !isJsonMode;
+      stdin.hasTerminal && stdout.hasTerminal && !isRunningOnCI && !isJsonMode;
 
   /// Whether platform.environment indicates that we are running on a CI
   /// platform. This implementation is intended to behave similar to the Flutter

@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cli_util/cli_util.dart';
 import 'package:googleapis_auth/auth_io.dart' as oauth2;
 import 'package:googleapis_auth/googleapis_auth.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +16,6 @@ import 'package:patchwing_cli/src/auth/patchwing_oauth.dart' as patchwing_oauth;
 import 'package:patchwing_cli/src/http_client/http_client.dart';
 import 'package:patchwing_cli/src/logging/logging.dart';
 import 'package:patchwing_cli/src/platform.dart';
-import 'package:patchwing_cli/src/patchwing_cli_command_runner.dart';
 import 'package:patchwing_cli/src/patchwing_command.dart';
 import 'package:patchwing_cli/src/patchwing_env.dart';
 import 'package:patchwing_cli/src/third_party/flutter_tools/lib/flutter_tools.dart';
@@ -217,8 +215,7 @@ class Auth {
     ObtainCredentialsViaLoopbackLogin? obtainCredentialsViaLoopbackLogin,
     CodePushClientBuilder? buildCodePushClient,
   }) : _httpClient = httpClient ?? _defaultHttpClient,
-       _credentialsDir =
-           credentialsDir ?? applicationConfigHome(executableName),
+       _credentialsDir = credentialsDir ?? patchwingEnv.patchwingRoot.path,
        _authServiceUri = authServiceUri ?? patchwingEnv.authServiceUri,
        _obtainCredentialsViaLoopbackLogin =
            obtainCredentialsViaLoopbackLogin ??

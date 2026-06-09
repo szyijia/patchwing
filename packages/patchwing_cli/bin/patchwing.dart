@@ -16,6 +16,7 @@ import 'package:patchwing_cli/src/code_signer.dart';
 import 'package:patchwing_cli/src/doctor.dart';
 import 'package:patchwing_cli/src/engine_config.dart';
 import 'package:patchwing_cli/src/executables/executables.dart';
+import 'package:patchwing_cli/src/flutter_cache_bootstrap.dart';
 import 'package:patchwing_cli/src/http_client/http_client.dart';
 import 'package:patchwing_cli/src/logging/logging.dart';
 import 'package:patchwing_cli/src/network_checker.dart';
@@ -77,6 +78,7 @@ Command: patchwing ${args.join(' ')}
           dittoRef,
           doctorRef,
           engineConfigRef,
+          flutterCacheBootstrapRef,
           gitRef,
           gradlewRef,
           httpClientRef,

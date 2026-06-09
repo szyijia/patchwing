@@ -122,11 +122,24 @@ function Update-Flutter {
         git -C "$flutterPath" -c advice.detachedHead=false checkout "$flutterVersion"
     }
 
-    # Set FLUTTER_STORAGE_BASE_URL=https://download.shorebird.dev and execute
-    # a `flutter` command to trigger a download of Dart, etc.
-    $env:FLUTTER_STORAGE_BASE_URL = 'https://download.shorebird.dev';
+    # 走 Patchwing 自家 CDN，触发一次 flutter 命令以下载 Dart SDK 等依赖。
+    # 允许通过 PATCHWING_STORAGE_URL / FLUTTER_STORAGE_BASE_URL 环境变量覆写，
+    # 缺省回退到 https://cdn.patchwing.net。
+    $resolvedStorageUrl = if ($env:FLUTTER_STORAGE_BASE_URL) {
+        $env:FLUTTER_STORAGE_BASE_URL
+    } elseif ($env:PATCHWING_STORAGE_URL) {
+        $env:PATCHWING_STORAGE_URL
+    } else {
+        'https://cdn.patchwing.net'
+    }
+    $previousStorageUrl = $env:FLUTTER_STORAGE_BASE_URL
+    $env:FLUTTER_STORAGE_BASE_URL = $resolvedStorageUrl
     & $flutter --version
-    Remove-Item Env:\FLUTTER_STORAGE_BASE_URL
+    if ($previousStorageUrl) {
+        $env:FLUTTER_STORAGE_BASE_URL = $previousStorageUrl
+    } else {
+        Remove-Item Env:\FLUTTER_STORAGE_BASE_URL
+    }
 }
 
 function Update-Patchwing {

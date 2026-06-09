@@ -1,4 +1,5 @@
 export 'account/account.dart';
+export 'apps/apps.dart';
 export 'cache/cache.dart';
 export 'create_command.dart';
 export 'doctor_command.dart';
