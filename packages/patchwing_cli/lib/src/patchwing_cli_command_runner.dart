@@ -301,6 +301,10 @@ ${lightCyan.wrap('patchwing release android -- --no-pub lib/main.dart')}''';
     // 该子命令未定义 target-platform 参数时直接返回（ArgResults[] 对
     // 未定义参数名会抛 ArgumentError，用 options 判断避免 catch Error）
     if (!commandResults.options.contains('target-platform')) return null;
+    // 未显式传参时返回 null（默认 arm64，历史行为）。必须判断 wasParsed：
+    // 该参数是 multiOption 且 defaultsTo 全部 ABI，未传参时 argResults
+    // 会返回默认值列表，直接读取会把默认构建误折叠到列表第一个 ABI。
+    if (!commandResults.wasParsed('target-platform')) return null;
     final value = commandResults['target-platform'];
     String? first;
     if (value is String && value.isNotEmpty) {
