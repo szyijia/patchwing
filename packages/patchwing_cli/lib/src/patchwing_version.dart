@@ -17,6 +17,10 @@ const String _kBuildVersion = String.fromEnvironment(
   defaultValue: 'dev',
 );
 
+/// 编译期注入的构建版本（`dev` 表示本地手工编译未注入）。
+/// 导出给 command_runner 的 `pw --version` 显示使用。
+const String patchwingBuildVersion = _kBuildVersion;
+
 /// CDN 上发布的 latest 版本号文件。
 /// CI 在发布二进制时同步写入：
 ///   https://cdn.patchwing.net/patchwing/cli/latest/version.txt

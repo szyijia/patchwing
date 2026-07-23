@@ -163,22 +163,39 @@ class PatchwingEnv {
     }
 
     // Mode 4: compiled executable — resolvedExecutable points to the
-    // binary itself.
+    // binary itself. Try to derive root from binary location, then
+    // validate against a known marker file.
     final resolved = platform.resolvedExecutable;
+    Directory resolvedRoot;
     if (!resolved.contains('dart-sdk')) {
-      // Mode 4a (用户安装): `~/.patchwing/bin/pw` —— 二进制位于 <root>/bin/pw，
-      // root = bin 的父目录。这是 GitHub Release / install_patchwing.sh 的标准布局。
       final exe = File(resolved);
       if (p.basename(exe.parent.path) == 'bin') {
-        return exe.parent.parent;
+        // <root>/bin/pw → root = bin 的父目录
+        resolvedRoot = exe.parent.parent;
+      } else {
+        resolvedRoot = exe.parent.parent.parent;
       }
-      // Mode 4b (开发编译): packages/patchwing_cli/pw —— 沿用旧逻辑
-      // 从 .../patchwing/packages/patchwing_cli/pw 向上 3 级到 patchwing root
-      return exe.parent.parent.parent;
+    } else {
+      resolvedRoot = File(resolved).parent.parent.parent;
     }
 
-    // Should not reach here in normal circumstances.
-    return File(resolved).parent.parent.parent;
+    // 验证：root 下必须存在 bin/internal/flutter.version（Patchwing 安装标记）
+    if (_isValidPatchwingRoot(resolvedRoot)) return resolvedRoot;
+
+    // Fallback: ~/.patchwing（覆盖非标准位置安装如 /usr/local/bin/pw）
+    final home = platform.environment['HOME'] ?? platform.environment['USERPROFILE'];
+    if (home != null) {
+      final fallback = Directory(p.join(home, '.patchwing'));
+      if (fallback.existsSync()) return fallback;
+    }
+
+    return resolvedRoot;
+  }
+
+  /// 验证一个目录是否像有效的 Patchwing 安装根目录。
+  bool _isValidPatchwingRoot(Directory root) {
+    return File(p.join(root.path, 'bin', 'internal', 'flutter.version'))
+        .existsSync();
   }
 
   /// The Patchwing engine revision.

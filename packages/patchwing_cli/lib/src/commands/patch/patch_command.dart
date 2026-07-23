@@ -76,6 +76,15 @@ class PatchCommand extends PatchwingCommand {
         'flavor',
         help: 'The product flavor to use when building the app.',
       )
+      // local-engine 单 ABI 模式下，patch 必须用与 release 一致的
+      // --target-platform 选择对应 ABI 的 engine（否则默认 arm64，
+      // 会对 armv7 release 错用 arm64 工具链）。
+      ..addMultiOption(
+        'target-platform',
+        help: 'The target platform(s) for which the app is compiled.',
+        defaultsTo: Arch.values.map((arch) => arch.targetPlatformCliArg),
+        allowed: Arch.values.map((arch) => arch.targetPlatformCliArg),
+      )
       ..addOption(
         CommonArguments.releaseVersionArg.name,
         help: '''

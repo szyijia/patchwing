@@ -238,16 +238,20 @@ class FlutterCacheBootstrap {
     try {
       final request = http.Request('HEAD', uri);
       final response = await httpClient.send(request);
-      await response.stream.drain<void>();
+      // 快速 drain HEAD 响应（通常无 body），但不要为了 drain 而阻塞太久。
+      await response.stream.drain<void>().timeout(const Duration(seconds: 5));
       if (response.statusCode != HttpStatus.ok) {
-        return const _RemoteFileInfo();
+        // 文件不存在就不要继续走下载流程了，直接抛出 404 让上层提示。
+        throw _DownloadHttpException(response.statusCode);
       }
       return _RemoteFileInfo(
         contentLength: int.tryParse(response.headers['content-length'] ?? ''),
       );
+    } on _DownloadHttpException {
+      rethrow;
     } on Exception catch (e) {
       logger.detail('[flutter-cache] HEAD $uri failed: $e');
-      return const _RemoteFileInfo();
+      throw _DownloadHttpException(-1);
     }
   }
 

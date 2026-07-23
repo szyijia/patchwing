@@ -170,7 +170,11 @@ class PatchwingCliCommandRunner extends CompletionCommandRunner<int> {
         } else if (_commandRequiresEngineConfig(topLevelResults)) {
           // 只有会调用 vended Flutter / local-engine 的命令才解析或下载 engine。
           // 纯 API 命令（login/apps/releases list 等）不能因为 engine/CDN 问题失败。
-          final resolved = await const EngineManager().resolveEngineConfig();
+          final targetAbi = _readFirstTargetPlatform(topLevelResults);
+          final resolved = await const EngineManager().resolveEngineConfig(
+            null,
+            targetAbi,
+          );
           engineConfig = resolved ?? const EngineConfig.empty();
         } else {
           engineConfig = const EngineConfig.empty();
@@ -288,6 +292,35 @@ ${lightCyan.wrap('patchwing release android -- --no-pub lib/main.dart')}''';
     };
   }
 
+  /// 读取子命令 `--target-platform` 的第一个值（如 android-arm），
+  /// 供 EngineManager 选择 per-ABI 的 local-engine 目录。
+  /// 未定义/未传该参数时返回 null（默认 arm64，历史行为）。
+  String? _readFirstTargetPlatform(ArgResults topLevelResults) {
+    final commandResults = topLevelResults.command;
+    if (commandResults == null) return null;
+    // 该子命令未定义 target-platform 参数时直接返回（ArgResults[] 对
+    // 未定义参数名会抛 ArgumentError，用 options 判断避免 catch Error）
+    if (!commandResults.options.contains('target-platform')) return null;
+    final value = commandResults['target-platform'];
+    String? first;
+    if (value is String && value.isNotEmpty) {
+      first = value;
+    } else if (value is List && value.isNotEmpty) {
+      first = value.first?.toString();
+    }
+    if (first == null || first.isEmpty) return null;
+    // 支持逗号分隔（flutter 原生格式），local-engine 模式一次只构建一个 ABI
+    final platforms =
+        first.split(',').where((e) => e.trim().isNotEmpty).toList();
+    if (platforms.length > 1 || (value is List && value.length > 1)) {
+      logger.warn(
+        'local-engine 模式一次只能构建一个 ABI，本次使用 ${platforms.first}；\n'
+        '其余 ABI 请分别运行 --target-platform 单独构建',
+      );
+    }
+    return platforms.first.trim();
+  }
+
   @override
   Future<int?> runCommand(ArgResults topLevelResults) async {
     // Fast track completion command
@@ -318,8 +351,13 @@ ${lightCyan.wrap('patchwing release android -- --no-pub lib/main.dart')}''';
         if (flutterVersion != null) {
           patchwingFlutterPrefix.write(' $flutterVersion');
         }
+        // 显示编译期注入的构建版本（如 1.0.0+3f98759），便于核对
+        // install.sh 安装的二进制与 CDN version.txt 是否一致；
+        // publish_cli.sh 的版本校验也依赖这里输出的 +sha 段。
+        final buildSuffix =
+            patchwingBuildVersion == 'dev' ? '' : ' ($patchwingBuildVersion)';
         logger.info('''
-Patchwing $packageVersion • git@github.com:patchwingtech/patchwing.git
+Patchwing $packageVersion$buildSuffix • git@github.com:patchwingtech/patchwing.git
 $patchwingFlutterPrefix • revision ${patchwingEnv.flutterRevision}
 Engine • revision ${patchwingEnv.patchwingEngineRevision}''');
       }
