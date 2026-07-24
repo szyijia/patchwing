@@ -24,9 +24,9 @@ R runWithOverrides<R>(R Function() body) {
 }
 
 void main() {
-  final shorebirdHostedURL = Platform.environment['SHOREBIRD_HOSTED_URL'];
+  final shorebirdHostedURL = Platform.environment['PATCHWING_HOSTED_URL'];
   if (shorebirdHostedURL == null || shorebirdHostedURL.isEmpty) {
-    throw Exception('SHOREBIRD_HOSTED_URL environment variable is not set.');
+    throw Exception('PATCHWING_HOSTED_URL environment variable is not set.');
   }
   final logger = Logger();
   final client = runWithOverrides(
@@ -251,7 +251,7 @@ Future<bool> isPatchAvailable({
 }) async {
   final response = await http.post(
     Uri.parse(
-      Platform.environment['SHOREBIRD_HOSTED_URL']!,
+      Platform.environment['PATCHWING_HOSTED_URL']!,
     ).replace(path: '/api/v1/patches/check'),
     body: jsonEncode({
       'release_version': releaseVersion,

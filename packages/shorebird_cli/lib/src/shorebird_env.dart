@@ -265,10 +265,10 @@ class ShorebirdEnv {
   );
 
   /// The expected JWT issuer for Shorebird-issued tokens. Can be overridden
-  /// with the `SHOREBIRD_JWT_ISSUER` environment variable. Defaults to
+  /// with the `PATCHWING_JWT_ISSUER` environment variable. Defaults to
   /// `https://auth.patchwing.net`.
   String get jwtIssuer =>
-      platform.environment['SHOREBIRD_JWT_ISSUER'] ??
+      platform.environment['PATCHWING_JWT_ISSUER'] ??
       'https://auth.patchwing.net';
 
   /// The base URL for the Shorebird code push server that overrides the default
@@ -277,7 +277,7 @@ class ShorebirdEnv {
   Uri? get hostedUri {
     try {
       final baseUrl =
-          platform.environment['SHOREBIRD_HOSTED_URL'] ??
+          platform.environment['PATCHWING_HOSTED_URL'] ??
           getShorebirdYaml()?.baseUrl;
       return baseUrl == null ? null : Uri.tryParse(baseUrl);
     } on Exception {

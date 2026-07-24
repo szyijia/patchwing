@@ -773,7 +773,7 @@ dependencies:
       test('returns hosted url from env if available', () {
         when(
           () => platform.environment,
-        ).thenReturn({'SHOREBIRD_HOSTED_URL': 'https://example.com'});
+        ).thenReturn({'PATCHWING_HOSTED_URL': 'https://example.com'});
         expect(
           runWithOverrides(() => shorebirdEnv.hostedUri),
           equals(Uri.parse('https://example.com')),
@@ -908,7 +908,7 @@ base_url: https://example.com''');
 
       test('returns issuer from env var when set', () {
         when(() => platform.environment).thenReturn({
-          'SHOREBIRD_JWT_ISSUER': 'https://custom-issuer.example.com',
+          'PATCHWING_JWT_ISSUER': 'https://custom-issuer.example.com',
         });
         expect(
           runWithOverrides(() => shorebirdEnv.jwtIssuer),

@@ -40,7 +40,7 @@ const googleJwtIssuer = 'https://accounts.google.com';
 const microsoftJwtIssuerPrefix = 'https://login.microsoftonline.com/';
 
 /// The environment variable that holds the Shorebird CI token.
-const shorebirdTokenEnvVar = 'SHOREBIRD_TOKEN';
+const shorebirdTokenEnvVar = 'PATCHWING_TOKEN';
 
 /// Callback for refreshing access credentials.
 typedef RefreshCredentials =
@@ -364,7 +364,7 @@ class Auth {
       try {
         _token = CiToken.fromBase64(trimmed);
         logger.warn(
-          'SHOREBIRD_TOKEN contains a legacy CI token from '
+          'PATCHWING_TOKEN contains a legacy CI token from '
           '`shorebird login:ci`. '
           'This format is deprecated and will stop working in a future '
           'release. '

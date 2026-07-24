@@ -839,7 +839,7 @@ void main() {
         expect(request.headers['Authorization'], equals('Bearer $idToken'));
       });
 
-      group('when SHOREBIRD_TOKEN is an API key', () {
+      group('when PATCHWING_TOKEN is an API key', () {
         setUp(() {
           when(() => platform.environment).thenReturn(<String, String>{
             shorebirdTokenEnvVar: 'sb_api_abc123',
@@ -970,7 +970,7 @@ void main() {
         ).called(1);
         verify(
           () => logger.warn(
-            'SHOREBIRD_TOKEN contains a legacy CI token from '
+            'PATCHWING_TOKEN contains a legacy CI token from '
             '`shorebird login:ci`. '
             'This format is deprecated and will stop working in a future '
             'release. '

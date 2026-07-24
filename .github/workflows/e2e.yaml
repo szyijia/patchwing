@@ -11,7 +11,7 @@ on:
     - cron: "0 0 * * *"
 
 env:
-  SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+  PATCHWING_TOKEN: ${{ secrets.PATCHWING_TOKEN }}
   FLUTTER_VERSION: 3.41.9
 
 jobs:
@@ -57,7 +57,7 @@ jobs:
     timeout-minutes: 30
 
     env:
-      SHOREBIRD_HOSTED_URL: https://api-dev.patchwing.net
+      PATCHWING_HOSTED_URL: https://api-dev.patchwing.net
 
     steps:
       - name: 📚 Git Checkout
@@ -139,7 +139,7 @@ jobs:
     timeout-minutes: 20
 
     env:
-      SHOREBIRD_HOSTED_URL: ${{ matrix.branch == 'stable' && 'https://api.patchwing.net' || 'https://api-dev.patchwing.net' }}
+      PATCHWING_HOSTED_URL: ${{ matrix.branch == 'stable' && 'https://api.patchwing.net' || 'https://api-dev.patchwing.net' }}
 
     steps:
       - name: 📚 Git Checkout

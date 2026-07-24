@@ -51,7 +51,7 @@ void main() {
       final message = captured.single as String;
       expect(message, contains('shorebird login:ci has been replaced'));
       expect(message, contains('console.patchwing.net'));
-      expect(message, contains('SHOREBIRD_TOKEN'));
+      expect(message, contains('PATCHWING_TOKEN'));
       expect(message, contains('docs.patchwing.net/account/api-keys'));
     });
 
