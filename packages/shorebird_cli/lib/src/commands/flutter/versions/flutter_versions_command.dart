@@ -12,7 +12,7 @@ class FlutterVersionsCommand extends ShorebirdCommand {
   }
 
   @override
-  String get description => 'Manage your Shorebird Flutter versions.';
+  String get description => 'Manage your Patchwing Flutter versions.';
 
   @override
   String get name => 'versions';

@@ -13,7 +13,7 @@ class FlutterCommand extends ShorebirdCommand {
   }
 
   @override
-  String get description => 'Manage your Shorebird Flutter installation.';
+  String get description => 'Manage your Patchwing Flutter installation.';
 
   @override
   String get name => 'flutter';

@@ -44,7 +44,7 @@ class InitCommand extends ShorebirdCommand {
   }
 
   @override
-  String get description => 'Initialize Shorebird.';
+  String get description => 'Initialize Patchwing.';
 
   @override
   String get name => 'init';

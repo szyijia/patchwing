@@ -179,7 +179,7 @@ of the iOS app that is using this module. (aar and ios-framework only)''',
 
   @override
   String get description =>
-      'Creates a shorebird release for the provided target platforms.';
+      'Creates a Patchwing release for the provided target platforms.';
 
   @override
   String get name => 'release';

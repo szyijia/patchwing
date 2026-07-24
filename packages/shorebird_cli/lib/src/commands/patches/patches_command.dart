@@ -17,5 +17,5 @@ class PatchesCommand extends ShorebirdCommand {
   String get name => 'patches';
 
   @override
-  String get description => 'Manage Shorebird patches.';
+  String get description => 'Manage Patchwing patches.';
 }

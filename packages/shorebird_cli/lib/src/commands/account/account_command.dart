@@ -16,5 +16,5 @@ class AccountCommand extends ShorebirdCommand {
   String get name => 'account';
 
   @override
-  String get description => 'Manage your Shorebird account.';
+  String get description => 'Manage your Patchwing account.';
 }

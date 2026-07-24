@@ -16,7 +16,7 @@ class CleanCacheCommand extends ShorebirdCommand {
   CleanCacheCommand();
 
   @override
-  String get description => 'Clears the Shorebird cache directory.';
+  String get description => 'Clears the Patchwing cache directory.';
 
   @override
   String get name => 'clean';

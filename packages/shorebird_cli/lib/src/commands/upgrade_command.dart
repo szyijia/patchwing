@@ -15,7 +15,7 @@ class UpgradeCommand extends ShorebirdCommand {
   UpgradeCommand();
 
   @override
-  String get description => 'Upgrade your copy of Shorebird.';
+  String get description => 'Upgrade your copy of Patchwing.';
 
   /// Name of the command, exposed for the [CommandRunner].
   static const String commandName = 'upgrade';

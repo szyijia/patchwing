@@ -182,7 +182,7 @@ NOTE: this is ${styleBold.wrap('not')} recommended. Asset changes cannot be incl
 
   @override
   String get description =>
-      'Creates a shorebird patch for the provided target platforms.';
+      'Creates a Patchwing patch for the provided target platforms.';
 
   @override
   String get name => 'patch';

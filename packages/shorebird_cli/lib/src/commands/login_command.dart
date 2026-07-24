@@ -9,7 +9,7 @@ import 'package:shorebird_cli/src/shorebird_command.dart';
 /// {@endtemplate}
 class LoginCommand extends ShorebirdCommand {
   @override
-  String get description => 'Login as a new Shorebird user.';
+  String get description => 'Login as a new Patchwing user.';
 
   @override
   String get name => 'login';

@@ -12,7 +12,7 @@ class CacheCommand extends ShorebirdCommand {
   }
 
   @override
-  String get description => 'Manage the Shorebird cache.';
+  String get description => 'Manage the Patchwing cache.';
 
   @override
   String get name => 'cache';

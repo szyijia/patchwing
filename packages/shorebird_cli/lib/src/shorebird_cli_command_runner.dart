@@ -20,19 +20,19 @@ import 'package:shorebird_cli/src/third_party/flutter_tools/lib/flutter_tools.da
 import 'package:shorebird_cli/src/version.dart';
 
 /// The name of the executable.
-const executableName = 'shorebird';
+const executableName = 'pw';
 
 /// The name of the package (e.g. name in the pubspec.yaml).
 const packageName = 'shorebird_cli';
 
 /// The package description.
-const description = 'The shorebird command-line tool';
+const description = 'The Patchwing command-line tool';
 
 /// {@template shorebird_cli_command_runner}
 /// A [CommandRunner] for the CLI.
 ///
 /// ```sh
-/// $ shorebird --version
+/// $ pw --version
 /// ```
 /// {@endtemplate}
 class ShorebirdCliCommandRunner extends CompletionCommandRunner<int> {
@@ -172,7 +172,7 @@ class ShorebirdCliCommandRunner extends CompletionCommandRunner<int> {
         JsonResult.error(
           code: JsonErrorCode.usageError,
           message: e.message,
-          hint: 'Run: shorebird --help',
+          hint: 'Run: pw --help',
           command: executableName,
         ).write();
       } else {
@@ -191,7 +191,7 @@ class ShorebirdCliCommandRunner extends CompletionCommandRunner<int> {
         JsonResult.error(
           code: JsonErrorCode.usageError,
           message: e.message,
-          hint: 'Run: shorebird --help',
+          hint: 'Run: pw --help',
           command: executableName,
         ).write();
         return ExitCode.usage.code;
@@ -278,8 +278,8 @@ Engine • revision ${shorebirdEnv.shorebirdEngineRevision}''');
         if (isJsonMode) {
           final subcommand = commandNameFromResults(topLevelResults);
           final hint = subcommand == null
-              ? 'Run: shorebird --help'
-              : 'Run: shorebird $subcommand --help'; // coverage:ignore-line
+              ? 'Run: pw --help'
+              : 'Run: pw $subcommand --help'; // coverage:ignore-line
           JsonResult.error(
             code: JsonErrorCode.usageError,
             message: e.message,

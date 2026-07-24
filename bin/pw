@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+
+# Public Patchwing entrypoint. Keep Shorebird's bootstrap implementation
+# unchanged and delegate to it; product naming is handled by the Dart CLI.
+BIN_DIR=$(cd "$(dirname "$BASH_SOURCE")"; pwd)
+exec "$BIN_DIR/shorebird" "$@"

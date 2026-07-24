@@ -141,7 +141,7 @@ void main() {
       ).called(1);
       verify(
         () => logger.info(
-          any(that: contains('Usage: shorebird <command> [arguments]')),
+          any(that: contains('Usage: pw <command> [arguments]')),
         ),
       ).called(1);
     });
@@ -598,9 +598,9 @@ Engine • revision $shorebirdEngineRevision'''),
           expect(json['status'], equals('error'));
           final error = json['error'] as Map<String, dynamic>;
           expect(error['code'], equals('usage_error'));
-          expect(error['hint'], equals('Run: shorebird --help'));
+          expect(error['hint'], equals('Run: pw --help'));
           final meta = json['meta'] as Map<String, dynamic>;
-          expect(meta['command'], equals('shorebird'));
+          expect(meta['command'], equals('pw'));
           // Human-readable error must not be written under --json.
           verifyNever(() => logger.err(any()));
         });

@@ -55,7 +55,7 @@ void main() {
     });
 
     test('has correct description', () {
-      expect(command.description, 'Login as a new Shorebird user.');
+      expect(command.description, 'Login as a new Patchwing user.');
     });
 
     group('when user is already logged in', () {

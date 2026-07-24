@@ -17,7 +17,7 @@ class CreateCommand extends ShorebirdProxyCommand {
   String get name => 'create';
 
   @override
-  String get description => 'Create a new Flutter project with Shorebird.';
+  String get description => 'Create a new Flutter project with Patchwing.';
 
   @override
   Future<int> run() async {
