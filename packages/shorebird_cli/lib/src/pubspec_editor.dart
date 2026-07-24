@@ -13,8 +13,8 @@ PubspecEditor get pubspecEditor => read(pubspecEditorRef);
 /// A class that exposes APIs to edit the current project's `pubspec.yaml`.
 /// {@endtemplate}
 class PubspecEditor {
-  /// Adds shorebird.yaml to the assets section of the pubspec.yaml file.
-  /// Does nothing if the pubspec.yaml file already contains shorebird.yaml.
+  /// Adds patchwing.yaml to the assets section of the pubspec.yaml file.
+  /// Does nothing if the pubspec.yaml file already contains patchwing.yaml.
   /// Does nothing if a flutter project root cannot be found.
   void addShorebirdYamlToPubspecAssets() {
     if (shorebirdEnv.pubspecContainsShorebirdYaml) return;
@@ -33,16 +33,16 @@ class PubspecEditor {
       editor.update(
         ['flutter'],
         {
-          'assets': ['shorebird.yaml'],
+          'assets': ['patchwing.yaml'],
         },
       );
     } else {
       if (!(yaml['flutter'] as Map).containsKey('assets')) {
-        editor.update(['flutter', 'assets'], ['shorebird.yaml']);
+        editor.update(['flutter', 'assets'], ['patchwing.yaml']);
       } else {
         final assets = (yaml['flutter'] as Map)['assets'] as List;
-        if (!assets.contains('shorebird.yaml')) {
-          editor.update(['flutter', 'assets'], [...assets, 'shorebird.yaml']);
+        if (!assets.contains('patchwing.yaml')) {
+          editor.update(['flutter', 'assets'], [...assets, 'patchwing.yaml']);
         }
       }
     }

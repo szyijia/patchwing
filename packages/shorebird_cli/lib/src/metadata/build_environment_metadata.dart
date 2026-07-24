@@ -102,7 +102,7 @@ class BuildEnvironmentMetadata extends Equatable {
   /// Reason: issues may occur on some OS versions and not others.
   final String operatingSystemVersion;
 
-  /// The shorebird.yaml file for this project.
+  /// The patchwing.yaml file for this project.
   final ShorebirdYaml shorebirdYaml;
 
   /// Whether the project uses package:shorebird_code_push.

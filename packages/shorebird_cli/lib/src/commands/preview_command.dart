@@ -934,14 +934,14 @@ Skipping the ios-deploy fallback because it does not support iOS 17 or later.'''
     );
   }
 
-  /// Sets the channel property in the shorebird.yaml file inside the Windows
+  /// Sets the channel property in the patchwing.yaml file inside the Windows
   /// app whose root directory is [appDirectory].
   Future<void> setChannelOnWindowsApp({
     required Directory appDirectory,
     required String channel,
   }) async {
     final shorebirdYamlFile = File(
-      p.join(appDirectory.path, 'data', 'flutter_assets', 'shorebird.yaml'),
+      p.join(appDirectory.path, 'data', 'flutter_assets', 'patchwing.yaml'),
     );
 
     await _maybeSetChannelInShorebirdYaml(
@@ -950,7 +950,7 @@ Skipping the ios-deploy fallback because it does not support iOS 17 or later.'''
     );
   }
 
-  /// Sets the channel property in the shorebird.yaml file inside the Runner.app
+  /// Sets the channel property in the patchwing.yaml file inside the Runner.app
   Future<void> setChannelOnRunner({
     required Directory runnerDirectory,
     required String channel,
@@ -962,12 +962,12 @@ Skipping the ios-deploy fallback because it does not support iOS 17 or later.'''
           'Frameworks',
           'App.framework',
           'flutter_assets',
-          'shorebird.yaml',
+          'patchwing.yaml',
         ),
       );
 
       if (!shorebirdYaml.existsSync()) {
-        throw Exception('Unable to find shorebird.yaml');
+        throw Exception('Unable to find patchwing.yaml');
       }
 
       await _maybeSetChannelInShorebirdYaml(
@@ -977,7 +977,7 @@ Skipping the ios-deploy fallback because it does not support iOS 17 or later.'''
     });
   }
 
-  /// Sets the channel property in the shorebird.yaml file inside a macOS app.
+  /// Sets the channel property in the patchwing.yaml file inside a macOS app.
   Future<void> setChannelOnMacosApp({
     required Directory appDirectory,
     required String channel,
@@ -990,7 +990,7 @@ Skipping the ios-deploy fallback because it does not support iOS 17 or later.'''
         'App.framework',
         'Resources',
         'flutter_assets',
-        'shorebird.yaml',
+        'patchwing.yaml',
       ),
     );
 
@@ -1000,7 +1000,7 @@ Skipping the ios-deploy fallback because it does not support iOS 17 or later.'''
     );
   }
 
-  /// Unzips the `.aab` and sets the channel property in the shorebird.yaml
+  /// Unzips the `.aab` and sets the channel property in the patchwing.yaml
   /// file inside the base module and then re-zips the `.aab`.
   Future<void> setChannelOnAab({
     required File aabFile,
@@ -1024,7 +1024,7 @@ Skipping the ios-deploy fallback because it does not support iOS 17 or later.'''
           'base',
           'assets',
           'flutter_assets',
-          'shorebird.yaml',
+          'patchwing.yaml',
         ),
       );
 
@@ -1059,13 +1059,13 @@ Skipping the ios-deploy fallback because it does not support iOS 17 or later.'''
     });
   }
 
-  /// Sets the channel property in the shorebird.yaml file if none is set.
+  /// Sets the channel property in the patchwing.yaml file if none is set.
   Future<void> setChannelOnLinuxApp({
     required String channel,
     required Directory bundleDirectory,
   }) async {
     final shorebirdYamlFile = File(
-      p.join(bundleDirectory.path, 'data', 'flutter_assets', 'shorebird.yaml'),
+      p.join(bundleDirectory.path, 'data', 'flutter_assets', 'patchwing.yaml'),
     );
 
     await _maybeSetChannelInShorebirdYaml(
@@ -1074,14 +1074,14 @@ Skipping the ios-deploy fallback because it does not support iOS 17 or later.'''
     );
   }
 
-  /// Sets the channel property in the shorebird.yaml file if none is set or
+  /// Sets the channel property in the patchwing.yaml file if none is set or
   /// different from the provided channel.
   static Future<bool> _maybeSetChannelInShorebirdYaml({
     required String channel,
     required File shorebirdYamlFile,
   }) async {
     if (!shorebirdYamlFile.existsSync()) {
-      throw Exception('Unable to find shorebird.yaml');
+      throw Exception('Unable to find patchwing.yaml');
     }
 
     final yamlText = shorebirdYamlFile.readAsStringSync();

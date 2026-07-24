@@ -55,7 +55,7 @@ void main() {
 
     group('validate', () {
       test(
-        'returns with no errors if pubspec.yaml has shorebird.yaml in assets',
+        'returns with no errors if pubspec.yaml has patchwing.yaml in assets',
         () async {
           when(() => shorebirdEnv.hasPubspecYaml).thenReturn(true);
           when(
@@ -79,7 +79,7 @@ void main() {
         expect(results.first.fix, isNull);
       });
 
-      test('returns error if shorebird.yaml is missing from assets', () async {
+      test('returns error if patchwing.yaml is missing from assets', () async {
         when(() => shorebirdEnv.hasPubspecYaml).thenReturn(true);
         when(() => shorebirdEnv.pubspecContainsShorebirdYaml).thenReturn(false);
         final results = await runWithOverrides(
@@ -91,7 +91,7 @@ void main() {
           equals(
             const ValidationIssue(
               severity: ValidationIssueSeverity.error,
-              message: 'No shorebird.yaml found in pubspec.yaml assets',
+              message: 'No patchwing.yaml found in pubspec.yaml assets',
             ),
           ),
         );
@@ -99,7 +99,7 @@ void main() {
     });
 
     group('fix', () {
-      test('adds shorebird.yaml to pubspec.yaml', () async {
+      test('adds patchwing.yaml to pubspec.yaml', () async {
         when(() => shorebirdEnv.hasPubspecYaml).thenReturn(true);
         when(() => shorebirdEnv.pubspecContainsShorebirdYaml).thenReturn(false);
         when(

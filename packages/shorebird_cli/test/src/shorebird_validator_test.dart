@@ -101,7 +101,7 @@ void main() {
       group(
         '''when shorebird has not been properly initialized for the current app''',
         () {
-          group("when shorebird.yaml doesn't exist", () {
+          group("when patchwing.yaml doesn't exist", () {
             setUp(() {
               when(() => shorebirdEnv.hasShorebirdYaml).thenReturn(false);
             });
@@ -119,7 +119,7 @@ void main() {
                 );
                 verifyInOrder([
                   () => logger.err(
-                    '''Unable to find shorebird.yaml. Are you in a shorebird app directory?''',
+                    '''Unable to find patchwing.yaml. Are you in a shorebird app directory?''',
                   ),
                   () => logger.info(
                     '''If you have not yet initialized your app, run ${lightCyan.wrap('shorebird init')} to get started.''',
@@ -130,7 +130,7 @@ void main() {
           });
 
           group("when pubspec.yaml doesn't contain "
-              'shorebird.yaml as an asset', () {
+              'patchwing.yaml as an asset', () {
             setUp(() {
               when(() => shorebirdEnv.hasShorebirdYaml).thenReturn(true);
               when(
@@ -151,14 +151,14 @@ void main() {
                 );
                 verifyInOrder([
                   () => logger.err(
-                    '''Your pubspec.yaml does not have shorebird.yaml as a flutter asset.''',
+                    '''Your pubspec.yaml does not have patchwing.yaml as a flutter asset.''',
                   ),
                   () => logger.info('''
 To fix, update your pubspec.yaml to include the following:
 
   flutter:
     assets:
-      - shorebird.yaml # Add this line
+      - patchwing.yaml # Add this line
 '''),
                 ]);
               },
@@ -230,7 +230,7 @@ To fix, update your pubspec.yaml to include the following:
         when(() => platform.isLinux).thenReturn(false);
       });
 
-      group('when shorebird.yaml has flavors', () {
+      group('when patchwing.yaml has flavors', () {
         setUp(() {
           shorebirdYaml = const ShorebirdYaml(
             appId: 'test',
@@ -319,7 +319,7 @@ The default app id test will be used.''',
         });
       });
 
-      group('when shorebird.yaml does not have flavors', () {
+      group('when patchwing.yaml does not have flavors', () {
         setUp(() {
           shorebirdYaml = const ShorebirdYaml(appId: 'test');
         });

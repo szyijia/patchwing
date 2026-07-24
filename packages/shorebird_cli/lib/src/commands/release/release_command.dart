@@ -411,7 +411,7 @@ of the iOS app that is using this module. (aar and ios-framework only)''',
         results.wasParsed(CommonArguments.publicKeyCmd.name);
     if (shorebirdYaml?.patchVerification != null && !hasPublicKey) {
       logger.warn(
-        'patch_verification is set in shorebird.yaml but '
+        'patch_verification is set in patchwing.yaml but '
         'no public key was provided '
         '(--${CommonArguments.publicKeyArg.name} '
         'or --${CommonArguments.publicKeyCmd.name}).\n'

@@ -147,7 +147,7 @@ void main() {
         ).called(1);
       });
 
-      test('fetches releases using app id from shorebird.yaml', () async {
+      test('fetches releases using app id from patchwing.yaml', () async {
         await runWithOverrides(command.run);
         verify(
           () => codePushClientWrapper.getReleases(appId: appId),

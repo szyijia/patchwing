@@ -92,7 +92,7 @@ void main() {
           runWithOverrides(
             () => shorebirdEnv.getShorebirdYamlFile(cwd: tempDir).path,
           ),
-          equals(p.join(tempDir.path, 'shorebird.yaml')),
+          equals(p.join(tempDir.path, 'patchwing.yaml')),
         );
       });
     });
@@ -171,7 +171,7 @@ void main() {
         () {
           final tempDir = Directory.systemTemp.createTempSync();
           File(
-            p.join(tempDir.path, 'shorebird.yaml'),
+            p.join(tempDir.path, 'patchwing.yaml'),
           ).createSync(recursive: true);
           final projectRoot = IOOverrides.runZoned(
             () =>
@@ -188,7 +188,7 @@ void main() {
           final tempDir = Directory.systemTemp.createTempSync();
           final nestedDir = Directory(p.join(tempDir.path, 'nested'));
           File(
-            p.join(tempDir.path, 'shorebird.yaml'),
+            p.join(tempDir.path, 'patchwing.yaml'),
           ).createSync(recursive: true);
           final projectRoot = IOOverrides.runZoned(
             () =>
@@ -528,7 +528,7 @@ publish_to: yon30c
     });
 
     group('hasShorebirdYaml', () {
-      test('returns false when shorebird.yaml does not exist', () {
+      test('returns false when patchwing.yaml does not exist', () {
         final tempDir = Directory('temp');
         expect(
           IOOverrides.runZoned(
@@ -539,10 +539,10 @@ publish_to: yon30c
         );
       });
 
-      test('returns true when shorebird.yaml does exist', () {
+      test('returns true when patchwing.yaml does exist', () {
         final tempDir = Directory.systemTemp.createTempSync();
         File(
-          p.join(tempDir.path, 'shorebird.yaml'),
+          p.join(tempDir.path, 'patchwing.yaml'),
         ).writeAsStringSync('app_id: test-app-id');
         expect(
           IOOverrides.runZoned(
@@ -556,7 +556,7 @@ publish_to: yon30c
 
     group('pubspecContainsShorebirdYaml', () {
       test('returns false when pubspec.yaml does not '
-          'contain shorebird.yaml in assets', () {
+          'contain patchwing.yaml in assets', () {
         final tempDir = Directory.systemTemp.createTempSync();
         File(
           p.join(tempDir.path, 'pubspec.yaml'),
@@ -589,13 +589,13 @@ flutter:''');
       });
 
       test('returns true when pubspec.yaml does '
-          'contain shorebird.yaml in assets', () {
+          'contain patchwing.yaml in assets', () {
         final tempDir = Directory.systemTemp.createTempSync();
         File(p.join(tempDir.path, 'pubspec.yaml')).writeAsStringSync('''
 name: test
 flutter:
   assets:
-    - shorebird.yaml
+    - patchwing.yaml
 ''');
         expect(
           IOOverrides.runZoned(
@@ -780,9 +780,9 @@ dependencies:
         );
       });
 
-      test('falls back to shorebird.yaml', () {
+      test('falls back to patchwing.yaml', () {
         final directory = Directory.systemTemp.createTempSync();
-        File(p.join(directory.path, 'shorebird.yaml')).writeAsStringSync('''
+        File(p.join(directory.path, 'patchwing.yaml')).writeAsStringSync('''
 app_id: test-id
 base_url: https://example.com''');
         expect(
@@ -794,15 +794,15 @@ base_url: https://example.com''');
         );
       });
 
-      test('returns null when there is no env override or shorebird.yaml', () {
+      test('returns null when there is no env override or patchwing.yaml', () {
         expect(runWithOverrides(() => shorebirdEnv.hostedUri), isNull);
       });
 
-      test('returns null when unable to read shorebird.yaml', () {
+      test('returns null when unable to read patchwing.yaml', () {
         final directory = Directory.systemTemp.createTempSync();
         // This is not valid utf8 so readAsString will throw.
         File(
-          p.join(directory.path, 'shorebird.yaml'),
+          p.join(directory.path, 'patchwing.yaml'),
         ).writeAsBytesSync([999999999999]);
 
         expect(

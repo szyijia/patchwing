@@ -198,12 +198,12 @@ Please make sure you are running "shorebird init" from within your Flutter proje
       expect(exitCode, ExitCode.software.code);
     });
 
-    test('throws software error when shorebird.yaml already exists', () async {
+    test('throws software error when patchwing.yaml already exists', () async {
       when(() => shorebirdEnv.hasShorebirdYaml).thenReturn(true);
       final exitCode = await runWithOverrides(command.run);
       verify(
         () => logger.err(
-          'A "shorebird.yaml" file already exists and seems up-to-date.',
+          'A "patchwing.yaml" file already exists and seems up-to-date.',
         ),
       ).called(1);
       verify(
@@ -226,7 +226,7 @@ Please make sure you are running "shorebird init" from within your Flutter proje
         final exitCode = await runWithOverrides(command.run);
         verify(
           () => logger.err(
-            'A "shorebird.yaml" file already exists and seems up-to-date.',
+            'A "patchwing.yaml" file already exists and seems up-to-date.',
           ),
         ).called(1);
         expect(exitCode, ExitCode.software.code);
@@ -247,7 +247,7 @@ Please make sure you are running "shorebird init" from within your Flutter proje
         final exitCode = await runWithOverrides(command.run);
         verify(
           () => logger.err(
-            'A "shorebird.yaml" file already exists and seems up-to-date.',
+            'A "patchwing.yaml" file already exists and seems up-to-date.',
           ),
         ).called(1);
         expect(exitCode, ExitCode.software.code);
@@ -290,13 +290,13 @@ Please make sure you are running "shorebird init" from within your Flutter proje
       ).called(1);
     });
 
-    test('--force overwrites existing shorebird.yaml', () async {
+    test('--force overwrites existing patchwing.yaml', () async {
       when(() => shorebirdEnv.hasShorebirdYaml).thenReturn(true);
       when(() => argResults['force']).thenReturn(true);
       final exitCode = await runWithOverrides(command.run);
       verifyNever(
         () => logger.err(
-          'A "shorebird.yaml" file already exists and seems up-to-date.',
+          'A "patchwing.yaml" file already exists and seems up-to-date.',
         ),
       );
       expect(exitCode, ExitCode.success.code);
@@ -776,7 +776,7 @@ flavors:
       });
     });
 
-    test('creates shorebird.yaml for an app without flavors', () async {
+    test('creates patchwing.yaml for an app without flavors', () async {
       await runWithOverrides(command.run);
       verify(
         () => shorebirdYamlFile.writeAsStringSync(
@@ -785,7 +785,7 @@ flavors:
       );
     });
 
-    group('creates shorebird.yaml for an app with flavors', () {
+    group('creates patchwing.yaml for an app with flavors', () {
       test('android only', () async {
         final appIds = [
           'test-appId-1',
@@ -1363,7 +1363,7 @@ flavors:
           },
         );
 
-        test('creates new flavor entries in shorebird.yaml', () async {
+        test('creates new flavor entries in patchwing.yaml', () async {
           const newAppIds = ['test-appId-3', 'test-appId-4'];
           const appName = 'my-app';
           var index = 0;
@@ -1432,12 +1432,12 @@ flavors:
       });
     });
 
-    test('detects existing shorebird.yaml in pubspec.yaml assets', () async {
+    test('detects existing patchwing.yaml in pubspec.yaml assets', () async {
       when(() => pubspecYamlFile.readAsStringSync()).thenReturn('''
 $pubspecYamlContent
 flutter:
   assets:
-    - shorebird.yaml
+    - patchwing.yaml
 ''');
       await runWithOverrides(command.run);
       verify(
@@ -1455,8 +1455,8 @@ flutter:
             that: stringContainsInOrder([
               lightGreen.wrap('🐦 Shorebird initialized successfully!')!,
               '✅ A shorebird app has been created.',
-              '✅ A "shorebird.yaml" has been created.',
-              '''✅ The "pubspec.yaml" has been updated to include "shorebird.yaml" as an asset.''',
+              '✅ A "patchwing.yaml" has been created.',
+              '''✅ The "pubspec.yaml" has been updated to include "patchwing.yaml" as an asset.''',
               '''📦 To create a new release use: "${lightCyan.wrap('shorebird release')}".''',
               '''🚀 To push an update use: "${lightCyan.wrap('shorebird patch')}".''',
               '''👀 To preview a release use: "${lightCyan.wrap('shorebird preview')}".''',

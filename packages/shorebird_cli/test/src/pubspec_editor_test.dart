@@ -33,7 +33,7 @@ void main() {
     });
 
     group('addShorebirdYamlToPubspecAssets', () {
-      group('when shorebird.yaml is part of the pubspec.yaml assets', () {
+      group('when patchwing.yaml is part of the pubspec.yaml assets', () {
         setUp(() {
           when(
             () => shorebirdEnv.pubspecContainsShorebirdYaml,
@@ -50,7 +50,7 @@ void main() {
         });
       });
 
-      group('when shorebird.yaml is not part of the pubspec.yaml assets', () {
+      group('when patchwing.yaml is not part of the pubspec.yaml assets', () {
         setUp(() {
           when(
             () => shorebirdEnv.pubspecContainsShorebirdYaml,
@@ -93,7 +93,7 @@ environment:
             ).thenReturn(pubspecFile);
           });
 
-          test('creates flutter.assets and adds shorebird.yaml', () {
+          test('creates flutter.assets and adds patchwing.yaml', () {
             pubspecFile
               ..createSync()
               ..writeAsStringSync(basePubspecContents);
@@ -109,12 +109,12 @@ environment:
 $basePubspecContents
 flutter:
  assets:
-   - shorebird.yaml
+   - patchwing.yaml
 '''),
             );
           });
 
-          test('creates assets and adds shorebird.yaml (empty flutter)', () {
+          test('creates assets and adds patchwing.yaml (empty flutter)', () {
             pubspecFile
               ..createSync()
               ..writeAsStringSync('''
@@ -133,12 +133,12 @@ flutter:
 $basePubspecContents
 flutter:
  assets:
-   - shorebird.yaml
+   - patchwing.yaml
 '''),
             );
           });
           test(
-            'creates assets and adds shorebird.yaml (non-empty flutter)',
+            'creates assets and adds patchwing.yaml (non-empty flutter)',
             () {
               pubspecFile
                 ..createSync()
@@ -159,13 +159,13 @@ flutter:
 $basePubspecContents
 flutter:
  assets:
-  - shorebird.yaml
+  - patchwing.yaml
  uses-material-design: true
 '''),
               );
             },
           );
-          test('adds shorebird.yaml to assets (existing assets)', () {
+          test('adds patchwing.yaml to assets (existing assets)', () {
             pubspecFile
               ..createSync()
               ..writeAsStringSync('''
@@ -187,7 +187,7 @@ $basePubspecContents
 flutter:
  assets:
   - some/asset.txt
-  - shorebird.yaml
+  - patchwing.yaml
 '''),
             );
           });

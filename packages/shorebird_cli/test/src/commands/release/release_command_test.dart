@@ -791,7 +791,7 @@ $exception'''),
             await runWithOverrides(() => command.assertArgsAreValid(releaser));
             verify(
               () => logger.warn(
-                'patch_verification is set in shorebird.yaml but '
+                'patch_verification is set in patchwing.yaml but '
                 'no public key was provided '
                 '(--${CommonArguments.publicKeyArg.name} '
                 'or --${CommonArguments.publicKeyCmd.name}).\n'

@@ -157,9 +157,9 @@ class ShorebirdEnv {
   Directory get iosSupplementDirectory =>
       Directory(p.join(buildDirectory.path, 'ios', 'shorebird'));
 
-  /// The `shorebird.yaml` file for this project.
+  /// The `patchwing.yaml` file for this project.
   File getShorebirdYamlFile({required Directory cwd}) {
-    return File(p.join(cwd.path, 'shorebird.yaml'));
+    return File(p.join(cwd.path, 'patchwing.yaml'));
   }
 
   /// The `pubspec.yaml` file for this project.
@@ -205,7 +205,7 @@ class ShorebirdEnv {
     return Directory(p.dirname(file.path));
   }
 
-  /// The `shorebird.yaml` file for this project, parsed into a [ShorebirdYaml]
+  /// The `patchwing.yaml` file for this project, parsed into a [ShorebirdYaml]
   /// object.
   ///
   /// Returns `null` if the file does not exist.
@@ -232,21 +232,21 @@ class ShorebirdEnv {
     }
   }
 
-  /// Whether the current project has a `shorebird.yaml` file.
+  /// Whether the current project has a `patchwing.yaml` file.
   bool get hasShorebirdYaml => getShorebirdYaml() != null;
 
   /// Whether the current project has a `pubspec.yaml` file.
   bool get hasPubspecYaml => getPubspecYaml() != null;
 
   /// Whether the current project's `pubspec.yaml` file contains a reference to
-  /// `shorebird.yaml` in its `assets` section.
+  /// `patchwing.yaml` in its `assets` section.
   bool get pubspecContainsShorebirdYaml {
     final pubspec = getPubspecYaml();
     if (pubspec == null) return false;
     if (pubspec.flutter == null) return false;
     if (pubspec.flutter!['assets'] == null) return false;
     final assets = pubspec.flutter!['assets'] as List;
-    return assets.contains('shorebird.yaml');
+    return assets.contains('patchwing.yaml');
   }
 
   /// Returns the Android package name from the pubspec.yaml file of a Flutter

@@ -2,10 +2,10 @@ import 'package:shorebird_cli/src/pubspec_editor.dart';
 import 'package:shorebird_cli/src/shorebird_env.dart';
 import 'package:shorebird_cli/src/validators/validators.dart';
 
-/// Verifies that the shorebird.yaml is found in pubspec.yaml assets.
+/// Verifies that the patchwing.yaml is found in pubspec.yaml assets.
 class ShorebirdYamlAssetValidator extends Validator {
   @override
-  String get description => 'shorebird.yaml found in pubspec.yaml assets';
+  String get description => 'patchwing.yaml found in pubspec.yaml assets';
 
   @override
   bool canRunInCurrentContext() => shorebirdEnv.hasPubspecYaml;
@@ -33,7 +33,7 @@ The command you are running must be run within a Flutter app project.''';
     return [
       ValidationIssue(
         severity: ValidationIssueSeverity.error,
-        message: 'No shorebird.yaml found in pubspec.yaml assets',
+        message: 'No patchwing.yaml found in pubspec.yaml assets',
         fix: () => pubspecEditor.addShorebirdYamlToPubspecAssets(),
       ),
     ];

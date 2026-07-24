@@ -29,7 +29,7 @@ class InitCommand extends ShorebirdCommand {
       ..addFlag(
         'force',
         abbr: 'f',
-        help: 'Initialize the app even if a "shorebird.yaml" already exists.',
+        help: 'Initialize the app even if a "patchwing.yaml" already exists.',
         negatable: false,
       )
       ..addOption(
@@ -182,7 +182,7 @@ Please make sure you are running "shorebird init" from within your Flutter proje
       final existingFlavorNames = existingFlavors.keys.toSet();
       newFlavors = productFlavors.difference(existingFlavorNames);
     } else if (shorebirdYaml != null) {
-      // Existing shorebird.yaml without flavors — treat all detected flavors
+      // Existing patchwing.yaml without flavors — treat all detected flavors
       // as new so they can be added without resetting the base app_id.
       newFlavors = productFlavors;
     } else {
@@ -196,7 +196,7 @@ Please make sure you are running "shorebird init" from within your Flutter proje
     if (!force && newFlavors.isNotEmpty) {
       logger.info('New flavors detected: ${newFlavors.join(', ')}');
       final updateShorebirdYamlProgress = logger.progress(
-        'Adding flavors to shorebird.yaml',
+        'Adding flavors to patchwing.yaml',
       );
 
       final AppMetadata existingApp;
@@ -225,13 +225,13 @@ Please make sure you are running "shorebird init" from within your Flutter proje
         appId: shorebirdYaml.appId,
         flavors: flavorsToAppIds,
       );
-      updateShorebirdYamlProgress.complete('Flavors added to shorebird.yaml');
+      updateShorebirdYamlProgress.complete('Flavors added to patchwing.yaml');
       return ExitCode.success.code;
     }
 
     if (!force && shorebirdEnv.hasShorebirdYaml) {
       logger
-        ..err('A "shorebird.yaml" file already exists and seems up-to-date.')
+        ..err('A "patchwing.yaml" file already exists and seems up-to-date.')
         ..info(
           '''If you want to reinitialize Shorebird, please run ${lightCyan.wrap('shorebird init --force')}.''',
         );
@@ -327,8 +327,8 @@ Please make sure you are running "shorebird init" from within your Flutter proje
 ${lightGreen.wrap('🐦 Shorebird initialized successfully!')}
 
 ✅ A shorebird app has been created.
-✅ A "shorebird.yaml" has been created.
-✅ The "pubspec.yaml" has been updated to include "shorebird.yaml" as an asset.
+✅ A "patchwing.yaml" has been created.
+✅ The "pubspec.yaml" has been updated to include "patchwing.yaml" as an asset.
 
 Reference the following commands to get started:
 

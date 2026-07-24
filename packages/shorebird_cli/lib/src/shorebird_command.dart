@@ -100,7 +100,7 @@ abstract class ShorebirdCommand extends Command<int> {
       'Pass --json (global flag) for machine-readable output with all fields:\n'
       '  $example';
 
-  /// Resolves the app ID from `--app-id` or `shorebird.yaml`, validating
+  /// Resolves the app ID from `--app-id` or `patchwing.yaml`, validating
   /// preconditions in the process.
   ///
   /// Returns `(appId: <id>, errorCode: null)` on success, or

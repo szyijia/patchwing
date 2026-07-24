@@ -92,7 +92,7 @@ class ShorebirdValidator {
       if (!shorebirdEnv.hasShorebirdYaml) {
         logger
           ..err(
-            '''Unable to find shorebird.yaml. Are you in a shorebird app directory?''',
+            '''Unable to find patchwing.yaml. Are you in a shorebird app directory?''',
           )
           ..info(
             '''If you have not yet initialized your app, run ${lightCyan.wrap('shorebird init')} to get started.''',
@@ -103,14 +103,14 @@ class ShorebirdValidator {
       if (!shorebirdEnv.pubspecContainsShorebirdYaml) {
         logger
           ..err(
-            '''Your pubspec.yaml does not have shorebird.yaml as a flutter asset.''',
+            '''Your pubspec.yaml does not have patchwing.yaml as a flutter asset.''',
           )
           ..info('''
 To fix, update your pubspec.yaml to include the following:
 
   flutter:
     assets:
-      - shorebird.yaml # Add this line
+      - patchwing.yaml # Add this line
 ''');
         throw ShorebirdNotInitializedException();
       }

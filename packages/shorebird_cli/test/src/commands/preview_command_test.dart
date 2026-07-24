@@ -99,7 +99,7 @@ void main() {
               'Frameworks',
               'App.framework',
               'flutter_assets',
-              'shorebird.yaml',
+              'patchwing.yaml',
             ),
           )
           ..createSync(recursive: true)
@@ -112,7 +112,7 @@ void main() {
             'base',
             'assets',
             'flutter_assets',
-            'shorebird.yaml',
+            'patchwing.yaml',
           ),
         )
         ..createSync(recursive: true)
@@ -133,7 +133,7 @@ void main() {
             'base',
             'assets',
             'flutter_assets',
-            'shorebird.yaml',
+            'patchwing.yaml',
           ),
         )
         ..createSync(recursive: true)
@@ -171,7 +171,7 @@ void main() {
           'base',
           'assets',
           'flutter_assets',
-          'shorebird.yaml',
+          'patchwing.yaml',
         ),
       );
     }
@@ -735,7 +735,7 @@ void main() {
 
         group('when channel is not set', () {
           group('when target channel is  production', () {
-            test('does not change shorebird.yaml', () async {
+            test('does not change patchwing.yaml', () async {
               aabFile = await createAabFile(channel: null);
               await runWithOverrides(
                 () => command.setChannelOnAab(
@@ -755,7 +755,7 @@ void main() {
           });
 
           group('when target channel is not production', () {
-            test('sets shorebird.yaml channel to target channel', () async {
+            test('sets patchwing.yaml channel to target channel', () async {
               aabFile = await createAabFile(channel: null);
               await runWithOverrides(
                 () =>
@@ -797,7 +797,7 @@ channel: ${track.channel}
         });
 
         group('when channel is set to a different channel', () {
-          test('sets shorebird.yaml channel to target channel', () async {
+          test('sets patchwing.yaml channel to target channel', () async {
             aabFile = await createAabFile(channel: 'dev');
             await runWithOverrides(
               () => command.setChannelOnAab(
@@ -886,12 +886,12 @@ channel: ${track.channel}
         });
       });
 
-      group('when unable to find shorebird.yaml', () {
+      group('when unable to find patchwing.yaml', () {
         test('exits with code 70', () async {
           final result = await runWithOverrides(command.run);
           expect(result, equals(ExitCode.software.code));
           verify(
-            () => progress.fail('Exception: Unable to find shorebird.yaml'),
+            () => progress.fail('Exception: Unable to find patchwing.yaml'),
           ).called(1);
         });
       });
@@ -1597,12 +1597,12 @@ channel: ${track.channel}
         });
       });
 
-      group('when unable to find shorebird.yaml', () {
+      group('when unable to find patchwing.yaml', () {
         test('exits with code 70', () async {
           final result = await runWithOverrides(command.run);
           expect(result, equals(ExitCode.software.code));
           verify(
-            () => progress.fail('Exception: Unable to find shorebird.yaml'),
+            () => progress.fail('Exception: Unable to find patchwing.yaml'),
           ).called(1);
           verifyNever(
             () => iosDeploy.installAndLaunchApp(bundlePath: iosRunnerPath()),
@@ -1904,7 +1904,7 @@ channel: ${track.channel}
                     'Frameworks',
                     'App.framework',
                     'flutter_assets',
-                    'shorebird.yaml',
+                    'patchwing.yaml',
                   ),
                 )
                 ..createSync(recursive: true)
@@ -2054,7 +2054,7 @@ channel: ${DeploymentTrack.staging.channel}
               baseDirectory.path,
               'data',
               'flutter_assets',
-              'shorebird.yaml',
+              'patchwing.yaml',
             ),
           )
           ..createSync(recursive: true)
@@ -2203,7 +2203,7 @@ channel: ${DeploymentTrack.staging.channel}
           final result = await runWithOverrides(command.run);
           expect(result, equals(ExitCode.software.code));
           verify(
-            () => progress.fail('Exception: Unable to find shorebird.yaml'),
+            () => progress.fail('Exception: Unable to find patchwing.yaml'),
           ).called(1);
         });
       });
@@ -2352,7 +2352,7 @@ channel: ${DeploymentTrack.staging.channel}
                 'App.framework',
                 'Resources',
                 'flutter_assets',
-                'shorebird.yaml',
+                'patchwing.yaml',
               ),
             )
             ..createSync(recursive: true)
@@ -2467,7 +2467,7 @@ channel: ${DeploymentTrack.staging.channel}
           shorebirdYaml = setupMacosShorebirdYaml();
         });
 
-        test('sets channel in shorebird.yaml', () async {
+        test('sets channel in patchwing.yaml', () async {
           final result = await runWithOverrides(command.run);
           expect(result, equals(ExitCode.success.code));
 
@@ -2597,7 +2597,7 @@ channel: ${DeploymentTrack.staging.channel}
                   windowsReleaseDirectory.path,
                   'data',
                   'flutter_assets',
-                  'shorebird.yaml',
+                  'patchwing.yaml',
                 ),
               )
               ..createSync(recursive: true)

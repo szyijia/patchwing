@@ -85,12 +85,12 @@ Entries from "--dart-define" with identical keys take precedence over entries fr
   );
 
   /// An argument that allows the user to specify a Shorebird app ID directly,
-  /// bypassing the app ID in shorebird.yaml.
+  /// bypassing the app ID in patchwing.yaml.
   static const appIdArg = ArgumentDescriber(
     name: 'app-id',
     description:
         'The Shorebird app ID to use. Overrides the app ID in '
-        'shorebird.yaml (e.g. "your-app-id").',
+        'patchwing.yaml (e.g. "your-app-id").',
   );
 
   /// An argument that allows the user to specify a build flavor. You will most

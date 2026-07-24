@@ -35,10 +35,10 @@ flutter doctor --verbose
 shorebird doctor --verbose
 
 # Point to the development environment
-echo "base_url: https://api-dev.shorebird.dev" >>shorebird.yaml
+echo "base_url: https://api-dev.shorebird.dev" >>patchwing.yaml
 
-# Extract the app_id from the "shorebird.yaml"
-APP_ID=$(cat shorebird.yaml | grep 'app_id:' | awk '{print $2}')
+# Extract the app_id from the "patchwing.yaml"
+APP_ID=$(cat patchwing.yaml | grep 'app_id:' | awk '{print $2}')
 
 # Create Debug Keystore
 # Android Studio creates this keystore by default, but we need to create it manually for CI.

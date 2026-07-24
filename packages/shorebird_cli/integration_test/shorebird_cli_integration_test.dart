@@ -103,7 +103,7 @@ void main() {
 
       cwd = p.join(cwd, testAppName);
 
-      final shorebirdYamlPath = p.join(cwd, 'shorebird.yaml');
+      final shorebirdYamlPath = p.join(cwd, 'patchwing.yaml');
       final shorebirdYamlText = File(shorebirdYamlPath).readAsStringSync();
       final shorebirdYaml = checkedYamlDecode(
         shorebirdYamlText,
