@@ -117,7 +117,7 @@ void main() {
         () => logger.err('We could not find a Shorebird account for $email.'),
       ).called(1);
       verify(
-        () => logger.info(any(that: contains('console.shorebird.dev'))),
+        () => logger.info(any(that: contains('console.patchwing.net'))),
       ).called(1);
     });
 

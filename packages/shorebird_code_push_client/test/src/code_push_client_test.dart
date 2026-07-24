@@ -101,7 +101,7 @@ void main() {
     group('getCurrentUser', () {
       const user = PrivateUser(
         id: 123,
-        email: 'tester@shorebird.dev',
+        email: 'tester@patchwing.net',
         jwtIssuer: 'https://accounts.google.com',
       );
 
@@ -1683,7 +1683,7 @@ void main() {
       const userName = 'Jane Doe';
       const user = PrivateUser(
         id: 1,
-        email: 'tester@shorebird.dev',
+        email: 'tester@patchwing.net',
         displayName: userName,
         jwtIssuer:
             'https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0',

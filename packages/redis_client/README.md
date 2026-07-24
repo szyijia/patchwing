@@ -74,4 +74,4 @@ See our [license philosophy](https://github.com/shorebirdtech/handbook/blob/main
 [pub_badge]: https://img.shields.io/pub/v/shorebird_redis_client.svg
 [pub_link]: https://pub.dev/packages/shorebird_redis_client
 [redis_link]: https://redis.io
-[shorebird_link]: https://shorebird.dev
+[shorebird_link]: https://www.patchwing.net

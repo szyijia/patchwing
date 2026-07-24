@@ -19,9 +19,9 @@ class LoginCiCommand extends ShorebirdCommand {
       '''
 shorebird login:ci has been replaced by API keys.
 
-Create an API key at ${link(uri: Uri.parse('https://console.shorebird.dev'))} and set it as your ${lightCyan.wrap('SHOREBIRD_TOKEN')} environment variable.
+Create an API key at ${link(uri: Uri.parse('https://console.patchwing.net'))} and set it as your ${lightCyan.wrap('SHOREBIRD_TOKEN')} environment variable.
 
-Learn more: ${link(uri: Uri.parse('https://docs.shorebird.dev/account/api-keys/'))}''',
+Learn more: ${link(uri: Uri.parse('https://docs.patchwing.net/account/api-keys/'))}''',
     );
     return ExitCode.usage.code;
   }

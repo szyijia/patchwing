@@ -99,7 +99,7 @@ class CodePushClient {
          ...?customHeaders,
        }),
        _uploadRetryBaseDelay = uploadRetryBaseDelay,
-       hostedUri = hostedUri ?? Uri.https('api.shorebird.dev');
+       hostedUri = hostedUri ?? Uri.https('api.patchwing.net');
 
   /// The standard headers applied to all requests.
   @visibleForTesting

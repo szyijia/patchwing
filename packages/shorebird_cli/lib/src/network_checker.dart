@@ -36,8 +36,8 @@ class NetworkCheckerException implements Exception {
 class NetworkChecker {
   /// The URLs to check for network reachability.
   static final urlsToCheck = [
-    'https://api.shorebird.dev',
-    'https://console.shorebird.dev',
+    'https://api.patchwing.net',
+    'https://console.patchwing.net',
     'https://oauth2.googleapis.com',
     'https://storage.googleapis.com',
     'https://cdn.shorebird.cloud',

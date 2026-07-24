@@ -2,7 +2,7 @@
 class ShorebirdWebConsole {
   /// Returns a [Uri] for the Shorebird Web Console.
   static Uri uri(String path) {
-    return Uri.parse('https://console.shorebird.dev/$path');
+    return Uri.parse('https://console.patchwing.net/$path');
   }
 
   /// Returns a [Uri] for the Shorebird Web Console login page.

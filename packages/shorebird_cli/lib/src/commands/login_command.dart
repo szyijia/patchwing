@@ -33,7 +33,7 @@ class LoginCommand extends ShorebirdCommand {
     try {
       await auth.login(prompt: prompt);
     } on UserNotFoundException catch (error) {
-      final consoleUri = Uri.https('console.shorebird.dev');
+      final consoleUri = Uri.https('console.patchwing.net');
       logger
         ..err('''
 We could not find a Shorebird account for ${error.email}.''')

@@ -9,7 +9,7 @@
 //
 // Usage (from the repo root):
 //   dart run packages/shorebird_code_push_protocol/tool/gen.dart \
-//     -i https://api.shorebird.dev/openapi.json \
+//     -i https://api.patchwing.net/openapi.json \
 //     -o packages/shorebird_code_push_protocol
 //
 // The generator does not touch `lib/extensions/` or

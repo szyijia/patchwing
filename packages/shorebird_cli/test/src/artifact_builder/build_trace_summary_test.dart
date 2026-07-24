@@ -112,7 +112,7 @@ void main() {
           args: {'kind': 'r8_minify'},
         ),
         _event(
-          name: 'POST api.shorebird.dev',
+          name: 'POST api.patchwing.net',
           cat: 'network',
           ts: 0,
           dur: 300_000,

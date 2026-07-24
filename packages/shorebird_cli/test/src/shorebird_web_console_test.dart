@@ -6,14 +6,14 @@ void main() {
     test('uri returns the correct uri with the received path', () {
       expect(
         ShorebirdWebConsole.uri('path'),
-        Uri.parse('https://console.shorebird.dev/path'),
+        Uri.parse('https://console.patchwing.net/path'),
       );
     });
 
     test('appReleaseUri returns the correct uri to an app release', () {
       expect(
         ShorebirdWebConsole.appReleaseUri('appId', 123),
-        Uri.parse('https://console.shorebird.dev/apps/appId/releases/123'),
+        Uri.parse('https://console.patchwing.net/apps/appId/releases/123'),
       );
     });
   });

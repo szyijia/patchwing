@@ -368,7 +368,7 @@ class Auth {
           '`shorebird login:ci`. '
           'This format is deprecated and will stop working in a future '
           'release. '
-          'Create an API key at https://console.shorebird.dev instead.',
+          'Create an API key at https://console.patchwing.net instead.',
         );
       } on FormatException catch (e) {
         logger

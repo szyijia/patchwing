@@ -13,7 +13,7 @@ part 'update_release_metadata.g.dart';
 ///
 /// We do not collect Personally Identifying Information (e.g. no paths,
 /// argument lists, etc.) in accordance with our privacy policy:
-/// https://shorebird.dev/privacy/
+/// https://www.patchwing.net/privacy/
 /// {@endtemplate}
 @JsonSerializable()
 class UpdateReleaseMetadata extends Equatable {

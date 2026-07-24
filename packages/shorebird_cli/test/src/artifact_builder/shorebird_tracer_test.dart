@@ -15,7 +15,7 @@ void main() {
 
     test('addNetworkEvent writes a cat=network span on network tid', () {
       tracer.addNetworkEvent(
-        name: 'GET api.shorebird.dev',
+        name: 'GET api.patchwing.net',
         start: DateTime.fromMicrosecondsSinceEpoch(0),
         duration: const Duration(microseconds: 1),
       );
@@ -106,7 +106,7 @@ void main() {
             ]),
           );
           tracer.addNetworkEvent(
-            name: 'POST api.shorebird.dev',
+            name: 'POST api.patchwing.net',
             start: DateTime.fromMicrosecondsSinceEpoch(200),
             duration: const Duration(microseconds: 50),
           );
@@ -118,7 +118,7 @@ void main() {
           // 3 metadata (process_name + 2 thread_name) = 5 events.
           expect(decoded, hasLength(5));
           expect((decoded[0] as Map)['name'], 'flutter build');
-          expect((decoded[1] as Map)['name'], 'POST api.shorebird.dev');
+          expect((decoded[1] as Map)['name'], 'POST api.patchwing.net');
           // Metadata events come after the spans when written.
           expect((decoded[2] as Map)['name'], 'process_name');
           expect((decoded[3] as Map)['name'], 'thread_name');

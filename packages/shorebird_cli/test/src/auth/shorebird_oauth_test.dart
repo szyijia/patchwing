@@ -19,7 +19,7 @@ class MockHttpClient extends Mock implements http.Client {}
 ///
 /// The token has a valid 3-part structure (header.payload.signature) that
 /// can be parsed by `Jwt.parse()`.
-String _buildTestJwt({String issuer = 'https://auth.shorebird.dev'}) {
+String _buildTestJwt({String issuer = 'https://auth.patchwing.net'}) {
   String b64(Map<String, dynamic> json) =>
       base64Url.encode(utf8.encode(jsonEncode(json))).replaceAll('=', '');
 
@@ -46,7 +46,7 @@ void main() {
     shorebirdEnv = MockShorebirdEnv();
     when(
       () => shorebirdEnv.jwtIssuer,
-    ).thenReturn('https://auth.shorebird.dev');
+    ).thenReturn('https://auth.patchwing.net');
   });
 
   R runWithOverrides<R>(R Function() body) {
@@ -58,7 +58,7 @@ void main() {
 
   group('obtainCredentialsViaLoopbackLogin', () {
     late MockHttpClient httpClient;
-    final authBaseUrl = Uri.parse('https://auth.shorebird.dev');
+    final authBaseUrl = Uri.parse('https://auth.patchwing.net');
 
     setUp(() {
       httpClient = MockHttpClient();
@@ -156,7 +156,7 @@ void main() {
       );
 
       final loginUri = Uri.parse(capturedUrl);
-      expect(loginUri.host, equals('auth.shorebird.dev'));
+      expect(loginUri.host, equals('auth.patchwing.net'));
       expect(loginUri.path, contains('/login'));
       expect(
         loginUri.queryParameters['continue'],
@@ -168,11 +168,11 @@ void main() {
     });
 
     test('handles authBaseUrl with trailing slash', () async {
-      final authBaseUrlWithSlash = Uri.parse('https://auth.shorebird.dev/v1/');
-      final testJwt = _buildTestJwt(issuer: 'https://auth.shorebird.dev/v1/');
+      final authBaseUrlWithSlash = Uri.parse('https://auth.patchwing.net/v1/');
+      final testJwt = _buildTestJwt(issuer: 'https://auth.patchwing.net/v1/');
       when(
         () => shorebirdEnv.jwtIssuer,
-      ).thenReturn('https://auth.shorebird.dev/v1/');
+      ).thenReturn('https://auth.patchwing.net/v1/');
 
       when(
         () => httpClient.post(
@@ -577,7 +577,7 @@ void main() {
 
   group('refreshShorebirdCredentials', () {
     late MockHttpClient httpClient;
-    final authBaseUrl = Uri.parse('https://auth.shorebird.dev');
+    final authBaseUrl = Uri.parse('https://auth.patchwing.net');
 
     setUp(() {
       httpClient = MockHttpClient();

@@ -52,4 +52,4 @@ See our [license philosophy](https://github.com/shorebirdtech/handbook/blob/main
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
 [mit_link]: https://opensource.org/licenses/MIT
-[shorebird_link]: https://shorebird.dev
+[shorebird_link]: https://www.patchwing.net

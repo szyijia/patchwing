@@ -27,7 +27,7 @@ import '../mocks.dart';
 const googleJwtIssuer = 'https://accounts.google.com';
 const microsoftJwtIssuer =
     'https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0';
-const shorebirdJwtIssuer = 'https://auth.shorebird.dev';
+const shorebirdJwtIssuer = 'https://auth.patchwing.net';
 
 void main() {
   group('scoped', () {
@@ -116,7 +116,7 @@ void main() {
         });
       });
 
-      group('when issuer is auth.shorebird.dev', () {
+      group('when issuer is auth.patchwing.net', () {
         setUp(() {
           when(() => payload.iss).thenReturn(shorebirdJwtIssuer);
         });
@@ -164,7 +164,7 @@ void main() {
     );
     // Decoded payload:
     // {
-    //   "iss": "https://auth.shorebird.dev",
+    //   "iss": "https://auth.patchwing.net",
     //   "aud": "shorebird",
     //   "sub": "12345",
     //   "email": "test@email.com",
@@ -174,7 +174,7 @@ void main() {
     // }
     // cspell:disable-next-line
     const shorebirdIdToken =
-        '''eyJhbGciOiJIUzI1NiIsImtpZCI6IjEyMzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2F1dGguc2hvcmViaXJkLmRldiIsImF1ZCI6InNob3JlYmlyZCIsInN1YiI6IjEyMzQ1IiwiZW1haWwiOiJ0ZXN0QGVtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpYXQiOjEyMzQsImV4cCI6Njc4OX0.dGVzdA''';
+        '''eyJhbGciOiJIUzI1NiIsImtpZCI6IjEyMzQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2F1dGgucGF0Y2h3aW5nLm5ldCIsImF1ZCI6InNob3JlYmlyZCIsInN1YiI6IjEyMzQ1IiwiZW1haWwiOiJ0ZXN0QGVtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpYXQiOjEyMzQsImV4cCI6Njc4OX0.dGVzdA''';
     const shorebirdCiToken = CiToken(
       refreshToken: 'sb_rt_test',
       authProvider: AuthProvider.shorebird,
@@ -260,7 +260,7 @@ void main() {
       when(() => shorebirdEnv.jwtIssuer).thenReturn(shorebirdJwtIssuer);
       when(
         () => shorebirdEnv.authServiceUri,
-      ).thenReturn(Uri.parse('https://auth.shorebird.dev'));
+      ).thenReturn(Uri.parse('https://auth.patchwing.net'));
       when(() => shorebirdEnv.hostedUri).thenReturn(null);
 
       auth = buildAuth();
@@ -288,7 +288,7 @@ void main() {
             () => AuthenticatedClient.token(
               token: ciToken,
               httpClient: httpClient,
-              authServiceUri: Uri.parse('https://auth.shorebird.dev'),
+              authServiceUri: Uri.parse('https://auth.patchwing.net'),
               refreshCredentials:
                   (
                     clientId,
@@ -314,7 +314,7 @@ void main() {
             final client = AuthenticatedClient.token(
               token: ciToken,
               httpClient: httpClient,
-              authServiceUri: Uri.parse('https://auth.shorebird.dev'),
+              authServiceUri: Uri.parse('https://auth.patchwing.net'),
               onRefreshCredentials: onRefreshCredentialsCalls.add,
               refreshCredentials:
                   (
@@ -363,7 +363,7 @@ void main() {
             client = AuthenticatedClient.token(
               token: ciToken,
               httpClient: httpClient,
-              authServiceUri: Uri.parse('https://auth.shorebird.dev'),
+              authServiceUri: Uri.parse('https://auth.patchwing.net'),
               onRefreshCredentials: onRefreshCredentialsCalls.add,
               refreshCredentials:
                   (
@@ -403,7 +403,7 @@ void main() {
           final client = AuthenticatedClient.token(
             token: ciToken,
             httpClient: httpClient,
-            authServiceUri: Uri.parse('https://auth.shorebird.dev'),
+            authServiceUri: Uri.parse('https://auth.patchwing.net'),
             onRefreshCredentials: onRefreshCredentialsCalls.add,
             refreshCredentials:
                 (
@@ -460,7 +460,7 @@ void main() {
               final client = AuthenticatedClient.token(
                 token: shorebirdCiToken,
                 httpClient: httpClient,
-                authServiceUri: Uri.parse('https://auth.shorebird.dev'),
+                authServiceUri: Uri.parse('https://auth.patchwing.net'),
                 onRefreshCredentials: onRefreshCredentialsCalls.add,
               );
 
@@ -486,7 +486,7 @@ void main() {
               );
               verify(
                 () => httpClient.post(
-                  Uri.parse('https://auth.shorebird.dev/token'),
+                  Uri.parse('https://auth.patchwing.net/token'),
                   headers: any(named: 'headers'),
                   body: any(named: 'body'),
                 ),
@@ -508,7 +508,7 @@ void main() {
               client = AuthenticatedClient.token(
                 token: shorebirdCiToken,
                 httpClient: httpClient,
-                authServiceUri: Uri.parse('https://auth.shorebird.dev'),
+                authServiceUri: Uri.parse('https://auth.patchwing.net'),
               );
             });
 
@@ -565,7 +565,7 @@ void main() {
             final client = AuthenticatedClient.credentials(
               credentials: expiredCredentials,
               httpClient: httpClient,
-              authServiceUri: Uri.parse('https://auth.shorebird.dev'),
+              authServiceUri: Uri.parse('https://auth.patchwing.net'),
               onRefreshCredentials: onRefreshCredentialsCalls.add,
               refreshCredentials:
                   (
@@ -626,7 +626,7 @@ void main() {
             client = AuthenticatedClient.credentials(
               credentials: expiredCredentials,
               httpClient: httpClient,
-              authServiceUri: Uri.parse('https://auth.shorebird.dev'),
+              authServiceUri: Uri.parse('https://auth.patchwing.net'),
               onRefreshCredentials: onRefreshCredentialsCalls.add,
               refreshCredentials:
                   (
@@ -666,7 +666,7 @@ void main() {
           final client = AuthenticatedClient.credentials(
             credentials: accessCredentials,
             httpClient: httpClient,
-            authServiceUri: Uri.parse('https://auth.shorebird.dev'),
+            authServiceUri: Uri.parse('https://auth.patchwing.net'),
             onRefreshCredentials: onRefreshCredentialsCalls.add,
           );
 
@@ -724,7 +724,7 @@ void main() {
               final client = AuthenticatedClient.credentials(
                 credentials: expiredShorebirdCredentials,
                 httpClient: httpClient,
-                authServiceUri: Uri.parse('https://auth.shorebird.dev'),
+                authServiceUri: Uri.parse('https://auth.patchwing.net'),
                 onRefreshCredentials: onRefreshCredentialsCalls.add,
               );
 
@@ -750,7 +750,7 @@ void main() {
               );
               verify(
                 () => httpClient.post(
-                  Uri.parse('https://auth.shorebird.dev/token'),
+                  Uri.parse('https://auth.patchwing.net/token'),
                   headers: any(named: 'headers'),
                   body: any(named: 'body'),
                 ),
@@ -784,7 +784,7 @@ void main() {
             client = AuthenticatedClient.credentials(
               credentials: expiredShorebirdCredentials,
               httpClient: httpClient,
-              authServiceUri: Uri.parse('https://auth.shorebird.dev'),
+              authServiceUri: Uri.parse('https://auth.patchwing.net'),
             );
           });
 
@@ -974,7 +974,7 @@ void main() {
             '`shorebird login:ci`. '
             'This format is deprecated and will stop working in a future '
             'release. '
-            'Create an API key at https://console.shorebird.dev instead.',
+            'Create an API key at https://console.patchwing.net instead.',
           ),
         ).called(1);
         verify(

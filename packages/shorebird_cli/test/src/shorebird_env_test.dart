@@ -882,7 +882,7 @@ base_url: https://example.com''');
         when(() => platform.environment).thenReturn({});
         expect(
           runWithOverrides(() => shorebirdEnv.authServiceUri),
-          equals(Uri.parse('https://auth.shorebird.dev')),
+          equals(Uri.parse('https://auth.patchwing.net')),
         );
       });
 
@@ -902,7 +902,7 @@ base_url: https://example.com''');
         when(() => platform.environment).thenReturn({});
         expect(
           runWithOverrides(() => shorebirdEnv.jwtIssuer),
-          equals('https://auth.shorebird.dev'),
+          equals('https://auth.patchwing.net'),
         );
       });
 
