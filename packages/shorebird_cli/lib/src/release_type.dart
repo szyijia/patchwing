@@ -2,7 +2,7 @@ import 'package:args/args.dart';
 import 'package:collection/collection.dart';
 import 'package:shorebird_code_push_client/shorebird_code_push_client.dart';
 
-/// The different types of shorebird releases that can be created.
+/// The different types of pw releases that can be created.
 enum ReleaseType {
   /// An Android archive used in a hybrid app.
   aar,

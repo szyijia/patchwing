@@ -4,7 +4,7 @@ import 'package:shorebird_cli/src/logging/logging.dart';
 import 'package:shorebird_cli/src/shorebird_command.dart';
 
 /// {@template login_command}
-/// `shorebird login`
+/// `pw login`
 /// Login as a new Shorebird user.
 /// {@endtemplate}
 class LoginCommand extends ShorebirdCommand {
@@ -25,7 +25,7 @@ class LoginCommand extends ShorebirdCommand {
               : 'You are already authenticated via API key.',
         )
         ..info(
-          'Run ${lightCyan.wrap('shorebird logout')} to log out and try again.',
+          'Run ${lightCyan.wrap('pw logout')} to log out and try again.',
         );
       return ExitCode.success.code;
     }
@@ -51,7 +51,7 @@ We could not find a Shorebird account for ${error.email}.''')
 🎉 ${lightGreen.wrap('Welcome to Shorebird! You are now logged in as <${auth.email}>.')}
 
 🔑 Credentials are stored in ${lightCyan.wrap(auth.credentialsFilePath)}.
-🚪 To logout use: "${lightCyan.wrap('shorebird logout')}".''');
+🚪 To logout use: "${lightCyan.wrap('pw logout')}".''');
     return ExitCode.success.code;
   }
 

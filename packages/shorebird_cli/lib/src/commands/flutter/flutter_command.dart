@@ -2,7 +2,7 @@ import 'package:shorebird_cli/src/commands/commands.dart';
 import 'package:shorebird_cli/src/shorebird_command.dart';
 
 /// {@template flutter_command}
-/// `shorebird flutter`
+/// `pw flutter`
 /// Manage your Shorebird Flutter installation.
 /// {@endtemplate}
 class FlutterCommand extends ShorebirdCommand {

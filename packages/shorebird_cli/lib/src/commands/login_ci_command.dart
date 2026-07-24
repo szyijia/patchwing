@@ -3,7 +3,7 @@ import 'package:shorebird_cli/src/logging/logging.dart';
 import 'package:shorebird_cli/src/shorebird_command.dart';
 
 /// {@template login_ci_command}
-/// `shorebird login:ci`
+/// `pw login:ci`
 /// Removed — directs users to API keys instead.
 /// {@endtemplate}
 class LoginCiCommand extends ShorebirdCommand {
@@ -17,7 +17,7 @@ class LoginCiCommand extends ShorebirdCommand {
   Future<int> run() async {
     logger.err(
       '''
-shorebird login:ci has been replaced by API keys.
+pw login:ci has been replaced by API keys.
 
 Create an API key at ${link(uri: Uri.parse('https://console.patchwing.net'))} and set it as your ${lightCyan.wrap('PATCHWING_TOKEN')} environment variable.
 

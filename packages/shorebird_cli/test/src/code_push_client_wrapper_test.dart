@@ -396,7 +396,7 @@ void main() {
             ).called(1);
             verify(
               () => logger.info(
-                '''Run ${lightCyan.wrap('shorebird upgrade')} to get the latest version.''',
+                '''Run ${lightCyan.wrap('pw upgrade')} to get the latest version.''',
               ),
             ).called(1);
           },

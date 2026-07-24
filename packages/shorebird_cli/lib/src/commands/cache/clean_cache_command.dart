@@ -8,7 +8,7 @@ import 'package:shorebird_cli/src/platform.dart';
 import 'package:shorebird_cli/src/shorebird_command.dart';
 
 /// {@template clean_cache_command}
-/// `shorebird cache clean`
+/// `pw cache clean`
 /// Clears the Shorebird cache directory.
 /// {@endtemplate}
 class CleanCacheCommand extends ShorebirdCommand {

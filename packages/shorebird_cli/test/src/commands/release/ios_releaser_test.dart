@@ -557,7 +557,7 @@ $body
           ).called(1);
           verify(
             () => logger.warn(
-              '''shorebird preview will not work for releases created with "--no-codesign". However, you can still preview your app by signing the generated .xcarchive in Xcode.''',
+              '''pw preview will not work for releases created with "--no-codesign". However, you can still preview your app by signing the generated .xcarchive in Xcode.''',
             ),
           ).called(1);
           verify(

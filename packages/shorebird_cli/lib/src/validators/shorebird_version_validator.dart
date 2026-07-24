@@ -31,7 +31,7 @@ class ShorebirdVersionValidator extends Validator {
         const ValidationIssue(
           severity: ValidationIssueSeverity.warning,
           message: '''
-A new version of shorebird is available! Run `shorebird upgrade` to upgrade.''',
+A new version of shorebird is available! Run `pw upgrade` to upgrade.''',
         ),
       ];
     }

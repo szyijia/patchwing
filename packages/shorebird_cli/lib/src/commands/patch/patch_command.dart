@@ -35,8 +35,8 @@ import 'package:shorebird_code_push_client/shorebird_code_push_client.dart';
 typedef ResolvePatcher = Patcher Function(ReleaseType releaseType);
 
 /// {@template patch_command}
-/// A command that creates a shorebird patch for the provided target platforms.
-/// `shorebird patch --platforms=android,ios`
+/// A command that creates a pw patch for the provided target platforms.
+/// `pw patch --platforms=android,ios`
 /// {@endtemplate}
 class PatchCommand extends ShorebirdCommand {
   /// {@macro patch_command}
@@ -634,7 +634,7 @@ Building patch with Flutter $flutterVersionString
     if (!contains) {
       final platformName = releasePlatform.name;
       logger.err(
-        '''No release exists for $platformName in release version ${release.version}. Please run shorebird release $platformName to create one.''',
+        '''No release exists for $platformName in release version ${release.version}. Please run pw release $platformName to create one.''',
       );
       throw ProcessExit(ExitCode.software.code);
     }

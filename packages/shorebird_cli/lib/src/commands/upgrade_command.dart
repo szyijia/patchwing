@@ -7,7 +7,7 @@ import 'package:shorebird_cli/src/shorebird_command.dart';
 import 'package:shorebird_cli/src/shorebird_version.dart';
 
 /// {@template upgrade_command}
-/// `shorebird upgrade`
+/// `pw upgrade`
 /// A command which upgrades your copy of Shorebird.
 /// {@endtemplate}
 class UpgradeCommand extends ShorebirdCommand {

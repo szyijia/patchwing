@@ -206,14 +206,14 @@ To proxy an option to the flutter command, use the '--' --<option> syntax.
 
 Example:
 
-${lightCyan.wrap("shorebird release android '--' --no-pub lib/main.dart")}''';
+${lightCyan.wrap("pw release android '--' --no-pub lib/main.dart")}''';
         } else {
           errorMessage = '''
 To proxy an option to the flutter command, use the -- --<option> syntax.
 
 Example:
 
-${lightCyan.wrap('shorebird release android -- --no-pub lib/main.dart')}''';
+${lightCyan.wrap('pw release android -- --no-pub lib/main.dart')}''';
         }
 
         logger.err(errorMessage);
@@ -371,7 +371,7 @@ ${currentRunLogFile.absolute.path}
 
   /// If this version of shorebird is on the `stable` branch, checks to see if
   /// there are newer commits available. If there are, prints a message to the
-  /// user telling them to run `shorebird upgrade`.
+  /// user telling them to run `pw upgrade`.
   Future<void> _checkForUpdates() async {
     try {
       if (await shorebirdVersion.isTrackingStable() &&
@@ -379,7 +379,7 @@ ${currentRunLogFile.absolute.path}
         logger
           ..info('')
           ..info('A new version of shorebird is available!')
-          ..info('Run ${lightCyan.wrap('shorebird upgrade')} to upgrade.');
+          ..info('Run ${lightCyan.wrap('pw upgrade')} to upgrade.');
       }
     } on Exception catch (error) {
       logger.detail('Unable to check for updates.\n$error');

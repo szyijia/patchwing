@@ -75,7 +75,7 @@ void main() {
           ).called(1);
           verify(
             () => logger.info(
-              '''Run ${lightCyan.wrap('shorebird logout')} to log out and try again.''',
+              '''Run ${lightCyan.wrap('pw logout')} to log out and try again.''',
             ),
           ).called(1);
           verifyNever(() => auth.login(prompt: any(named: 'prompt')));
@@ -98,7 +98,7 @@ void main() {
         ).called(1);
         verify(
           () => logger.info(
-            '''Run ${lightCyan.wrap('shorebird logout')} to log out and try again.''',
+            '''Run ${lightCyan.wrap('pw logout')} to log out and try again.''',
           ),
         ).called(1);
         verifyNever(() => auth.login(prompt: any(named: 'prompt')));

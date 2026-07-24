@@ -226,7 +226,7 @@ class ShorebirdProcess {
       if (logger.level == Level.verbose) {
         /// We explicitly add the `--verbose` flag to flutter commands when the
         /// shorebird command was run with `--verbose`
-        /// (e.g. `shorebird release ios --verbose`).
+        /// (e.g. `pw release ios --verbose`).
         resolvedArguments = [...resolvedArguments, '--verbose'];
       }
       if (useVendedFlutter && engineConfig.localEngine != null) {

@@ -30,7 +30,7 @@ import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
 /// {@template preview_command}
-/// `shorebird preview` command.
+/// `pw preview` command.
 /// {@endtemplate}
 class PreviewCommand extends ShorebirdCommand {
   /// {@macro preview_command}

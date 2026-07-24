@@ -10,7 +10,7 @@ import 'package:shorebird_cli/src/third_party/flutter_tools/lib/src/base/process
 import 'package:shorebird_code_push_client/shorebird_code_push_client.dart';
 
 /// {@template patches_info_command}
-/// `shorebird patches info`
+/// `pw patches info`
 /// Show details for a specific patch.
 /// {@endtemplate}
 class PatchesInfoCommand extends ShorebirdCommand {
@@ -53,7 +53,7 @@ class PatchesInfoCommand extends ShorebirdCommand {
       '    android  arm64-v8a    1.20 MB\n'
       '    android  armeabi-v7a  1.10 MB\n'
       '    ios      arm64        896 KB\n\n'
-      '${ShorebirdCommand.jsonHint('shorebird patches info --release-version 1.0.0+1 --patch-number 1 --app-id <id> --json')}';
+      '${ShorebirdCommand.jsonHint('pw patches info --release-version 1.0.0+1 --patch-number 1 --app-id <id> --json')}';
 
   @override
   Future<int> run() async {

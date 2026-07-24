@@ -15,7 +15,7 @@ import 'package:shorebird_code_push_client/shorebird_code_push_client.dart';
 /// Exception thrown when the Shorebird cache appears to be corrupted.
 ///
 /// Surfaces a user-actionable message directing the user to run
-/// `shorebird cache clean` and retry.
+/// `pw cache clean` and retry.
 class CacheCorruptedException implements Exception {
   /// Creates a [CacheCorruptedException] explaining why the cache is
   /// considered corrupted via [reason] (a complete sentence).
@@ -27,7 +27,7 @@ class CacheCorruptedException implements Exception {
   @override
   String toString() =>
       '$reason Your Shorebird installation may be corrupted. '
-      "Try running 'shorebird cache clean' and retrying.";
+      "Try running 'pw cache clean' and retrying.";
 }
 
 /// A reference to a [ShorebirdEnv] instance.

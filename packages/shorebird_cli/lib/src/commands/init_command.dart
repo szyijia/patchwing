@@ -19,7 +19,7 @@ import 'package:yaml_edit/yaml_edit.dart';
 
 /// {@template init_command}
 ///
-/// `shorebird init`
+/// `pw init`
 /// Initialize Shorebird.
 /// {@endtemplate}
 class InitCommand extends ShorebirdCommand {
@@ -63,7 +63,7 @@ class InitCommand extends ShorebirdCommand {
       if (!shorebirdEnv.hasPubspecYaml) {
         logger.err('''
 Could not find a "pubspec.yaml".
-Please make sure you are running "shorebird init" from within your Flutter project.
+Please make sure you are running "pw init" from within your Flutter project.
 ''');
         return ExitCode.noInput.code;
       }
@@ -233,7 +233,7 @@ Please make sure you are running "shorebird init" from within your Flutter proje
       logger
         ..err('A "patchwing.yaml" file already exists and seems up-to-date.')
         ..info(
-          '''If you want to reinitialize Shorebird, please run ${lightCyan.wrap('shorebird init --force')}.''',
+          '''If you want to reinitialize Shorebird, please run ${lightCyan.wrap('pw init --force')}.''',
         );
       return ExitCode.software.code;
     }
@@ -332,9 +332,9 @@ ${lightGreen.wrap('🐦 Shorebird initialized successfully!')}
 
 Reference the following commands to get started:
 
-📦 To create a new release use: "${lightCyan.wrap('shorebird release')}".
-🚀 To push an update use: "${lightCyan.wrap('shorebird patch')}".
-👀 To preview a release use: "${lightCyan.wrap('shorebird preview')}".
+📦 To create a new release use: "${lightCyan.wrap('pw release')}".
+🚀 To push an update use: "${lightCyan.wrap('pw patch')}".
+👀 To preview a release use: "${lightCyan.wrap('pw preview')}".
 
 For more information about Shorebird, visit ${link(uri: Uri.parse('https://www.patchwing.net'))}''',
     );

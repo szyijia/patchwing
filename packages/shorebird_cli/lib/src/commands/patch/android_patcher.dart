@@ -121,7 +121,7 @@ See more info about the issue ${link(uri: Uri.parse('https://github.com/shorebir
       logger
         ..err('Cannot find patch build artifacts.')
         ..info('''
-Please run `shorebird cache clean` and try again. If the issue persists, please
+Please run `pw cache clean` and try again. If the issue persists, please
 file a bug report at https://github.com/shorebirdtech/shorebird/issues/new.
 
 Looked in:

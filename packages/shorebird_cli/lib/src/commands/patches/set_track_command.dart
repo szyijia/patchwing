@@ -13,7 +13,7 @@ import 'package:shorebird_code_push_client/shorebird_code_push_client.dart';
 ///
 /// Sample usage:
 /// ```sh
-/// shorebird patches set-track --release=1.0.0+1 --patch=1 --track=beta
+/// pw patches set-track --release=1.0.0+1 --patch=1 --track=beta
 /// ```
 ///
 /// {@endtemplate}
@@ -57,7 +57,7 @@ class SetTrackCommand extends ShorebirdCommand {
       'Sets the track of a patch.\n\n'
       'Example output:\n'
       '  Patch 1 on release 1.0.0+1 is now in channel stable!\n\n'
-      '${ShorebirdCommand.jsonHint('shorebird patches set-track --release 1.0.0+1 --patch 1 --track stable --app-id <id> --json')}';
+      '${ShorebirdCommand.jsonHint('pw patches set-track --release 1.0.0+1 --patch 1 --track stable --app-id <id> --json')}';
 
   @override
   Future<int> run() async {

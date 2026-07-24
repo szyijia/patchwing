@@ -8,7 +8,7 @@ import 'package:shorebird_cli/src/third_party/flutter_tools/lib/src/base/process
 import 'package:shorebird_code_push_client/shorebird_code_push_client.dart';
 
 /// {@template whoami_command}
-/// `shorebird account whoami`
+/// `pw account whoami`
 /// Show the currently authenticated Shorebird user.
 /// {@endtemplate}
 class WhoamiCommand extends ShorebirdCommand {
@@ -30,7 +30,7 @@ class WhoamiCommand extends ShorebirdCommand {
       'Plan is "paid" (active Shorebird subscription) or "free".\n'
       'Overage limit is the max pay-as-you-go patch installs allowed '
       'beyond your plan ("none" if unset).\n\n'
-      '${ShorebirdCommand.jsonHint('shorebird account whoami --json')}';
+      '${ShorebirdCommand.jsonHint('pw account whoami --json')}';
 
   @override
   Future<int> run() async {

@@ -468,7 +468,7 @@ $error''');
       );
       logger.err('''
 Version $flutterVersionArg not found. Please $openIssueLink to request a new version.
-Use `shorebird flutter versions list` to list available versions.
+Use `pw flutter versions list` to list available versions.
 ''');
       throw ProcessExit(ExitCode.software.code);
     }
@@ -649,7 +649,7 @@ ${summary.join('\n')}
     String? target,
   }) {
     final baseCommand = [
-      'shorebird patch',
+      'pw patch',
       '--platforms=${releaseType.cliName}',
       if (flavor != null) '--flavor=$flavor',
       if (target != null) '--target=$target',

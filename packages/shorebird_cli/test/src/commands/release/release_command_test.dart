@@ -345,7 +345,7 @@ void main() {
 ✅ Published Release ${release.version}!'''),
         () => logger.info(postReleaseInstructions),
         () => logger.info(
-          '''To create a patch for this release, run ${lightCyan.wrap('shorebird patch --platforms=android --release-version=${release.version}')}''',
+          '''To create a patch for this release, run ${lightCyan.wrap('pw patch --platforms=android --release-version=${release.version}')}''',
         ),
       ]);
     });
@@ -528,7 +528,7 @@ void main() {
 ✅ Published Release ${release.version}!'''),
           () => logger.info(postReleaseInstructions),
           () => logger.info(
-            '''To create a patch for this release, run ${lightCyan.wrap('shorebird patch --platforms=android --flavor=$flavor --target=$target --release-version=${release.version}')}''',
+            '''To create a patch for this release, run ${lightCyan.wrap('pw patch --platforms=android --flavor=$flavor --target=$target --release-version=${release.version}')}''',
           ),
         ]);
       });

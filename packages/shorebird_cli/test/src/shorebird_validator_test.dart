@@ -90,7 +90,7 @@ void main() {
         verifyInOrder([
           () => logger.err('You must be logged in to run this command.'),
           () => logger.info(
-            '''If you already have an account, run ${lightCyan.wrap('shorebird login')} to sign in.''',
+            '''If you already have an account, run ${lightCyan.wrap('pw login')} to sign in.''',
           ),
           () => logger.info(
             '''If you don't have a Shorebird account, go to ${link(uri: Uri.parse('https://console.patchwing.net'))} to create one.''',
@@ -122,7 +122,7 @@ void main() {
                     '''Unable to find patchwing.yaml. Are you in a shorebird app directory?''',
                   ),
                   () => logger.info(
-                    '''If you have not yet initialized your app, run ${lightCyan.wrap('shorebird init')} to get started.''',
+                    '''If you have not yet initialized your app, run ${lightCyan.wrap('pw init')} to get started.''',
                   ),
                 ]);
               },
@@ -192,7 +192,7 @@ To fix, update your pubspec.yaml to include the following:
         ).called(1);
         verify(
           () => logger.info(
-            '''1 issue can be fixed automatically with ${lightCyan.wrap('shorebird doctor --fix')}.''',
+            '''1 issue can be fixed automatically with ${lightCyan.wrap('pw doctor --fix')}.''',
           ),
         ).called(1);
       });

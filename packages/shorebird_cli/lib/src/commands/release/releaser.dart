@@ -77,7 +77,7 @@ abstract class Releaser {
     return metadata;
   }
 
-  /// Instructions explaining next steps after running `shorebird release`. This
+  /// Instructions explaining next steps after running `pw release`. This
   /// could include how to upload the generated artifact to a store and how to
   /// patch the release.
   String get postReleaseInstructions;

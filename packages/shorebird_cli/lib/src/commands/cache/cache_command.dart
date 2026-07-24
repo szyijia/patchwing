@@ -2,7 +2,7 @@ import 'package:shorebird_cli/src/commands/commands.dart';
 import 'package:shorebird_cli/src/shorebird_command.dart';
 
 /// {@template cache_command}
-/// `shorebird cache`
+/// `pw cache`
 /// Manage the Shorebird cache.
 /// {@endtemplate}
 class CacheCommand extends ShorebirdCommand {

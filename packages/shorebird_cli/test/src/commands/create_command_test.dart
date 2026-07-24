@@ -97,7 +97,7 @@ void main() {
       });
     });
 
-    test('runs the shorebird init command', () async {
+    test('runs the pw init command', () async {
       when(() => runner.run(any())).thenAnswer((invocation) async {
         final runnerArgs = invocation.positionalArguments.first as List;
         if (runnerArgs.first == 'init') {

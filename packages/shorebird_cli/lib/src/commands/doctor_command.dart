@@ -15,7 +15,7 @@ import 'package:shorebird_cli/src/validators/validators.dart';
 import 'package:shorebird_cli/src/version.dart';
 
 /// {@template doctor_command}
-/// `shorebird doctor`
+/// `pw doctor`
 /// A command that checks for potential issues with the current shorebird
 /// environment.
 /// {@endtemplate}

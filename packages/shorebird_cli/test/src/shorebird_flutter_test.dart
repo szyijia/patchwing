@@ -993,7 +993,7 @@ origin/flutter_release/3.10.6''';
         });
 
         test(
-          'throws CacheCorruptedException directing to shorebird cache clean',
+          'throws CacheCorruptedException directing to pw cache clean',
           () async {
             await expectLater(
               runWithOverrides(
@@ -1003,7 +1003,7 @@ origin/flutter_release/3.10.6''';
                 isA<CacheCorruptedException>().having(
                   (e) => e.toString(),
                   'toString',
-                  contains('shorebird cache clean'),
+                  contains('pw cache clean'),
                 ),
               ),
             );
@@ -1021,7 +1021,7 @@ origin/flutter_release/3.10.6''';
         });
 
         test(
-          'throws CacheCorruptedException directing to shorebird cache clean',
+          'throws CacheCorruptedException directing to pw cache clean',
           () async {
             await expectLater(
               runWithOverrides(
@@ -1031,7 +1031,7 @@ origin/flutter_release/3.10.6''';
                 isA<CacheCorruptedException>().having(
                   (e) => e.toString(),
                   'toString',
-                  contains('shorebird cache clean'),
+                  contains('pw cache clean'),
                 ),
               ),
             );

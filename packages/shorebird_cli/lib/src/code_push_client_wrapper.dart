@@ -251,7 +251,7 @@ You can manage this release in the ${link(uri: uri, message: 'Shorebird Console'
 Release not found: "$releaseVersion"
 
 Patches can only be published for existing releases.
-Please create a release using "shorebird release" and try again.
+Please create a release using "pw release" and try again.
 ''');
       throw ProcessExit(ExitCode.software.code);
     }
@@ -487,7 +487,7 @@ Please create a release using "shorebird release" and try again.
         message: '''
 Cannot find release build artifacts.
 
-Please run `shorebird cache clean` and try again. If the issue persists, please
+Please run `pw cache clean` and try again. If the issue persists, please
 file a bug report at https://github.com/shorebirdtech/shorebird/issues/new.
 
 Looked in:
@@ -1052,7 +1052,7 @@ aar artifact already exists, continuing...''');
       logger
         ..err('Your version of shorebird is out of date.')
         ..info(
-          '''Run ${lightCyan.wrap('shorebird upgrade')} to get the latest version.''',
+          '''Run ${lightCyan.wrap('pw upgrade')} to get the latest version.''',
         );
     } else if (progress != null) {
       progress.fail(message ?? '$error');

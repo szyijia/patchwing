@@ -138,8 +138,8 @@ instruction section matches. This typically means the release and patch were
 built with different --dart-define values or a different --obfuscate setting,
 since those affect compile-time constants that live in the VM data section.
 
-Verify that `shorebird patch` was invoked with the exact same --dart-define
-(and --dart-define-from-file) flags as `shorebird release`, and that the
+Verify that `pw patch` was invoked with the exact same --dart-define
+(and --dart-define-from-file) flags as `pw release`, and that the
 --obfuscate setting matches.''';
     }
     return null;

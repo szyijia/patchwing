@@ -5,7 +5,7 @@ import 'package:shorebird_cli/src/shorebird_command.dart';
 
 /// {@template logout_command}
 ///
-/// `shorebird logout`
+/// `pw logout`
 /// Logout of the current Shorebird user.
 /// {@endtemplate}
 class LogoutCommand extends ShorebirdCommand {

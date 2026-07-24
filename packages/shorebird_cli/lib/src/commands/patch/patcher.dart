@@ -38,7 +38,7 @@ abstract class Patcher {
   /// The standard link percentage warning.
   static String lowLinkPercentageWarning(double linkPercentage) {
     return '''
-${lightCyan.wrap('shorebird patch')} was only able to share ${linkPercentage.toStringAsFixed(1)}% of Dart code with the released app.
+${lightCyan.wrap('pw patch')} was only able to share ${linkPercentage.toStringAsFixed(1)}% of Dart code with the released app.
 This is unexpected, and means the application may execute slower than expected after patching.
 Please reach out to us over Discord or Email for help.
 More info: ${troubleshootingUrl.toLink()}.

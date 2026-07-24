@@ -176,7 +176,7 @@ class AuthenticatedClient extends http.BaseClient {
       logger
         ..err('Failed to refresh credentials.')
         ..info(
-          '''Try logging out with ${lightBlue.wrap('shorebird logout')} and logging in again.''',
+          '''Try logging out with ${lightBlue.wrap('pw logout')} and logging in again.''',
         )
         ..detail(e.toString())
         ..detail(s.toString());
@@ -365,7 +365,7 @@ class Auth {
         _token = CiToken.fromBase64(trimmed);
         logger.warn(
           'PATCHWING_TOKEN contains a legacy CI token from '
-          '`shorebird login:ci`. '
+          '`pw login:ci`. '
           'This format is deprecated and will stop working in a future '
           'release. '
           'Create an API key at https://console.patchwing.net instead.',

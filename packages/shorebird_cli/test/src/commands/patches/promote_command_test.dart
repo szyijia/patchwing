@@ -136,7 +136,7 @@ void main() {
         expect(result, equals(ExitCode.success.code));
         verify(
           () => logger.warn(
-            '''This command is deprecated and will be removed in a future release. Use `shorebird patches set-track --track=stable` instead.''',
+            '''This command is deprecated and will be removed in a future release. Use `pw patches set-track --track=stable` instead.''',
           ),
         ).called(1);
       });

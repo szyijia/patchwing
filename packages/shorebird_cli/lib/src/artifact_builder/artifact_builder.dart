@@ -108,9 +108,9 @@ the `--flutter-version` option. If you do not specify a `--flutter-version`
 Shorebird will default to the latest stable version of Flutter.
 We strongly encourage always specifying an explicit Flutter version:
 
-${lightCyan.wrap('shorebird release <platform> --flutter-version=3.29.0')}
+${lightCyan.wrap('pw release <platform> --flutter-version=3.29.0')}
 
-• If `flutter build` completes successfully and `shorebird release`
+• If `flutter build` completes successfully and `pw release`
 fails when using the same flutter version, please file an issue:
 ${link(uri: Uri.parse('https://github.com/shorebirdtech/shorebird/issues/new'))}
 ''';

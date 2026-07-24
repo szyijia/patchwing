@@ -49,7 +49,7 @@ class ShorebirdFlutter {
   /// corrupted install: Flutter's stamp-based cache will otherwise trust a
   /// partial extraction and surface the missing artifact later as an opaque
   /// Gradle error (see shorebirdtech/shorebird#3783). The user is directed
-  /// to run `shorebird cache clean` to start over.
+  /// to run `pw cache clean` to start over.
   Future<void> installRevision({required String revision}) async {
     final targetDirectory = Directory(_workingDirectory(revision: revision));
     if (targetDirectory.existsSync()) return;

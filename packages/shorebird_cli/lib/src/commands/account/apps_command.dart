@@ -8,7 +8,7 @@ import 'package:shorebird_cli/src/third_party/flutter_tools/lib/src/base/process
 import 'package:shorebird_code_push_client/shorebird_code_push_client.dart';
 
 /// {@template apps_command}
-/// `shorebird account apps`
+/// `pw account apps`
 /// List the apps the current user has access to.
 /// {@endtemplate}
 class AppsCommand extends ShorebirdCommand {
@@ -26,7 +26,7 @@ class AppsCommand extends ShorebirdCommand {
       '  01H...  Acme Mobile  1.2.3  4\n'
       '  01J...  Acme Internal  -  -\n\n'
       '"-" indicates no release or patch has been published yet.\n\n'
-      '${ShorebirdCommand.jsonHint('shorebird account apps --json')}';
+      '${ShorebirdCommand.jsonHint('pw account apps --json')}';
 
   @override
   Future<int> run() async {

@@ -80,7 +80,7 @@ class ShorebirdValidator {
       logger
         ..err('You must be logged in to run this command.')
         ..info(
-          '''If you already have an account, run ${lightCyan.wrap('shorebird login')} to sign in.''',
+          '''If you already have an account, run ${lightCyan.wrap('pw login')} to sign in.''',
         )
         ..info(
           '''If you don't have a Shorebird account, go to ${link(uri: Uri.parse('https://console.patchwing.net'))} to create one.''',
@@ -95,7 +95,7 @@ class ShorebirdValidator {
             '''Unable to find patchwing.yaml. Are you in a shorebird app directory?''',
           )
           ..info(
-            '''If you have not yet initialized your app, run ${lightCyan.wrap('shorebird init')} to get started.''',
+            '''If you have not yet initialized your app, run ${lightCyan.wrap('pw init')} to get started.''',
           );
         throw ShorebirdNotInitializedException();
       }
@@ -195,14 +195,14 @@ To fix, update your pubspec.yaml to include the following:
 
   /// Logs a message indicating that validation failed. If any of the issues
   /// can be automatically fixed, this also prompts the user to run
-  /// `shorebird doctor --fix`.
+  /// `pw doctor --fix`.
   void logValidationFailure({required List<ValidationIssue> issues}) {
     logger.err('Aborting due to validation errors.');
 
     final fixableIssues = issues.where((issue) => issue.fix != null);
     if (fixableIssues.isNotEmpty) {
       logger.info(
-        '''${fixableIssues.length} issue${fixableIssues.length == 1 ? '' : 's'} can be fixed automatically with ${lightCyan.wrap('shorebird doctor --fix')}.''',
+        '''${fixableIssues.length} issue${fixableIssues.length == 1 ? '' : 's'} can be fixed automatically with ${lightCyan.wrap('pw doctor --fix')}.''',
       );
     }
   }

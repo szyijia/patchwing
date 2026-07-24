@@ -49,15 +49,15 @@ class PromoteCommand extends ShorebirdCommand {
       emitJsonError(
         code: JsonErrorCode.usageError,
         message:
-            'shorebird patches promote is deprecated and does not support '
+            'pw patches promote is deprecated and does not support '
             '--json output.',
-        hint: 'Use `shorebird patches set-track --track=stable` instead.',
+        hint: 'Use `pw patches set-track --track=stable` instead.',
       );
       return ExitCode.usage.code;
     }
 
     logger.warn(
-      '''This command is deprecated and will be removed in a future release. Use `shorebird patches set-track --track=stable` instead.''',
+      '''This command is deprecated and will be removed in a future release. Use `pw patches set-track --track=stable` instead.''',
     );
 
     try {

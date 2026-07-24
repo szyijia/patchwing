@@ -9,7 +9,7 @@ import 'package:shorebird_cli/src/shorebird_process.dart';
 import 'package:shorebird_cli/src/shorebird_validator.dart';
 
 /// {@template shorebird_create_command}
-/// `shorebird create`
+/// `pw create`
 /// Create a new Flutter app with Shorebird.
 /// {@endtemplate}
 class CreateCommand extends ShorebirdProxyCommand {
