@@ -842,7 +842,7 @@ void main() {
       group('when PATCHWING_TOKEN is an API key', () {
         setUp(() {
           when(() => platform.environment).thenReturn(<String, String>{
-            shorebirdTokenEnvVar: 'sb_api_abc123',
+            shorebirdTokenEnvVar: 'pw_api_abc123',
           });
         });
 
@@ -862,7 +862,7 @@ void main() {
 
         test('trims whitespace from API key', () {
           when(() => platform.environment).thenReturn(<String, String>{
-            shorebirdTokenEnvVar: '  sb_api_abc123  \n',
+            shorebirdTokenEnvVar: '  pw_api_abc123  \n',
           });
           auth = buildAuth();
           expect(auth.isAuthenticated, isTrue);
@@ -891,7 +891,7 @@ void main() {
           final request = captured.first as http.BaseRequest;
           expect(
             request.headers['Authorization'],
-            equals('Bearer sb_api_abc123'),
+            equals('Bearer pw_api_abc123'),
           );
         });
 
@@ -921,7 +921,7 @@ void main() {
             verify(
               () => logger.err(
                 'Failed to parse $shorebirdTokenEnvVar. Expected an API key '
-                '(sb_api_...) or a legacy CI token.',
+                '(pw_api_...) or a legacy CI token.',
               ),
             ).called(1);
             verifyNever(
@@ -1030,7 +1030,7 @@ void main() {
         'throws UserAlreadyLoggedInException when authenticated via API key',
         () async {
           when(() => platform.environment).thenReturn(<String, String>{
-            shorebirdTokenEnvVar: 'sb_api_abc123',
+            shorebirdTokenEnvVar: 'pw_api_abc123',
           });
           auth = buildAuth();
 
@@ -1128,7 +1128,7 @@ void main() {
       group('when authenticated via API key', () {
         setUp(() {
           when(() => platform.environment).thenReturn(<String, String>{
-            shorebirdTokenEnvVar: 'sb_api_abc123',
+            shorebirdTokenEnvVar: 'pw_api_abc123',
           });
           auth = buildAuth();
         });

@@ -57,7 +57,7 @@ class DoctorCommand extends ShorebirdCommand {
       shorebirdFlutterPrefix.write(' $flutterVersion');
     }
     output.writeln('''
-Shorebird $packageVersion • git@github.com:shorebirdtech/shorebird.git
+Patchwing $packageVersion • git@github.com:patchwingtech/patchwing.git
 $shorebirdFlutterPrefix • revision ${shorebirdEnv.flutterRevision}
 Engine • revision ${shorebirdEnv.shorebirdEngineRevision}''');
 

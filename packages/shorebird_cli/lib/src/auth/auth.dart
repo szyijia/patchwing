@@ -354,7 +354,7 @@ class Auth {
       logger.detail('[env] $shorebirdTokenEnvVar detected');
 
       // New API key format — pass through directly, no refresh needed.
-      if (trimmed.startsWith('sb_api_')) {
+      if (trimmed.startsWith('pw_api_')) {
         _apiKey = trimmed;
         logger.detail('[env] $shorebirdTokenEnvVar parsed as API key');
         return;
@@ -374,7 +374,7 @@ class Auth {
         logger
           ..err(
             'Failed to parse $shorebirdTokenEnvVar. Expected an API key '
-            '(sb_api_...) or a legacy CI token.',
+            '(pw_api_...) or a legacy CI token.',
           )
           ..detail(e.toString());
         rethrow;
