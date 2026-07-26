@@ -13,12 +13,10 @@ PubspecEditor get pubspecEditor => read(pubspecEditorRef);
 /// A class that exposes APIs to edit the current project's `pubspec.yaml`.
 /// {@endtemplate}
 class PubspecEditor {
-  /// Adds patchwing.yaml to the assets section of the pubspec.yaml file.
-  /// Does nothing if the pubspec.yaml file already contains patchwing.yaml.
+  /// Adds Patchwing's public config and the upstream engine compatibility
+  /// config to the assets section of the pubspec.yaml file.
   /// Does nothing if a flutter project root cannot be found.
   void addShorebirdYamlToPubspecAssets() {
-    if (shorebirdEnv.pubspecContainsShorebirdYaml) return;
-
     final root = shorebirdEnv.getFlutterProjectRoot();
     // TODO(felangel): this should throw an exception instead of returning
     // to make it explicit that the edit operation failed.
@@ -28,21 +26,25 @@ class PubspecEditor {
     final pubspecContents = pubspecFile.readAsStringSync();
     final editor = YamlEditor(pubspecContents);
     final yaml = loadYaml(pubspecContents, sourceUrl: pubspecFile.uri) as Map;
+    const updaterAssets = ['patchwing.yaml', 'shorebird.yaml'];
 
     if (!yaml.containsKey('flutter') || yaml['flutter'] == null) {
       editor.update(
         ['flutter'],
         {
-          'assets': ['patchwing.yaml'],
+          'assets': updaterAssets,
         },
       );
     } else {
       if (!(yaml['flutter'] as Map).containsKey('assets')) {
-        editor.update(['flutter', 'assets'], ['patchwing.yaml']);
+        editor.update(['flutter', 'assets'], updaterAssets);
       } else {
         final assets = (yaml['flutter'] as Map)['assets'] as List;
-        if (!assets.contains('patchwing.yaml')) {
-          editor.update(['flutter', 'assets'], [...assets, 'patchwing.yaml']);
+        final missingAssets = updaterAssets.where(
+          (asset) => !assets.contains(asset),
+        );
+        if (missingAssets.isNotEmpty) {
+          editor.update(['flutter', 'assets'], [...assets, ...missingAssets]);
         }
       }
     }

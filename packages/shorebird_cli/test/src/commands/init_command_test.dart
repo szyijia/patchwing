@@ -783,6 +783,10 @@ flavors:
           any(that: contains('app_id: $appId')),
         ),
       );
+      expect(
+        File(p.join(projectRoot.path, 'shorebird.yaml')).readAsStringSync(),
+        contains('app_id: $appId'),
+      );
     });
 
     group('creates patchwing.yaml for an app with flavors', () {
@@ -1453,14 +1457,14 @@ flutter:
         () => logger.info(
           any(
             that: stringContainsInOrder([
-              lightGreen.wrap('🐦 Shorebird initialized successfully!')!,
-              '✅ A shorebird app has been created.',
+              lightGreen.wrap('Patchwing initialized successfully!')!,
+              '✅ A Patchwing app has been created.',
               '✅ A "patchwing.yaml" has been created.',
-              '''✅ The "pubspec.yaml" has been updated to include "patchwing.yaml" as an asset.''',
+              '''✅ Runtime configuration assets have been added to "pubspec.yaml".''',
               '''📦 To create a new release use: "${lightCyan.wrap('pw release')}".''',
               '''🚀 To push an update use: "${lightCyan.wrap('pw patch')}".''',
               '''👀 To preview a release use: "${lightCyan.wrap('pw preview')}".''',
-              '''For more information about Shorebird, visit ${link(uri: Uri.parse('https://www.patchwing.net'))}''',
+              '''For more information about Patchwing, visit ${link(uri: Uri.parse('https://www.patchwing.net'))}''',
               '',
             ]),
           ),
@@ -1480,7 +1484,7 @@ flutter:
         () => logger.info(
           any(
             that: contains(
-              lightGreen.wrap('🐦 Shorebird initialized successfully!'),
+              lightGreen.wrap('Patchwing initialized successfully!'),
             ),
           ),
         ),

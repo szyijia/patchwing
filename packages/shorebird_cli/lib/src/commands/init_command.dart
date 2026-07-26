@@ -317,18 +317,16 @@ Please make sure you are running "pw init" from within your Flutter project.
       flavors: flavors,
     );
 
-    if (!shorebirdEnv.pubspecContainsShorebirdYaml) {
-      pubspecEditor.addShorebirdYamlToPubspecAssets();
-    }
+    pubspecEditor.addShorebirdYamlToPubspecAssets();
 
     logger.info(
       '''
 
-${lightGreen.wrap('🐦 Shorebird initialized successfully!')}
+${lightGreen.wrap('Patchwing initialized successfully!')}
 
-✅ A shorebird app has been created.
+✅ A Patchwing app has been created.
 ✅ A "patchwing.yaml" has been created.
-✅ The "pubspec.yaml" has been updated to include "patchwing.yaml" as an asset.
+✅ Runtime configuration assets have been added to "pubspec.yaml".
 
 Reference the following commands to get started:
 
@@ -336,7 +334,7 @@ Reference the following commands to get started:
 🚀 To push an update use: "${lightCyan.wrap('pw patch')}".
 👀 To preview a release use: "${lightCyan.wrap('pw preview')}".
 
-For more information about Shorebird, visit ${link(uri: Uri.parse('https://www.patchwing.net'))}''',
+For more information about Patchwing, visit ${link(uri: Uri.parse('https://www.patchwing.net'))}''',
     );
 
     await doctor.runValidators(
@@ -371,16 +369,16 @@ For more information about Shorebird, visit ${link(uri: Uri.parse('https://www.p
   }) {
     const content =
         '''
-# This file is used to configure the Shorebird updater used by your app.
+# This file is used to configure the Patchwing updater used by your app.
 # Learn more at $docsUrl
 # This file does not contain any sensitive information and should be checked into version control.
 
 # Your app_id is the unique identifier assigned to your app.
-# It is used to identify your app when requesting patches from Shorebird's servers.
+# It is used to identify your app when requesting patches from Patchwing's servers.
 # It is not a secret and can be shared publicly.
 app_id:
 
-# auto_update controls if Shorebird should automatically update in the background on launch.
+# auto_update controls if Patchwing should automatically update in the background on launch.
 # If auto_update: false, you will need to use package:shorebird_code_push to trigger updates.
 # https://pub.dev/packages/shorebird_code_push
 # Uncomment the following line to disable automatic updates.
@@ -391,9 +389,15 @@ app_id:
 
     if (flavors != null) editor.update(['flavors'], flavors);
 
-    shorebirdEnv
-        .getShorebirdYamlFile(cwd: projectRoot)
-        .writeAsStringSync(editor.toString());
+    final yaml = editor.toString();
+    shorebirdEnv.getShorebirdYamlFile(cwd: projectRoot).writeAsStringSync(yaml);
+
+    // The upstream prebuilt engine still reads this internal asset name. Keep
+    // its contents identical to the public Patchwing configuration so pw can
+    // use the unmodified engine binary.
+    File(
+      projectRoot.uri.resolve('shorebird.yaml').toFilePath(),
+    ).writeAsStringSync(yaml);
 
     return ShorebirdYaml(appId: appId);
   }

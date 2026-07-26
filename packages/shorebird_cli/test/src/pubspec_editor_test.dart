@@ -38,15 +38,16 @@ void main() {
           when(
             () => shorebirdEnv.pubspecContainsShorebirdYaml,
           ).thenReturn(true);
+          when(() => shorebirdEnv.getFlutterProjectRoot()).thenReturn(null);
         });
 
-        test('does nothing', () {
+        test('returns when a project root cannot be found', () {
           expect(
             () =>
                 runWithOverrides(pubspecEditor.addShorebirdYamlToPubspecAssets),
             returnsNormally,
           );
-          verifyNever(() => shorebirdEnv.getFlutterProjectRoot());
+          verify(() => shorebirdEnv.getFlutterProjectRoot()).called(1);
         });
       });
 
@@ -93,7 +94,7 @@ environment:
             ).thenReturn(pubspecFile);
           });
 
-          test('creates flutter.assets and adds patchwing.yaml', () {
+          test('creates flutter.assets and adds updater configs', () {
             pubspecFile
               ..createSync()
               ..writeAsStringSync(basePubspecContents);
@@ -110,11 +111,12 @@ $basePubspecContents
 flutter:
  assets:
    - patchwing.yaml
+   - shorebird.yaml
 '''),
             );
           });
 
-          test('creates assets and adds patchwing.yaml (empty flutter)', () {
+          test('creates assets and adds updater configs (empty flutter)', () {
             pubspecFile
               ..createSync()
               ..writeAsStringSync('''
@@ -134,11 +136,12 @@ $basePubspecContents
 flutter:
  assets:
    - patchwing.yaml
+   - shorebird.yaml
 '''),
             );
           });
           test(
-            'creates assets and adds patchwing.yaml (non-empty flutter)',
+            'creates assets and adds updater configs (non-empty flutter)',
             () {
               pubspecFile
                 ..createSync()
@@ -160,12 +163,13 @@ $basePubspecContents
 flutter:
  assets:
   - patchwing.yaml
+  - shorebird.yaml
  uses-material-design: true
 '''),
               );
             },
           );
-          test('adds patchwing.yaml to assets (existing assets)', () {
+          test('adds updater configs to existing assets', () {
             pubspecFile
               ..createSync()
               ..writeAsStringSync('''
@@ -188,6 +192,7 @@ flutter:
  assets:
   - some/asset.txt
   - patchwing.yaml
+  - shorebird.yaml
 '''),
             );
           });
