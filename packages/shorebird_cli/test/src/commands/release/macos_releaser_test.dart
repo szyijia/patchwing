@@ -931,7 +931,7 @@ To change the version of this release, change your app's version in your pubspec
         expect(
           runWithOverrides(() => releaser.postReleaseInstructions),
           contains(
-            'https://github.com/shorebirdtech/shorebird/issues/3223',
+            'https://docs.patchwing.net/support',
           ),
         );
       });

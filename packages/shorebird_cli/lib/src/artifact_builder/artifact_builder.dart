@@ -98,21 +98,21 @@ completes successfully by running the following command:
 
 ${lightCyan.wrap(buildCommand)}
 
-If the above command fails, then this is likely not a Shorebird issue and
-the underlying `flutter build` failure must be resolved for Shorebird to
+If the above command fails, then this is likely not a Patchwing issue and
+the underlying `flutter build` failure must be resolved for Patchwing to
 build a release.
 
 • If `flutter build` completes successfully, please ensure that you are
 providing the desired flutter version to the release command via 
 the `--flutter-version` option. If you do not specify a `--flutter-version`
-Shorebird will default to the latest stable version of Flutter.
+Patchwing will default to the latest stable version of Flutter.
 We strongly encourage always specifying an explicit Flutter version:
 
 ${lightCyan.wrap('pw release <platform> --flutter-version=3.29.0')}
 
 • If `flutter build` completes successfully and `pw release`
 fails when using the same flutter version, please file an issue:
-${link(uri: Uri.parse('https://github.com/shorebirdtech/shorebird/issues/new'))}
+${link(uri: Uri.parse('https://docs.patchwing.net/support'))}
 ''';
 
   /// Cache of `flutter build <command>` help output checks for
@@ -466,7 +466,7 @@ Reason: Exited with code $exitCode.''',
       throw ArtifactBuildException(
         'Unable to find app.dill file.',
         fixRecommendation:
-            '''Please file a bug at https://github.com/shorebirdtech/shorebird/issues/new with the logs for this command.''',
+            '''Please file a bug at https://docs.patchwing.net/support with the logs for this command.''',
       );
     }
 
@@ -538,7 +538,7 @@ Reason: Exited with code $exitCode.''',
       throw ArtifactBuildException(
         'Unable to find app.dill file.',
         fixRecommendation:
-            '''Please file a bug at https://github.com/shorebirdtech/shorebird/issues/new with the logs for this command.''',
+            '''Please file a bug at https://docs.patchwing.net/support with the logs for this command.''',
       );
     }
 
@@ -603,7 +603,7 @@ Reason: Exited with code $exitCode.''',
       throw ArtifactBuildException(
         'Unable to find app.dill file.',
         fixRecommendation:
-            '''Please file a bug at https://github.com/shorebirdtech/shorebird/issues/new with the logs for this command.''',
+            '''Please file a bug at https://docs.patchwing.net/support with the logs for this command.''',
       );
     }
 

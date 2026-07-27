@@ -111,7 +111,7 @@ class PromoteCommand extends ShorebirdCommand {
         '''
 No production channel found for app $appId.
       
-This is a bug and should never happen. Please file an issue at https://github.com/shorebirdtech/shorebird/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=fix%3A+''',
+This is a bug and should never happen. Please file an issue at https://docs.patchwing.net/support.''',
       );
       return ExitCode.software.code;
     }

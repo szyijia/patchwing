@@ -122,7 +122,7 @@ See more info about the issue ${link(uri: Uri.parse('https://github.com/shorebir
         ..err('Cannot find patch build artifacts.')
         ..info('''
 Please run `pw cache clean` and try again. If the issue persists, please
-file a bug report at https://github.com/shorebirdtech/shorebird/issues/new.
+file a bug report at https://docs.patchwing.net/support.
 
 Looked in:
   - the libapp.so entries inside the built .aab
@@ -161,7 +161,7 @@ Looked in:
         logger.info(
           '''
 It seems like your download is taking longer than expected. If you are on Windows, this is a known issue.
-Please refer to ${link(uri: Uri.parse('https://github.com/shorebirdtech/shorebird/issues/2532'))} for potential workarounds.''',
+Please refer to ${link(uri: Uri.parse('https://docs.patchwing.net/support'))} for potential workarounds.''',
         );
       }),
     );

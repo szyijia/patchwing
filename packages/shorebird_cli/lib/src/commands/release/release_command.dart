@@ -462,7 +462,7 @@ $error''');
     if (revision == null) {
       final openIssueLink = link(
         uri: Uri.parse(
-          'https://github.com/shorebirdtech/shorebird/issues/new?assignees=&labels=feature&projects=&template=feature_request.md&title=feat%3A+',
+          'https://docs.patchwing.net/support',
         ),
         message: 'open an issue',
       );

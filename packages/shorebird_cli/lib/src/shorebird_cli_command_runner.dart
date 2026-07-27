@@ -339,7 +339,7 @@ Engine • revision ${shorebirdEnv.shorebirdEngineRevision}''');
         logger.level != Level.verbose) {
       final fileAnIssue = link(
         uri: Uri.parse(
-          'https://github.com/shorebirdtech/shorebird/issues/new/choose',
+          'https://docs.patchwing.net/support',
         ),
         message: 'file an issue',
       );

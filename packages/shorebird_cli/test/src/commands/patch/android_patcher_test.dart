@@ -366,7 +366,7 @@ void main() {
           verify(
             () => logger.info('''
 Please run `pw cache clean` and try again. If the issue persists, please
-file a bug report at https://github.com/shorebirdtech/shorebird/issues/new.
+file a bug report at https://docs.patchwing.net/support.
 
 Looked in:
   - the libapp.so entries inside the built .aab
@@ -834,7 +834,7 @@ Looked in:
               () => logger.info(
                 any(
                   that: contains(
-                    'https://github.com/shorebirdtech/shorebird/issues/2532',
+                    'https://docs.patchwing.net/support',
                   ),
                 ),
               ),
