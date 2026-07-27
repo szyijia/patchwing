@@ -212,7 +212,7 @@ ${lightCyan.wrap("pw release android '--' --no-pub lib/main.dart")}'''),
 
         verify(
           () => logger.info('''
-Patchwing $packageVersion • git@github.com:patchwingtech/patchwing.git
+Patchwing $packageVersion • https://github.com/szyijia/patchwing.git
 Flutter $flutterVersion • revision $flutterRevision
 Engine • revision $shorebirdEngineRevision'''),
         ).called(1);

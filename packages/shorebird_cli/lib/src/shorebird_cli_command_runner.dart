@@ -257,7 +257,7 @@ ${lightCyan.wrap('pw release android -- --no-pub lib/main.dart')}''';
           shorebirdFlutterPrefix.write(' $flutterVersion');
         }
         logger.info('''
-Patchwing $packageVersion • git@github.com:patchwingtech/patchwing.git
+Patchwing $packageVersion • https://github.com/szyijia/patchwing.git
 $shorebirdFlutterPrefix • revision ${shorebirdEnv.flutterRevision}
 Engine • revision ${shorebirdEnv.shorebirdEngineRevision}''');
       }

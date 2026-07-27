@@ -10,6 +10,10 @@ final _shorebirdUrl = RegExp(
   r'https?://[^\s]*shorebird|github\.com/shorebirdtech',
   caseSensitive: false,
 );
+final _legacyPatchwingCdn = RegExp(
+  r'cdn\.patchwing\.net/patchwing(?:[\s\x27\x22;]|$)',
+  caseSensitive: false,
+);
 
 void main() {
   final repository = File(Platform.script.toFilePath()).parent.parent;
@@ -27,6 +31,8 @@ void main() {
     unit.accept(_StringVisitor(entity.path, failures));
   }
 
+  _checkBootstrapScripts(repository, failures);
+
   if (failures.isNotEmpty) {
     stderr
       ..writeln('Patchwing source branding verification failed:')
@@ -36,6 +42,43 @@ void main() {
   }
 
   stdout.writeln('Patchwing source branding verification passed.');
+}
+
+void _checkBootstrapScripts(Directory repository, List<String> failures) {
+  const relativePaths = [
+    'third_party/flutter/bin/internal/shared.sh',
+    'bin/shorebird',
+    'bin/shorebird.ps1',
+    'bin/shorebird.bat',
+    'bin/pw',
+    'bin/pw.bat',
+  ];
+
+  for (final relativePath in relativePaths) {
+    final file = File('${repository.path}/$relativePath');
+    final lines = file.readAsLinesSync();
+    for (var index = 0; index < lines.length; index++) {
+      final line = lines[index];
+      final trimmed = line.trimLeft();
+      if (trimmed.startsWith('#') || trimmed.toUpperCase().startsWith('REM ')) {
+        continue;
+      }
+
+      final productSurface = line.replaceAll(
+        RegExp(r'\$\{?SHOREBIRD_[A-Z0-9_]+\}?'),
+        '',
+      );
+      final visibleShorebird = RegExp(
+        r'(?:echo|printf|Write-(?:Output|Debug|Error))[^\n]*shorebird',
+        caseSensitive: false,
+      ).hasMatch(productSurface);
+      if (_shorebirdUrl.hasMatch(productSurface) ||
+          _legacyPatchwingCdn.hasMatch(productSurface) ||
+          visibleShorebird) {
+        failures.add('${file.path}:${index + 1}: ${line.trim()}');
+      }
+    }
+  }
 }
 
 class _StringVisitor extends RecursiveAstVisitor<void> {

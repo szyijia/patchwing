@@ -8,19 +8,19 @@ set -e
 # Needed because if it is set, cd may print the path it changed to.
 unset CDPATH
 
-# Either clones or pulls the Shorebird Flutter repository, depending on whether FLUTTER_PATH exists.
+# Either clones or pulls the Patchwing Flutter repository, depending on whether FLUTTER_PATH exists.
 function update_flutter {
   if [[ -d "$FLUTTER_PATH" ]]; then
     git -C "$FLUTTER_PATH" fetch
   else
-    git clone --filter=tree:0 https://github.com/shorebirdtech/flutter.git --no-checkout "$FLUTTER_PATH"
+    git clone --filter=tree:0 https://github.com/szyijia/flutter.git --no-checkout "$FLUTTER_PATH"
   fi
   # -c to avoid printing a warning about being in a detached head state.
   git -C "$FLUTTER_PATH" -c advice.detachedHead=false checkout "$FLUTTER_VERSION"
   SHOREBIRD_ENGINE_VERSION=`cat "$FLUTTER_PATH/bin/internal/engine.version"`
-  echo "Shorebird Engine • revision $SHOREBIRD_ENGINE_VERSION"
-  # Install Shorebird Flutter Artifacts
-  FLUTTER_STORAGE_BASE_URL=https://cdn.patchwing.net/patchwing $FLUTTER_PATH/bin/flutter --version
+  echo "Patchwing Engine • revision $SHOREBIRD_ENGINE_VERSION"
+  # Install Patchwing Flutter Artifacts
+  FLUTTER_STORAGE_BASE_URL=https://cdn.patchwing.net/patchwing/branded-v2 $FLUTTER_PATH/bin/flutter --version
 }
 
 function pub_get_with_retry {
@@ -28,7 +28,7 @@ function pub_get_with_retry {
   local remaining_tries=$((total_tries - 1))
   while [[ "$remaining_tries" -gt 0 ]]; do
     (cd "$SHOREBIRD_CLI_DIR" && $DART_PATH pub get) && break
-    >&2 echo "Error: Unable to 'pub get' shorebird. Retrying in five seconds... ($remaining_tries tries left)"
+    >&2 echo "Error: Unable to 'pub get' Patchwing. Retrying in five seconds... ($remaining_tries tries left)"
     remaining_tries=$((remaining_tries - 1))
     sleep 5
   done
@@ -144,7 +144,7 @@ function upgrade_shorebird () (
     >&2 echo Updating Flutter...
     update_flutter
 
-    >&2 echo Building Shorebird...
+    >&2 echo Building Patchwing...
 
     # Prepare packages...
     if [[ "$CI" == "true" || "$BOT" == "true" || "$CONTINUOUS_INTEGRATION" == "true" || "$CHROME_HEADLESS" == "1" ]]; then
@@ -197,8 +197,8 @@ function shared::execute() {
 
   # Test if running as superuser – but don't warn if running within Docker or CI.
   if [[ "$EUID" == "0" && ! -f /.dockerenv && "$CI" != "true" && "$BOT" != "true" && "$CONTINUOUS_INTEGRATION" != "true" ]]; then
-    >&2 echo "   Woah! You appear to be trying to run shorebird as root."
-    >&2 echo "   We strongly recommend running shorebird without superuser privileges."
+    >&2 echo "   Woah! You appear to be trying to run Patchwing as root."
+    >&2 echo "   We strongly recommend running Patchwing without superuser privileges."
     >&2 echo "  /"
     >&2 echo "📎"
   fi
@@ -212,10 +212,10 @@ function shared::execute() {
   # Test if the shorebird directory is a git clone (otherwise git rev-parse HEAD
   # would fail)
   if [[ ! -e "$SHOREBIRD_ROOT/.git" ]]; then
-    >&2 echo "Error: The shorebird directory is not a clone of the GitHub project."
-    >&2 echo "       The shorebird tools requires Git in order to operate properly;"
-    >&2 echo "       to install Shorebird, see the instructions at:"
-    >&2 echo "       https://github.com/shorebirdtech/shorebird"
+    >&2 echo "Error: The Patchwing directory is not a clone of the GitHub project."
+    >&2 echo "       The Patchwing tools require Git in order to operate properly;"
+    >&2 echo "       to install Patchwing, see the instructions at:"
+    >&2 echo "       https://docs.patchwing.net"
     exit 1
   fi
 

@@ -124,7 +124,7 @@ function Update-Flutter {
 
     # Set FLUTTER_STORAGE_BASE_URL to the Patchwing CDN and execute
     # a `flutter` command to trigger a download of Dart, etc.
-    $env:FLUTTER_STORAGE_BASE_URL = 'https://cdn.patchwing.net/patchwing';
+    $env:FLUTTER_STORAGE_BASE_URL = 'https://cdn.patchwing.net/patchwing/branded-v2';
     & $flutter --version
     Remove-Item Env:\FLUTTER_STORAGE_BASE_URL
 }

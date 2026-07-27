@@ -122,7 +122,7 @@ void main() {
       verify(
         () => logger.info('''
 
-Patchwing v$packageVersion • git@github.com:patchwingtech/patchwing.git
+Patchwing v$packageVersion • https://github.com/szyijia/patchwing.git
 Flutter • revision ${shorebirdEnv.flutterRevision}
 Engine • revision $shorebirdEngineRevision
 '''),
@@ -146,7 +146,7 @@ Engine • revision $shorebirdEngineRevision
         verify(
           () => logger.info('''
 
-Patchwing v$packageVersion • git@github.com:patchwingtech/patchwing.git
+Patchwing v$packageVersion • https://github.com/szyijia/patchwing.git
 Flutter $flutterVersion • revision ${shorebirdEnv.flutterRevision}
 Engine • revision $shorebirdEngineRevision
 '''),
@@ -178,7 +178,7 @@ Engine • revision $shorebirdEngineRevision
         expect(
           msg,
           equals('''
-Patchwing $packageVersion • git@github.com:patchwingtech/patchwing.git
+Patchwing $packageVersion • https://github.com/szyijia/patchwing.git
 Flutter • revision ${shorebirdEnv.flutterRevision}
 Engine • revision $shorebirdEngineRevision
 
@@ -218,7 +218,7 @@ OpenJDK 64-Bit Server VM (build 17.0.9+0-17.0.9b1087.7-11185874, mixed mode)'''
         expect(
           msg.replaceAll(Platform.lineTerminator, '\n'),
           equals('''
-Patchwing $packageVersion • git@github.com:patchwingtech/patchwing.git
+Patchwing $packageVersion • https://github.com/szyijia/patchwing.git
 Flutter • revision ${shorebirdEnv.flutterRevision}
 Engine • revision $shorebirdEngineRevision
 
@@ -275,7 +275,7 @@ OpenJDK 64-Bit Server VM (build 17.0.9+0-17.0.9b1087.7-11185874, mixed mode)'''
           expect(
             msg.replaceAll(Platform.lineTerminator, '\n'),
             equals('''
-Patchwing $packageVersion • git@github.com:patchwingtech/patchwing.git
+Patchwing $packageVersion • https://github.com/szyijia/patchwing.git
 Flutter • revision ${shorebirdEnv.flutterRevision}
 Engine • revision $shorebirdEngineRevision
 
