@@ -115,7 +115,7 @@ void assertValidExportOptionsPlist(File file) {
       '''
 Exported options plist ${file.path} sets "${Plist.manageAppVersionAndBuildNumberKey}" to true.
 
-Xcode will rewrite the build number in the exported IPA, so the version that ships to App Store Connect will not match the version Shorebird recorded for this release. Patches will fail to apply.
+Xcode will rewrite the build number in the exported IPA, so the version that ships to App Store Connect will not match the version Patchwing recorded for this release. Patches will fail to apply.
 
 Set "${Plist.manageAppVersionAndBuildNumberKey}" to false (or remove the key) and try again.
 

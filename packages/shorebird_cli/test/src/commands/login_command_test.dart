@@ -114,7 +114,7 @@ void main() {
       expect(result, equals(ExitCode.software.code));
 
       verify(
-        () => logger.err('We could not find a Shorebird account for $email.'),
+        () => logger.err('We could not find a Patchwing account for $email.'),
       ).called(1);
       verify(
         () => logger.info(any(that: contains('console.patchwing.net'))),
@@ -157,7 +157,7 @@ void main() {
 
       verify(
         () => logger.info('''
-The Shorebird CLI needs your authorization to manage apps, releases, and patches on your behalf.
+The Patchwing CLI needs your authorization to manage apps, releases, and patches on your behalf.
 
 In a browser, visit this URL to log in:
 

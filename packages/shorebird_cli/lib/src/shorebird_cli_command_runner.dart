@@ -378,7 +378,7 @@ ${currentRunLogFile.absolute.path}
           !await shorebirdVersion.isLatest()) {
         logger
           ..info('')
-          ..info('A new version of shorebird is available!')
+          ..info('A new version of Patchwing is available!')
           ..info('Run ${lightCyan.wrap('pw upgrade')} to upgrade.');
       }
     } on Exception catch (error) {

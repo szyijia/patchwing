@@ -370,7 +370,7 @@ Engine • revision $shorebirdEngineRevision'''),
               () => commandRunner.run(['--version']),
             );
             verify(
-              () => logger.info('A new version of shorebird is available!'),
+              () => logger.info('A new version of Patchwing is available!'),
             ).called(1);
             verify(
               () => logger.info(
@@ -393,7 +393,7 @@ Engine • revision $shorebirdEngineRevision'''),
             );
             expect(result, equals(ExitCode.success.code));
             verifyNever(
-              () => logger.info('A new version of shorebird is available!'),
+              () => logger.info('A new version of Patchwing is available!'),
             );
           });
         });
@@ -433,7 +433,7 @@ Engine • revision $shorebirdEngineRevision'''),
 
           verifyNever(shorebirdVersion.isLatest);
           verifyNever(
-            () => logger.info('A new version of shorebird is available!'),
+            () => logger.info('A new version of Patchwing is available!'),
           );
         });
       });

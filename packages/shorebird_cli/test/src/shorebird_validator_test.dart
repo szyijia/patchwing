@@ -93,7 +93,7 @@ void main() {
             '''If you already have an account, run ${lightCyan.wrap('pw login')} to sign in.''',
           ),
           () => logger.info(
-            '''If you don't have a Shorebird account, go to ${link(uri: Uri.parse('https://console.patchwing.net'))} to create one.''',
+            '''If you don't have a Patchwing account, go to ${link(uri: Uri.parse('https://console.patchwing.net'))} to create one.''',
           ),
         ]);
       });
@@ -119,7 +119,7 @@ void main() {
                 );
                 verifyInOrder([
                   () => logger.err(
-                    '''Unable to find patchwing.yaml. Are you in a shorebird app directory?''',
+                    '''Unable to find patchwing.yaml. Are you in a Patchwing app directory?''',
                   ),
                   () => logger.info(
                     '''If you have not yet initialized your app, run ${lightCyan.wrap('pw init')} to get started.''',

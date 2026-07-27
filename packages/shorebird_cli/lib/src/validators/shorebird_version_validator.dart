@@ -9,7 +9,7 @@ class ShorebirdVersionValidator extends Validator {
   ShorebirdVersionValidator();
 
   @override
-  String get description => 'Shorebird is up-to-date';
+  String get description => 'Patchwing is up-to-date';
 
   @override
   Future<List<ValidationIssue>> validate() async {
@@ -21,7 +21,7 @@ class ShorebirdVersionValidator extends Validator {
       return [
         ValidationIssue(
           severity: ValidationIssueSeverity.error,
-          message: 'Failed to get shorebird version. Error: ${e.message}',
+          message: 'Failed to get Patchwing version. Error: ${e.message}',
         ),
       ];
     }
@@ -31,7 +31,7 @@ class ShorebirdVersionValidator extends Validator {
         const ValidationIssue(
           severity: ValidationIssueSeverity.warning,
           message: '''
-A new version of shorebird is available! Run `pw upgrade` to upgrade.''',
+A new version of Patchwing is available! Run `pw upgrade` to upgrade.''',
         ),
       ];
     }

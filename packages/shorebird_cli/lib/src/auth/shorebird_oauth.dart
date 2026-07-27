@@ -19,7 +19,7 @@ class ShorebirdAuthException implements Exception {
   final String message;
 
   @override
-  String toString() => 'ShorebirdAuthException: $message';
+  String toString() => 'PatchwingAuthException: $message';
 }
 
 /// Implements the full loopback login flow for Shorebird auth.

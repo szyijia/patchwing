@@ -30,9 +30,9 @@ class ShorebirdFlutter {
   /// The executable name.
   static const executable = 'flutter';
 
-  /// The Shorebird Flutter fork git URL.
+  /// The Patchwing Flutter fork git URL.
   static const String flutterGitUrl =
-      'https://github.com/shorebirdtech/flutter.git';
+      'https://github.com/szyijia/flutter.git';
 
   /// Arguments to pass to `flutter precache`.
   List<String> get precacheArgs => ['--android', if (platform.isMacOS) '--ios'];
@@ -61,7 +61,7 @@ class ShorebirdFlutter {
     );
 
     try {
-      // Clone the Shorebird Flutter repo into the target directory.
+      // Clone the Patchwing Flutter repo into the target directory.
       await git.clone(
         url: flutterGitUrl,
         outputDirectory: targetDirectory.path,

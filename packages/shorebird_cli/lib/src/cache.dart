@@ -211,7 +211,7 @@ abstract class CachedArtifact {
     } catch (error) {
       throw CacheUpdateFailure('''
 Failed to download $fileName: $error
-If you're behind a firewall/proxy, please, make sure shorebird_cli is
+If you're behind a firewall/proxy, please, make sure Patchwing is
 allowed to access $url.''');
     }
 

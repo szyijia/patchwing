@@ -35,7 +35,7 @@ class InitCommand extends ShorebirdCommand {
       ..addOption(
         'display-name',
         help:
-            'The app name shown in the Shorebird dashboard '
+            'The app name shown in the Patchwing dashboard '
             '(defaults to the package name in pubspec.yaml). '
             'Must be between 1 and '
             '${CommonArguments.appDisplayNameMaxLength} characters.',
@@ -233,7 +233,7 @@ Please make sure you are running "pw init" from within your Flutter project.
       logger
         ..err('A "patchwing.yaml" file already exists and seems up-to-date.')
         ..info(
-          '''If you want to reinitialize Shorebird, please run ${lightCyan.wrap('pw init --force')}.''',
+          '''If you want to reinitialize Patchwing, please run ${lightCyan.wrap('pw init --force')}.''',
         );
       return ExitCode.software.code;
     }
@@ -382,7 +382,7 @@ app_id:
 
 # auto_update controls if Patchwing should automatically update in the background on launch.
 # If auto_update: false, you will need to use package:shorebird_code_push to trigger updates.
-# https://pub.dev/packages/shorebird_code_push
+# https://docs.patchwing.net/support
 # Uncomment the following line to disable automatic updates.
 # auto_update: false
 ''';

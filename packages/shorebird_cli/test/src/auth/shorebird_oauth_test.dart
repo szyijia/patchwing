@@ -903,7 +903,7 @@ void main() {
       const exception = ShorebirdAuthException('test error');
       expect(
         exception.toString(),
-        equals('ShorebirdAuthException: test error'),
+        equals('PatchwingAuthException: test error'),
       );
     });
   });

@@ -41,7 +41,7 @@ function Invoke-SilentlyIfNeeded($command) {
 function Test-GitConfigLongpaths {
     $longpathsEnabled = git config --system core.longpaths
     if ($longpathsEnabled -ne "true") {
-        Write-Output "Git is not configured to allow long paths. This can cause issues with Shorebird's Flutter checkout. Please run 'git config --system core.longpaths true' to enable long paths."
+        Write-Output "Git is not configured to allow long paths. This can cause issues with Patchwing's Flutter checkout. Please run 'git config --system core.longpaths true' to enable long paths."
     }
 }
 
@@ -50,13 +50,13 @@ function Test-GitInstalled {
         Write-Debug "Git is installed."
     }
     else {
-        Write-Output "No git installation detected. Git is required to use shorebird."
+        Write-Output "No git installation detected. Git is required to use Patchwing."
         exit 1
     }
 }
 
 function Test-ShorebirdNeedsUpdate {
-    Write-Debug "Checking whether shorebird needs to be rebuilt"
+    Write-Debug "Checking whether Patchwing needs to be rebuilt"
 
     # Invalidate cache if:
     #  * snapshotFile is not a file, or
@@ -74,32 +74,32 @@ function Test-ShorebirdNeedsUpdate {
     Pop-Location
 
     if (!$snapshotFile.Exists) {
-        Write-Debug "snapshot file does not exist, shorebird needs update"
+        Write-Debug "snapshot file does not exist, Patchwing needs update"
         return $true
     }
 
     if (!$stampFile.Exists) {
-        Write-Debug "stamp file does not exist at $($stampFile), shorebird needs update"
+        Write-Debug "stamp file does not exist at $($stampFile), Patchwing needs update"
         return $true
     }
 
     if ($stampFile.Length -eq 0) {
-        Write-Debug "stamp file is empty, shorebird needs update"
+        Write-Debug "stamp file is empty, Patchwing needs update"
         return $true
     }
 
     $stampFileContents = Get-Content $stampFile
     if ($stampFileContents -ne $compileKey) {
-        Write-Debug "contents of stamp file do not match compile key ($($stampFileContents) vs $($compileKey)), shorebird needs update"
+        Write-Debug "contents of stamp file do not match compile key ($($stampFileContents) vs $($compileKey)), Patchwing needs update"
         return $true
     }
 
     if ($pubspecFile.LastWriteTime -gt $pubspecLockFile.LastWriteTime) {
-        Write-Debug "pubspec.yaml updated more recently than pubspec.lock, shorebird needs update"
+        Write-Debug "pubspec.yaml updated more recently than pubspec.lock, Patchwing needs update"
         return $true
     }
 
-    Write-Debug "shorebird does not need update"
+    Write-Debug "Patchwing does not need update"
     return $false
 }
 
@@ -108,7 +108,7 @@ function Update-Flutter {
 
     if (!(Test-Path $flutterPath)) {
         Invoke-SilentlyIfNeeded {
-            git clone --filter=tree:0 https://github.com/shorebirdtech/flutter.git --no-checkout "$flutterPath" 
+            git clone --filter=tree:0 https://github.com/szyijia/flutter.git --no-checkout "$flutterPath"
         }
     }
     else {
@@ -134,7 +134,7 @@ function Update-Shorebird {
     $compileKey = & { git rev-parse HEAD } -split
     Pop-Location
  
-    Write-Output "Rebuilding shorebird..."
+    Write-Output "Rebuilding Patchwing..."
 
     Update-Flutter
 
@@ -146,7 +146,7 @@ function Update-Shorebird {
     # triggering a rebuild on every invocation.
     (Get-Item "$shorebirdRootDir/pubspec.lock").LastWriteTime = Get-Date
 
-    Write-Output "Compiling shorebird..."
+    Write-Output "Compiling Patchwing..."
 
     # Compile our snapshot
     # We invoke `$SNAPSHOT_PATH completion` to trigger the "completion" command, which

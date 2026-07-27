@@ -487,7 +487,7 @@ extension OauthValues on AuthProvider {
     (AuthProvider.google) => const oauth2.GoogleAuthEndpoints(),
     (AuthProvider.microsoft) => MicrosoftAuthEndpoints(),
     (AuthProvider.shorebird) => throw UnsupportedError(
-      'Shorebird auth does not use OAuth endpoints',
+      'Patchwing auth does not use OAuth endpoints',
     ),
   };
 
@@ -517,7 +517,7 @@ extension OauthValues on AuthProvider {
           '4fc38981-4ec4-4bd9-a755-e6ad9a413054',
         );
       case AuthProvider.shorebird:
-        throw UnsupportedError('Shorebird auth does not use a client ID');
+        throw UnsupportedError('Patchwing auth does not use a client ID');
     }
   }
 

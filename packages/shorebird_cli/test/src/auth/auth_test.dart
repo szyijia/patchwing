@@ -1272,7 +1272,7 @@ void main() {
             isA<UnsupportedError>().having(
               (e) => e.message,
               'message',
-              'Shorebird auth does not use a client ID',
+              'Patchwing auth does not use a client ID',
             ),
           ),
         );

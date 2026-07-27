@@ -56,7 +56,7 @@ void main() {
         expect(results.first.severity, ValidationIssueSeverity.error);
         expect(
           results.first.message,
-          contains('Failed to get shorebird version'),
+          contains('Failed to get Patchwing version'),
         );
       },
     );
@@ -70,7 +70,7 @@ void main() {
       expect(results.first.severity, ValidationIssueSeverity.warning);
       expect(
         results.first.message,
-        contains('A new version of shorebird is available!'),
+        contains('A new version of Patchwing is available!'),
       );
     });
   });

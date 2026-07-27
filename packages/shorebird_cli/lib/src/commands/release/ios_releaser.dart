@@ -84,7 +84,7 @@ class IosReleaser extends Releaser with AppleReleaserMixin {
           '''
 When you distribute the .xcarchive in Xcode, you MUST uncheck "Manage Version and Build Number" in the Distribute App dialog.
 
-If left checked, Xcode will rewrite the build number in the uploaded IPA, so the version that ships to App Store Connect will not match the version Shorebird recorded for this release. Patches will then fail to apply.''',
+If left checked, Xcode will rewrite the build number in the uploaded IPA, so the version that ships to App Store Connect will not match the version Patchwing recorded for this release. Patches will then fail to apply.''',
         );
     }
 
@@ -214,7 +214,7 @@ You can open the archive in Xcode by running:
     ${lightCyan.wrap('open $relativeArchivePath')}
 
 ${styleBold.wrap('Make sure to uncheck "Manage Version and Build Number" in the Distribute App dialog.')}
-If left checked, Xcode will rewrite the build number in the uploaded IPA, so the version that ships will not match the one Shorebird recorded for this release, and patches will fail to apply.
+If left checked, Xcode will rewrite the build number in the uploaded IPA, so the version that ships will not match the one Patchwing recorded for this release, and patches will fail to apply.
 ''';
     }
   }

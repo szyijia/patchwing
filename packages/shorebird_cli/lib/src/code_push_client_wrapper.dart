@@ -230,7 +230,7 @@ This app may not exist or you may not have permission to view it.''');
 It looks like you have an existing ${platform.name} release for version ${lightCyan.wrap(release.version)}.
 Please bump your version number and try again.
 
-You can manage this release in the ${link(uri: uri, message: 'Shorebird Console')}''',
+You can manage this release in the ${link(uri: uri, message: 'Patchwing Console')}''',
       );
       throw ProcessExit(ExitCode.software.code);
     }
@@ -559,13 +559,13 @@ ${arch.arch} artifact already exists, continuing...''');
             '''
 No architecture artifacts found to upload.
 
-Shorebird looked for libapp.so under ${archsDir.path} but every requested
+Patchwing looked for libapp.so under ${archsDir.path} but every requested
 architecture was missing:
 ${missingArchPaths.map((p) => '  - $p').join('\n')}
 
 This usually means your project's ndk.abiFilters / splits.abi / jniLibs.excludes
-configuration excludes every architecture Shorebird was asked to build. Either
-relax those filters or pass `--target-platform=<archs>` to restrict Shorebird
+configuration excludes every architecture Patchwing was asked to build. Either
+relax those filters or pass `--target-platform=<archs>` to restrict Patchwing
 to the architectures your project actually builds.''',
       );
     }
@@ -1050,7 +1050,7 @@ aar artifact already exists, continuing...''');
     if (error is CodePushUpgradeRequiredException) {
       progress?.fail();
       logger
-        ..err('Your version of shorebird is out of date.')
+        ..err('Your version of Patchwing is out of date.')
         ..info(
           '''Run ${lightCyan.wrap('pw upgrade')} to get the latest version.''',
         );

@@ -89,7 +89,7 @@ Entries from "--dart-define" with identical keys take precedence over entries fr
   static const appIdArg = ArgumentDescriber(
     name: 'app-id',
     description:
-        'The Shorebird app ID to use. Overrides the app ID in '
+        'The Patchwing app ID to use. Overrides the app ID in '
         'patchwing.yaml (e.g. "your-app-id").',
   );
 

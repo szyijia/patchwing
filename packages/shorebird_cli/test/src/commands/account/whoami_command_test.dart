@@ -70,7 +70,7 @@ void main() {
     test('has correct description', () {
       expect(
         command.description,
-        startsWith('Show the currently authenticated Shorebird user.'),
+        startsWith('Show the currently authenticated Patchwing user.'),
       );
     });
 

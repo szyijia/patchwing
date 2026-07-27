@@ -32,7 +32,7 @@ class AndroidInternetPermissionValidator extends Validator {
       '''
 The ${_androidSrcDirectory?.path ?? 'android/app/src'} directory does not exist.
 
-The command you are running must be run within a Flutter app project that supports the Android platform. If you are releasing a Flutter module, use 'aar' in place of 'android' in your shorebird command.''';
+The command you are running must be run within a Flutter app project that supports the Android platform. If you are releasing a Flutter module, use 'aar' in place of 'android' in your Patchwing command.''';
   // coverage:ignore-end
 
   @override

@@ -26,7 +26,7 @@ class CacheCorruptedException implements Exception {
 
   @override
   String toString() =>
-      '$reason Your Shorebird installation may be corrupted. '
+      '$reason Your Patchwing installation may be corrupted. '
       "Try running 'pw cache clean' and retrying.";
 }
 

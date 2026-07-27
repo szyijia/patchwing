@@ -392,7 +392,7 @@ void main() {
             );
             verify(() => progress.fail()).called(1);
             verify(
-              () => logger.err('Your version of shorebird is out of date.'),
+              () => logger.err('Your version of Patchwing is out of date.'),
             ).called(1);
             verify(
               () => logger.info(
@@ -627,7 +627,7 @@ void main() {
 It looks like you have an existing ios release for version ${lightCyan.wrap(release.version)}.
 Please bump your version number and try again.
 
-You can manage this release in the ${link(uri: uri, message: 'Shorebird Console')}''',
+You can manage this release in the ${link(uri: uri, message: 'Patchwing Console')}''',
               ),
             ).called(1);
           },

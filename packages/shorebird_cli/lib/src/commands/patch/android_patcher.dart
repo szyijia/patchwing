@@ -42,7 +42,7 @@ class AndroidPatcher extends Patcher {
 Your version of flutter contains a known issue that can cause patches to be erroneously uninstalled in apps that use package:flutter_foreground_task or other plugins that start their own Flutter engines.
 This issue was fixed in Flutter 3.24.2. Please upgrade to a newer version of Flutter to avoid this issue.
 
-See more info about the issue ${link(uri: Uri.parse('https://github.com/shorebirdtech/updater/issues/211'), message: 'on Github')}
+See more information ${link(uri: Uri.parse('https://docs.patchwing.net/support'), message: 'in Patchwing support')}
 ''';
 
   /// The `<arch>/libapp.so` directory resolved by [buildPatchArtifact] —

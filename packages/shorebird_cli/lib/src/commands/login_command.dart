@@ -36,7 +36,7 @@ class LoginCommand extends ShorebirdCommand {
       final consoleUri = Uri.https('console.patchwing.net');
       logger
         ..err('''
-We could not find a Shorebird account for ${error.email}.''')
+We could not find a Patchwing account for ${error.email}.''')
         ..info(
           """If you have not yet created an account, you can do so at "${link(uri: consoleUri)}". If you believe this is an error, please reach out to us via Discord, we're happy to help!""",
         );
@@ -48,7 +48,7 @@ We could not find a Shorebird account for ${error.email}.''')
 
     logger.info('''
 
-🎉 ${lightGreen.wrap('Welcome to Shorebird! You are now logged in as <${auth.email}>.')}
+🎉 ${lightGreen.wrap('Welcome to Patchwing! You are now logged in as <${auth.email}>.')}
 
 🔑 Credentials are stored in ${lightCyan.wrap(auth.credentialsFilePath)}.
 🚪 To logout use: "${lightCyan.wrap('pw logout')}".''');
@@ -58,7 +58,7 @@ We could not find a Shorebird account for ${error.email}.''')
   /// Prompt the user to log in.
   void prompt(String url) {
     logger.info('''
-The Shorebird CLI needs your authorization to manage apps, releases, and patches on your behalf.
+The Patchwing CLI needs your authorization to manage apps, releases, and patches on your behalf.
 
 In a browser, visit this URL to log in:
 

@@ -20,14 +20,14 @@ class WhoamiCommand extends ShorebirdCommand {
 
   @override
   String get description =>
-      'Show the currently authenticated Shorebird user.\n\n'
+      'Show the currently authenticated Patchwing user.\n\n'
       'Example output:\n'
       '  ID:             42\n'
       '  Email:          user@example.com\n'
       '  Display name:   Example User\n'
       '  Plan:           paid\n'
       '  Overage limit:  10000\n\n'
-      'Plan is "paid" (active Shorebird subscription) or "free".\n'
+      'Plan is "paid" (active Patchwing subscription) or "free".\n'
       'Overage limit is the max pay-as-you-go patch installs allowed '
       'beyond your plan ("none" if unset).\n\n'
       '${ShorebirdCommand.jsonHint('pw account whoami --json')}';

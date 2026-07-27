@@ -120,7 +120,7 @@ void main() {
 
       expect(result, equals(ExitCode.success.code));
       verify(
-        () => logger.info('Shorebird is already at the latest version.'),
+        () => logger.info('Patchwing is already at the latest version.'),
       ).called(1);
     });
   });

@@ -49,7 +49,7 @@ class UpgradeCommand extends ShorebirdCommand {
 
     final isUpToDate = currentVersion == latestVersion;
     if (isUpToDate) {
-      logger.info('Shorebird is already at the latest version.');
+      logger.info('Patchwing is already at the latest version.');
       return ExitCode.success.code;
     }
 

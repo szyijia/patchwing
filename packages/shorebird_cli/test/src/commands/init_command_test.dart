@@ -208,7 +208,7 @@ Please make sure you are running "pw init" from within your Flutter project.
       ).called(1);
       verify(
         () => logger.info(
-          '''If you want to reinitialize Shorebird, please run ${lightCyan.wrap('pw init --force')}.''',
+          '''If you want to reinitialize Patchwing, please run ${lightCyan.wrap('pw init --force')}.''',
         ),
       ).called(1);
       expect(exitCode, ExitCode.software.code);
