@@ -144,7 +144,7 @@ void main() {
 
     test('uses the Patchwing artifact bucket', () {
       expect(cache.storageBaseUrl, 'https://cdn.patchwing.net');
-      expect(cache.storageBucket, 'patchwing');
+      expect(cache.storageBucket, 'patchwing/branded-v2');
     });
 
     group(CacheUpdateFailure, () {
@@ -459,7 +459,7 @@ void main() {
           ).captured.cast<http.BaseRequest>().map((r) => r.url).toList();
 
           String perEngine(String name) =>
-              '${cache.storageBaseUrl}/${cache.storageBucket}/shorebird/$shorebirdEngineRevision/$name';
+              '${cache.storageBaseUrl}/${cache.storageBucket}/patchwing/$shorebirdEngineRevision/$name';
 
           final expected = [
             perEngine('patch-darwin-x64.zip'),
@@ -483,7 +483,7 @@ void main() {
           ).captured.cast<http.BaseRequest>().map((r) => r.url).toList();
 
           String perEngine(String name) =>
-              '${cache.storageBaseUrl}/${cache.storageBucket}/shorebird/$shorebirdEngineRevision/$name';
+              '${cache.storageBaseUrl}/${cache.storageBucket}/patchwing/$shorebirdEngineRevision/$name';
 
           final expected = [
             perEngine('patch-windows-x64.zip'),
@@ -507,7 +507,7 @@ void main() {
           ).captured.cast<http.BaseRequest>().map((r) => r.url).toList();
 
           String perEngine(String name) =>
-              '${cache.storageBaseUrl}/${cache.storageBucket}/shorebird/$shorebirdEngineRevision/$name';
+              '${cache.storageBaseUrl}/${cache.storageBucket}/patchwing/$shorebirdEngineRevision/$name';
 
           final expected = [
             perEngine('patch-linux-x64.zip'),

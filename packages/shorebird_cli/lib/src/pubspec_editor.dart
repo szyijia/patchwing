@@ -13,8 +13,8 @@ PubspecEditor get pubspecEditor => read(pubspecEditorRef);
 /// A class that exposes APIs to edit the current project's `pubspec.yaml`.
 /// {@endtemplate}
 class PubspecEditor {
-  /// Adds Patchwing's public config and the upstream engine compatibility
-  /// config to the assets section of the pubspec.yaml file.
+  /// Adds patchwing.yaml to the assets section of the pubspec.yaml file.
+  /// Does nothing if the pubspec.yaml file already contains patchwing.yaml.
   /// Does nothing if a flutter project root cannot be found.
   void addShorebirdYamlToPubspecAssets() {
     final root = shorebirdEnv.getFlutterProjectRoot();
@@ -26,25 +26,21 @@ class PubspecEditor {
     final pubspecContents = pubspecFile.readAsStringSync();
     final editor = YamlEditor(pubspecContents);
     final yaml = loadYaml(pubspecContents, sourceUrl: pubspecFile.uri) as Map;
-    const updaterAssets = ['patchwing.yaml', 'shorebird.yaml'];
 
     if (!yaml.containsKey('flutter') || yaml['flutter'] == null) {
       editor.update(
         ['flutter'],
         {
-          'assets': updaterAssets,
+          'assets': ['patchwing.yaml'],
         },
       );
     } else {
       if (!(yaml['flutter'] as Map).containsKey('assets')) {
-        editor.update(['flutter', 'assets'], updaterAssets);
+        editor.update(['flutter', 'assets'], ['patchwing.yaml']);
       } else {
         final assets = (yaml['flutter'] as Map)['assets'] as List;
-        final missingAssets = updaterAssets.where(
-          (asset) => !assets.contains(asset),
-        );
-        if (missingAssets.isNotEmpty) {
-          editor.update(['flutter', 'assets'], [...assets, ...missingAssets]);
+        if (!assets.contains('patchwing.yaml')) {
+          editor.update(['flutter', 'assets'], [...assets, 'patchwing.yaml']);
         }
       }
     }

@@ -94,7 +94,7 @@ environment:
             ).thenReturn(pubspecFile);
           });
 
-          test('creates flutter.assets and adds updater configs', () {
+          test('creates flutter.assets and adds patchwing.yaml', () {
             pubspecFile
               ..createSync()
               ..writeAsStringSync(basePubspecContents);
@@ -111,12 +111,11 @@ $basePubspecContents
 flutter:
  assets:
    - patchwing.yaml
-   - shorebird.yaml
 '''),
             );
           });
 
-          test('creates assets and adds updater configs (empty flutter)', () {
+          test('creates assets and adds patchwing.yaml (empty flutter)', () {
             pubspecFile
               ..createSync()
               ..writeAsStringSync('''
@@ -136,12 +135,11 @@ $basePubspecContents
 flutter:
  assets:
    - patchwing.yaml
-   - shorebird.yaml
 '''),
             );
           });
           test(
-            'creates assets and adds updater configs (non-empty flutter)',
+            'creates assets and adds patchwing.yaml (non-empty flutter)',
             () {
               pubspecFile
                 ..createSync()
@@ -163,13 +161,12 @@ $basePubspecContents
 flutter:
  assets:
   - patchwing.yaml
-  - shorebird.yaml
  uses-material-design: true
 '''),
               );
             },
           );
-          test('adds updater configs to existing assets', () {
+          test('adds patchwing.yaml to existing assets', () {
             pubspecFile
               ..createSync()
               ..writeAsStringSync('''
@@ -192,7 +189,6 @@ flutter:
  assets:
   - some/asset.txt
   - patchwing.yaml
-  - shorebird.yaml
 '''),
             );
           });

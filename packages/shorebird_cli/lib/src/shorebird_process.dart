@@ -267,7 +267,8 @@ $stderr''');
       // If this ever changes we also need to update the `shorebird` shell
       // wrapper which downloads runs Flutter to fetch artifacts the first time.
       return {
-        'FLUTTER_STORAGE_BASE_URL': 'https://cdn.patchwing.net/patchwing',
+        'FLUTTER_STORAGE_BASE_URL':
+            'https://cdn.patchwing.net/patchwing/branded-v2',
       };
     }
 

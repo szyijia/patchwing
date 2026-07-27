@@ -317,7 +317,9 @@ Please make sure you are running "pw init" from within your Flutter project.
       flavors: flavors,
     );
 
-    pubspecEditor.addShorebirdYamlToPubspecAssets();
+    if (!shorebirdEnv.pubspecContainsShorebirdYaml) {
+      pubspecEditor.addShorebirdYamlToPubspecAssets();
+    }
 
     logger.info(
       '''
@@ -389,15 +391,9 @@ app_id:
 
     if (flavors != null) editor.update(['flavors'], flavors);
 
-    final yaml = editor.toString();
-    shorebirdEnv.getShorebirdYamlFile(cwd: projectRoot).writeAsStringSync(yaml);
-
-    // The upstream prebuilt engine still reads this internal asset name. Keep
-    // its contents identical to the public Patchwing configuration so pw can
-    // use the unmodified engine binary.
-    File(
-      projectRoot.uri.resolve('shorebird.yaml').toFilePath(),
-    ).writeAsStringSync(yaml);
+    shorebirdEnv
+        .getShorebirdYamlFile(cwd: projectRoot)
+        .writeAsStringSync(editor.toString());
 
     return ShorebirdYaml(appId: appId);
   }

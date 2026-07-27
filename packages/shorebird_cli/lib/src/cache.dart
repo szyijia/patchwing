@@ -121,7 +121,7 @@ class Cache {
   String get storageBaseUrl => 'https://cdn.patchwing.net';
 
   /// The storage bucket host.
-  String get storageBucket => 'patchwing';
+  String get storageBucket => 'patchwing/branded-v2';
 
   /// Clear the cache.
   Future<void> clear() async {
@@ -312,7 +312,7 @@ class AotToolsArtifact extends CachedArtifact {
 
   @override
   Future<String> get storageUrl async =>
-      '${cache.storageBaseUrl}/${cache.storageBucket}/shorebird/${shorebirdEnv.shorebirdEngineRevision}/$fileName';
+      '${cache.storageBaseUrl}/${cache.storageBucket}/patchwing/${shorebirdEnv.shorebirdEngineRevision}/$fileName';
 
   @override
   String? get checksum => null;
@@ -358,7 +358,7 @@ class PatchArtifact extends CachedArtifact {
       artifactName += 'windows-x64.zip';
     }
 
-    return '${cache.storageBaseUrl}/${cache.storageBucket}/shorebird/${shorebirdEnv.shorebirdEngineRevision}/$artifactName';
+    return '${cache.storageBaseUrl}/${cache.storageBucket}/patchwing/${shorebirdEnv.shorebirdEngineRevision}/$artifactName';
   }
 
   Future<bool> _supportsArm64Patch() async {

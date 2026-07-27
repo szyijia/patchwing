@@ -784,8 +784,8 @@ flavors:
         ),
       );
       expect(
-        File(p.join(projectRoot.path, 'shorebird.yaml')).readAsStringSync(),
-        contains('app_id: $appId'),
+        File(p.join(projectRoot.path, 'shorebird.yaml')).existsSync(),
+        isFalse,
       );
     });
 

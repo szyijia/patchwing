@@ -4,18 +4,20 @@ set -euo pipefail
 
 readonly ENGINE_REVISION="e1eaecbcac6d9a32cb5590c646e21cf21252cf19"
 readonly FLUTTER_ENGINE_REVISION="83675ed27633283e7fc296c8bca22e841224c096"
-readonly CDN_ORIGIN="https://cdn.patchwing.net/patchwing"
-readonly MC_TARGET="${MC_TARGET:-patchwing/patchwing}"
-readonly SHOREBIRD_GCS="https://storage.googleapis.com/download.shorebird.dev"
+readonly CDN_ORIGIN="https://cdn.patchwing.net/patchwing/branded-v2"
+readonly MC_TARGET="${MC_TARGET:-patchwing/patchwing/branded-v2}"
+readonly REFERENCE_ORIGIN="https://cdn.patchwing.net/patchwing"
+readonly SHOREBIRD_GCS="${REFERENCE_ORIGIN}"
 readonly FLUTTER_GCS="https://storage.googleapis.com"
-readonly CHECKSUM_MANIFEST="phase1-android-macos-arm64-v1.sha256"
+readonly CHECKSUM_MANIFEST="phase1-android-macos-arm64-v3.sha256"
+readonly BRAND_TOOL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/brand_android_artifact.py"
 
 usage() {
   printf '%s\n' \
     'Usage: scripts/sync_phase1_android_cdn.sh <sync|verify|list>' \
     '' \
     'Environment:' \
-    '  MC_TARGET  mc alias and bucket (default: patchwing/patchwing)'
+    '  MC_TARGET  mc alias and prefix (default: patchwing/patchwing/branded-v2)'
 }
 
 die() {
@@ -29,20 +31,19 @@ require_command() {
 
 # destination|source
 #
-# The destination paths are the exact URLs requested by the unmodified
-# Shorebird/Flutter download logic. Standard Flutter artifacts are copied from
-# the upstream Flutter engine revision into the Shorebird engine namespace,
-# matching Shorebird's artifact-proxy resolution without adding runtime
-# fallback behavior to the CDN.
+# Artifacts previously mirrored from Shorebird are read only from Patchwing's
+# quarantined reference namespace, branded deterministically, and published to
+# the production namespace. Standard Flutter artifacts still come from
+# Flutter's public storage and are copied unchanged.
 artifact_rows() {
   local engine_prefix="flutter_infra_release/flutter/${ENGINE_REVISION}"
   local flutter_prefix="flutter_infra_release/flutter/${FLUTTER_ENGINE_REVISION}"
   local maven_prefix="download.flutter.io/io/flutter"
 
   printf '%s\n' \
-    "shorebird/${ENGINE_REVISION}/artifacts_manifest.yaml|${SHOREBIRD_GCS}/shorebird/${ENGINE_REVISION}/artifacts_manifest.yaml" \
-    "shorebird/${ENGINE_REVISION}/patch-darwin-arm64.zip|${SHOREBIRD_GCS}/shorebird/${ENGINE_REVISION}/patch-darwin-arm64.zip" \
-    "shorebird/${ENGINE_REVISION}/aot-tools.dill|${SHOREBIRD_GCS}/shorebird/${ENGINE_REVISION}/aot-tools.dill" \
+    "patchwing/${ENGINE_REVISION}/artifacts_manifest.yaml|${SHOREBIRD_GCS}/shorebird/${ENGINE_REVISION}/artifacts_manifest.yaml" \
+    "patchwing/${ENGINE_REVISION}/patch-darwin-arm64.zip|${SHOREBIRD_GCS}/shorebird/${ENGINE_REVISION}/patch-darwin-arm64.zip" \
+    "patchwing/${ENGINE_REVISION}/aot-tools.dill|${SHOREBIRD_GCS}/shorebird/${ENGINE_REVISION}/aot-tools.dill" \
     "${engine_prefix}/engine_stamp.json|${SHOREBIRD_GCS}/${engine_prefix}/engine_stamp.json" \
     "${engine_prefix}/dart-sdk-darwin-arm64.zip|${SHOREBIRD_GCS}/${engine_prefix}/dart-sdk-darwin-arm64.zip" \
     "${engine_prefix}/sky_engine.zip|${FLUTTER_GCS}/${flutter_prefix}/sky_engine.zip" \
@@ -86,12 +87,19 @@ sync_artifacts() {
   local checksum_file="${work_dir}/${CHECKSUM_MANIFEST}"
   : >"${checksum_file}"
 
-  local destination source local_file size remote_size checksum
+  local destination source local_file branded_file size remote_size checksum
   while IFS='|' read -r destination source; do
     printf 'sync %s\n' "${destination}"
     local_file="${work_dir}/artifact"
     curl --fail --location --retry 3 --silent --show-error \
       --output "${local_file}" "${source}"
+    if [[ "${destination}" == patchwing/*/artifacts_manifest.yaml ||
+          "${destination}" == patchwing/*/aot-tools.dill ||
+          "${destination}" == download.flutter.io/* ]]; then
+      branded_file="${work_dir}/artifact.branded"
+      python3 "${BRAND_TOOL}" "${local_file}" "${branded_file}"
+      mv "${branded_file}" "${local_file}"
+    fi
     size="$(stat -f '%z' "${local_file}")"
     [[ "${size}" -gt 0 ]] || die "empty artifact: ${source}"
     checksum="$(shasum -a 256 "${local_file}" | awk '{print $1}')"
@@ -107,8 +115,8 @@ sync_artifacts() {
     printf '%s  %s\n' "${checksum}" "${destination}" >>"${checksum_file}"
   done < <(artifact_rows)
 
-  mc cp --quiet "${checksum_file}" "${MC_TARGET}/shorebird/${ENGINE_REVISION}/${CHECKSUM_MANIFEST}"
-  printf 'uploaded checksum manifest: %s\n' "${MC_TARGET}/shorebird/${ENGINE_REVISION}/${CHECKSUM_MANIFEST}"
+  mc cp --quiet "${checksum_file}" "${MC_TARGET}/patchwing/${ENGINE_REVISION}/${CHECKSUM_MANIFEST}"
+  printf 'uploaded checksum manifest: %s\n' "${MC_TARGET}/patchwing/${ENGINE_REVISION}/${CHECKSUM_MANIFEST}"
 }
 
 verify_artifacts() {
@@ -120,7 +128,7 @@ verify_artifacts() {
   trap "rm -rf -- '${work_dir}'" EXIT
   local checksum_file="${work_dir}/${CHECKSUM_MANIFEST}"
   curl --fail --location --silent --show-error --output "${checksum_file}" \
-    "${CDN_ORIGIN}/shorebird/${ENGINE_REVISION}/${CHECKSUM_MANIFEST}"
+    "${CDN_ORIGIN}/patchwing/${ENGINE_REVISION}/${CHECKSUM_MANIFEST}"
 
   local expected destination local_file actual
   while read -r expected destination; do
@@ -131,18 +139,23 @@ verify_artifacts() {
       --output "${local_file}" "${CDN_ORIGIN}/${destination}"
     actual="$(shasum -a 256 "${local_file}" | awk '{print $1}')"
     [[ "${actual}" == "${expected}" ]] || die "checksum mismatch: ${destination}"
+    if [[ "${destination}" == patchwing/*/artifacts_manifest.yaml ||
+          "${destination}" == patchwing/*/aot-tools.dill ||
+          "${destination}" == download.flutter.io/* ]]; then
+      python3 "${BRAND_TOOL}" --verify-only "${local_file}"
+    fi
   done <"${checksum_file}"
 
   local range_headers="${work_dir}/range.headers"
   curl --fail --silent --show-error --range 0-0 --dump-header "${range_headers}" \
     --output /dev/null \
-    "${CDN_ORIGIN}/shorebird/${ENGINE_REVISION}/patch-darwin-arm64.zip"
+    "${CDN_ORIGIN}/patchwing/${ENGINE_REVISION}/patch-darwin-arm64.zip"
   grep -Eq '^HTTP/[^ ]+ 206' "${range_headers}" || die 'CDN did not return HTTP 206 for a Range request'
   grep -Eiq '^cache-control:.*immutable' "${range_headers}" || die 'CDN response is missing immutable cache control'
 
   local missing_status
   missing_status="$(curl --silent --output /dev/null --write-out '%{http_code}' \
-    "${CDN_ORIGIN}/shorebird/phase1-missing-artifact/patch-darwin-arm64.zip")"
+    "${CDN_ORIGIN}/patchwing/phase1-missing-artifact/patch-darwin-arm64.zip")"
   [[ "${missing_status}" == '404' ]] || die "missing artifact returned HTTP ${missing_status}, expected 404"
   printf 'verified checksums, HTTP Range/cache behavior, and strict missing-artifact failure\n'
 }
