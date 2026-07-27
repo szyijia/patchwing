@@ -39,8 +39,7 @@ class NetworkChecker {
     'https://api.patchwing.net',
     'https://console.patchwing.net',
     'https://oauth2.googleapis.com',
-    'https://storage.googleapis.com',
-    'https://cdn.shorebird.cloud',
+    'https://cdn.patchwing.net',
   ].map(Uri.parse).toList();
 
   /// Verify that each of [urlsToCheck] responds to an HTTP GET request.

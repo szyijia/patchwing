@@ -118,10 +118,10 @@ class Cache {
   final List<CachedArtifact> _artifacts = [];
 
   /// The storage base url.
-  String get storageBaseUrl => 'https://storage.googleapis.com';
+  String get storageBaseUrl => 'https://cdn.patchwing.net';
 
   /// The storage bucket host.
-  String get storageBucket => 'download.shorebird.dev';
+  String get storageBucket => 'patchwing';
 
   /// Clear the cache.
   Future<void> clear() async {

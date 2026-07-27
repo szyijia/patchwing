@@ -142,6 +142,11 @@ void main() {
       expect(Cache.new, returnsNormally);
     });
 
+    test('uses the Patchwing artifact bucket', () {
+      expect(cache.storageBaseUrl, 'https://cdn.patchwing.net');
+      expect(cache.storageBucket, 'patchwing');
+    });
+
     group(CacheUpdateFailure, () {
       test('overrides toString', () {
         const exception = CacheUpdateFailure('test');

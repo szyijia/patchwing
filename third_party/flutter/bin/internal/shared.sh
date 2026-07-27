@@ -20,7 +20,7 @@ function update_flutter {
   SHOREBIRD_ENGINE_VERSION=`cat "$FLUTTER_PATH/bin/internal/engine.version"`
   echo "Shorebird Engine • revision $SHOREBIRD_ENGINE_VERSION"
   # Install Shorebird Flutter Artifacts
-  FLUTTER_STORAGE_BASE_URL=https://download.shorebird.dev $FLUTTER_PATH/bin/flutter --version
+  FLUTTER_STORAGE_BASE_URL=https://cdn.patchwing.net/patchwing $FLUTTER_PATH/bin/flutter --version
 }
 
 function pub_get_with_retry {
