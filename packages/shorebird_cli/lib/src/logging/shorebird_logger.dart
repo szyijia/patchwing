@@ -14,11 +14,11 @@ final loggerRef = create(ShorebirdLogger.new);
 /// The [Logger] instance available in the current zone.
 ShorebirdLogger get logger => read(loggerRef);
 
-const _logFileName = 'shorebird.log';
+const _logFileName = 'patchwing.log';
 
 /// Where logs are written for the current Shorebird CLI run. A new file will
 /// be created for every run of the Shorebird CLI, and will have the name
-/// `timestamp_shorebird.log`.
+/// `timestamp_patchwing.log`.
 final File currentRunLogFile = (() {
   final timestamp = clock.now().millisecondsSinceEpoch;
   final file = File(

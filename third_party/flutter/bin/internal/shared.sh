@@ -148,12 +148,12 @@ function upgrade_shorebird () (
 
     # Prepare packages...
     if [[ "$CI" == "true" || "$BOT" == "true" || "$CONTINUOUS_INTEGRATION" == "true" || "$CHROME_HEADLESS" == "1" ]]; then
-      PUB_ENVIRONMENT="$PUB_ENVIRONMENT:shorebird_bot"
+      PUB_ENVIRONMENT="$PUB_ENVIRONMENT:patchwing_bot"
     else
       export PUB_SUMMARY_ONLY=1
     fi
 
-    export PUB_ENVIRONMENT="$PUB_ENVIRONMENT:shorebird_install"
+    export PUB_ENVIRONMENT="$PUB_ENVIRONMENT:patchwing_install"
     pub_get_with_retry
     # pub get may not update pubspec.lock's mtime if dependencies are unchanged,
     # which would cause the pubspec.yaml -nt pubspec.lock check above to keep

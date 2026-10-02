@@ -122,6 +122,10 @@ class _StringVisitor extends RecursiveAstVisitor<void> {
         value == 'shorebird_version') {
       failures.add('$path: diagnostic JSON version key must be Patchwing');
     }
+    if (path.endsWith('/src/logging/shorebird_logger.dart') &&
+        value == 'shorebird.log') {
+      failures.add('$path: user-visible log filename must be Patchwing');
+    }
     const productPathSources = [
       '/src/shorebird_env.dart',
       '/src/artifact_manager.dart',
