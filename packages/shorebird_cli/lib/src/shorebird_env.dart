@@ -155,7 +155,7 @@ class ShorebirdEnv {
   /// Where the link supplement files are stored.
   // TODO(eseidel): Make this not iOS specific.
   Directory get iosSupplementDirectory =>
-      Directory(p.join(buildDirectory.path, 'ios', 'shorebird'));
+      Directory(p.join(buildDirectory.path, 'ios', 'patchwing'));
 
   /// The `patchwing.yaml` file for this project.
   File getShorebirdYamlFile({required Directory cwd}) {

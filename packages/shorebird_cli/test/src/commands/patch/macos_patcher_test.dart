@@ -902,7 +902,7 @@ For more information see: ${supportedFlutterVersionsUrl.toLink()}'''),
               '--obfuscate',
               '--extra-gen-snapshot-options='
                   '--load-obfuscation-map=${obfuscationMapFile.path}',
-              '--split-debug-info=build/shorebird/symbols',
+              '--split-debug-info=build/patchwing/symbols',
             ];
             await runWithOverrides(patcher.buildPatchArtifact);
 

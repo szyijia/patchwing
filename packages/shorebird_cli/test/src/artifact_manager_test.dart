@@ -1145,7 +1145,7 @@ void main() {
       group('when the directory exists', () {
         setUp(() {
           Directory(
-            p.join(projectRoot.path, 'build', 'ios', 'shorebird'),
+            p.join(projectRoot.path, 'build', 'ios', 'patchwing'),
           ).createSync(recursive: true);
         });
 
@@ -1154,7 +1154,7 @@ void main() {
             runWithOverrides(
               artifactManager.getIosReleaseSupplementDirectory,
             )?.path,
-            equals(p.join(projectRoot.path, 'build', 'ios', 'shorebird')),
+            equals(p.join(projectRoot.path, 'build', 'ios', 'patchwing')),
           );
         });
       });
@@ -1175,7 +1175,7 @@ void main() {
       group('when the directory exists', () {
         setUp(() {
           Directory(
-            p.join(projectRoot.path, 'build', 'macos', 'shorebird'),
+            p.join(projectRoot.path, 'build', 'macos', 'patchwing'),
           ).createSync(recursive: true);
         });
 
@@ -1184,7 +1184,7 @@ void main() {
             runWithOverrides(
               artifactManager.getMacosReleaseSupplementDirectory,
             )?.path,
-            equals(p.join(projectRoot.path, 'build', 'macos', 'shorebird')),
+            equals(p.join(projectRoot.path, 'build', 'macos', 'patchwing')),
           );
         });
       });

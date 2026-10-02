@@ -578,7 +578,7 @@ $body
 
         setUp(() {
           shorebirdSupplementDir = Directory(
-            p.join(projectRoot.path, 'build', 'ios', 'shorebird'),
+            p.join(projectRoot.path, 'build', 'ios', 'patchwing'),
           )..createSync(recursive: true);
           when(
             () => artifactManager.getIosReleaseSupplementDirectory(),
@@ -723,7 +723,7 @@ $body
             final mapPath = p.join(
               projectRoot.path,
               'build',
-              'shorebird',
+              'patchwing',
               'obfuscation_map.json',
             );
             File(mapPath)
@@ -1060,7 +1060,7 @@ $body
               p.join(
                 projectRoot.path,
                 'build',
-                'shorebird',
+                'patchwing',
                 'obfuscation_map.json',
               ),
             )

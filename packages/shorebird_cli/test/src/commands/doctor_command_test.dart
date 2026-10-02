@@ -463,7 +463,7 @@ Android Toolchain
         expect(json['status'], equals('success'));
 
         final data = json['data'] as Map<String, dynamic>;
-        expect(data['shorebird_version'], equals(packageVersion));
+        expect(data['patchwing_version'], equals(packageVersion));
         expect(data['flutter_version'], equals(flutterVersion));
         expect(data['flutter_revision'], equals(shorebirdFlutterRevision));
         expect(data['engine_revision'], equals(shorebirdEngineRevision));

@@ -280,7 +280,7 @@ void main() {
         test('passes extraBuildArgs to buildLinuxApp', () async {
           patcher.extraBuildArgs = [
             '--obfuscate',
-            '--split-debug-info=build/shorebird/symbols',
+            '--split-debug-info=build/patchwing/symbols',
           ];
           await runWithOverrides(() => patcher.buildPatchArtifact());
 

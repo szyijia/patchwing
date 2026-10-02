@@ -309,7 +309,7 @@ void main() {
         final tempDir = Directory.systemTemp.createTempSync();
         File(p.join(tempDir.path, 'pubspec.yaml')).createSync(recursive: true);
         Directory(
-          p.join(tempDir.path, 'build', 'ios', 'shorebird'),
+          p.join(tempDir.path, 'build', 'ios', 'patchwing'),
         ).createSync(recursive: true);
         final supplementDirectory = IOOverrides.runZoned(
           () => runWithOverrides(() => shorebirdEnv.iosSupplementDirectory),
@@ -317,7 +317,7 @@ void main() {
         );
         expect(
           supplementDirectory.path,
-          equals(p.join(tempDir.path, 'build', 'ios', 'shorebird')),
+          equals(p.join(tempDir.path, 'build', 'ios', 'patchwing')),
         );
       });
     });

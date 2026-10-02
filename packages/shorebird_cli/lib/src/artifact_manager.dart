@@ -461,7 +461,7 @@ class ArtifactManager {
     final projectRoot = shorebirdEnv.getShorebirdProjectRoot();
     if (projectRoot == null) return null;
     final releaseSupplementDir = Directory(
-      p.join(projectRoot.path, 'build', platformSubdir, 'shorebird'),
+      p.join(projectRoot.path, 'build', platformSubdir, 'patchwing'),
     );
 
     if (!releaseSupplementDir.existsSync()) {

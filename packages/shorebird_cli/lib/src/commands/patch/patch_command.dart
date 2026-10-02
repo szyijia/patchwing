@@ -493,7 +493,7 @@ Building with Flutter $flutterVersionString to determine the release version...
     final hasSplitDebugInfo = results.optionPresent('split-debug-info');
     if (hasObfuscate && !hasSplitDebugInfo) {
       extraBuildArgs.add(
-        '--split-debug-info=${p.join('build', 'shorebird', 'symbols')}',
+        '--split-debug-info=${p.join('build', 'patchwing', 'symbols')}',
       );
     }
     patcher.extraBuildArgs = extraBuildArgs;

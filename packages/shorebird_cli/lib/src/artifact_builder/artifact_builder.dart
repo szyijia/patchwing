@@ -643,7 +643,7 @@ Reason: Exited with code $exitCode.''',
     final traceFile = File(
       p.join(
         shorebirdEnv.buildDirectory.path,
-        'shorebird',
+        'patchwing',
         'debug',
         'build-trace-$platform.json',
       ),

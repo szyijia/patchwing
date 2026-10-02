@@ -32,6 +32,20 @@ void main() {
   }
 
   _checkBootstrapScripts(repository, failures);
+  final artifactBuilder = File(
+    '${sourceRoot.path}/src/artifact_builder/artifact_builder.dart',
+  );
+  if (RegExp(
+    r"buildDirectory\.path,\s*'shorebird',\s*'debug'",
+  ).hasMatch(artifactBuilder.readAsStringSync())) {
+    failures.add('${artifactBuilder.path}: user-visible trace directory must be Patchwing');
+  }
+  final tracer = File(
+    '${sourceRoot.path}/src/artifact_builder/shorebird_tracer.dart',
+  );
+  if (tracer.readAsStringSync().contains("name: 'shorebird_cli'")) {
+    failures.add('${tracer.path}: user-visible trace row must be Patchwing');
+  }
 
   if (failures.isNotEmpty) {
     stderr
@@ -104,6 +118,20 @@ class _StringVisitor extends RecursiveAstVisitor<void> {
   }
 
   void _check(String value, int offset) {
+    if (path.endsWith('/src/commands/doctor_command.dart') &&
+        value == 'shorebird_version') {
+      failures.add('$path: diagnostic JSON version key must be Patchwing');
+    }
+    const productPathSources = [
+      '/src/shorebird_env.dart',
+      '/src/artifact_manager.dart',
+      '/src/commands/release/releaser.dart',
+      '/src/commands/patch/patch_command.dart',
+    ];
+    if (productPathSources.any(path.endsWith) &&
+        (value == 'shorebird' || value.contains('build/shorebird'))) {
+      failures.add('$path: product output directory must be Patchwing');
+    }
     final productSurface = value
         .replaceAll('package:shorebird_code_push', '')
         .replaceAll('ShorebirdFlutter.framework', '');

@@ -215,7 +215,7 @@ Android Toolchain
     }
 
     emitJsonSuccess({
-      'shorebird_version': packageVersion,
+      'patchwing_version': packageVersion,
       'flutter_version': flutterVersion,
       'flutter_revision': shorebirdEnv.flutterRevision,
       'engine_revision': shorebirdEnv.shorebirdEngineRevision,

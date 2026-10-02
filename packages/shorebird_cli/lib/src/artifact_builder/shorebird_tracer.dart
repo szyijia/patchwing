@@ -97,12 +97,12 @@ class ShorebirdTracer {
       return;
     }
     _tracer
-      ..addProcessNameMetadata(pid: _pid, name: 'shorebird_cli')
+      ..addProcessNameMetadata(pid: _pid, name: 'patchwing_cli')
       ..addThreadNameMetadata(pid: _pid, tid: _networkTid, name: 'network')
       ..addThreadNameMetadata(
         pid: _pid,
         tid: _shorebirdTid,
-        name: 'shorebird_cli',
+        name: 'patchwing_cli',
       )
       ..writeToFile(traceFile, existingEvents: existingEvents);
   }

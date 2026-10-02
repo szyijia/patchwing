@@ -136,7 +136,7 @@ void main() {
         () => shorebirdEnv.buildDirectory,
       ).thenReturn(Directory(p.join(projectRoot.path, 'build')));
       when(() => shorebirdEnv.iosSupplementDirectory).thenReturn(
-        Directory(p.join(projectRoot.path, 'build', 'shorebird', 'ios')),
+        Directory(p.join(projectRoot.path, 'build', 'patchwing', 'ios')),
       );
       when(
         () => shorebirdEnv.getShorebirdProjectRoot(),
@@ -605,14 +605,14 @@ void main() {
           p.join(projectRoot.path, 'build', linkFileName),
         ).createSync(recursive: true);
         File(
-          p.join(projectRoot.path, 'build', 'ios', 'shorebird', 'App.ct.link'),
+          p.join(projectRoot.path, 'build', 'ios', 'patchwing', 'App.ct.link'),
         ).createSync(recursive: true);
         File(
           p.join(
             projectRoot.path,
             'build',
             'ios',
-            'shorebird',
+            'patchwing',
             'App.class_table.json',
           ),
         ).createSync(recursive: true);

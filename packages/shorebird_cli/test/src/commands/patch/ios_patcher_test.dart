@@ -142,7 +142,7 @@ void main() {
         () => shorebirdEnv.buildDirectory,
       ).thenReturn(Directory(p.join(projectRoot.path, 'build')));
       when(() => shorebirdEnv.iosSupplementDirectory).thenReturn(
-        Directory(p.join(projectRoot.path, 'build', 'shorebird', 'ios')),
+        Directory(p.join(projectRoot.path, 'build', 'patchwing', 'ios')),
       );
       when(() => shorebirdEnv.iosPodfileLockHash).thenReturn(null);
 
@@ -862,7 +862,7 @@ For more information see: ${supportedFlutterVersionsUrl.toLink()}'''),
               '--obfuscate',
               '--extra-gen-snapshot-options='
                   '--load-obfuscation-map=${obfuscationMapFile.path}',
-              '--split-debug-info=build/shorebird/symbols',
+              '--split-debug-info=build/patchwing/symbols',
             ];
             await runWithOverrides(patcher.buildPatchArtifact);
 
@@ -978,14 +978,14 @@ For more information see: ${supportedFlutterVersionsUrl.toLink()}'''),
           ),
         ).createSync(recursive: true);
         File(
-          p.join(projectRoot.path, 'build', 'ios', 'shorebird', 'App.ct.link'),
+          p.join(projectRoot.path, 'build', 'ios', 'patchwing', 'App.ct.link'),
         ).createSync(recursive: true);
         File(
           p.join(
             projectRoot.path,
             'build',
             'ios',
-            'shorebird',
+            'patchwing',
             'App.class_table.json',
           ),
         ).createSync(recursive: true);

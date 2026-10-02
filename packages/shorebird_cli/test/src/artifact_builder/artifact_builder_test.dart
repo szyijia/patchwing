@@ -312,7 +312,7 @@ Either run `flutter pub get` manually, or follow the steps in ${cannotRunInVSCod
         final expectedTracePath = p.join(
           projectRoot.path,
           'build',
-          'shorebird',
+          'patchwing',
           'debug',
           'build-trace-android.json',
         );
@@ -398,7 +398,7 @@ Either run `flutter pub get` manually, or follow the steps in ${cannotRunInVSCod
           final expectedTracePath = p.join(
             projectRoot.path,
             'build',
-            'shorebird',
+            'patchwing',
             'debug',
             'build-trace-android.json',
           );
@@ -671,7 +671,7 @@ Either run `flutter pub get` manually, or follow the steps in ${cannotRunInVSCod
         });
 
         test(
-          'passes --trace with a path under build/shorebird/debug',
+          'passes --trace with a path under build/patchwing/debug',
           () async {
             await runWithOverrides(() async {
               await builder.prepareBuildTrace(platform: 'android');
@@ -681,7 +681,7 @@ Either run `flutter pub get` manually, or follow the steps in ${cannotRunInVSCod
             final expectedTracePath = p.join(
               projectRoot.path,
               'build',
-              'shorebird',
+              'patchwing',
               'debug',
               'build-trace-android.json',
             );
@@ -713,7 +713,7 @@ Either run `flutter pub get` manually, or follow the steps in ${cannotRunInVSCod
               p.join(
                 projectRoot.path,
                 'build',
-                'shorebird',
+                'patchwing',
                 'debug',
                 'build-trace-android.json',
               ),
@@ -1683,7 +1683,7 @@ Reason: Exited with code 70.'''),
         });
 
         test(
-          'passes --trace with a path under build/shorebird/debug',
+          'passes --trace with a path under build/patchwing/debug',
           () async {
             await runWithOverrides(() async {
               await builder.prepareBuildTrace(platform: 'ios');
@@ -1693,7 +1693,7 @@ Reason: Exited with code 70.'''),
             final expectedTracePath = p.join(
               projectRoot.path,
               'build',
-              'shorebird',
+              'patchwing',
               'debug',
               'build-trace-ios.json',
             );

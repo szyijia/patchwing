@@ -121,8 +121,10 @@ void main() {
           expect((decoded[1] as Map)['name'], 'POST api.patchwing.net');
           // Metadata events come after the spans when written.
           expect((decoded[2] as Map)['name'], 'process_name');
+          expect((decoded[2] as Map)['args'], {'name': 'patchwing_cli'});
           expect((decoded[3] as Map)['name'], 'thread_name');
           expect((decoded[4] as Map)['name'], 'thread_name');
+          expect((decoded[4] as Map)['args'], {'name': 'patchwing_cli'});
         },
       );
 

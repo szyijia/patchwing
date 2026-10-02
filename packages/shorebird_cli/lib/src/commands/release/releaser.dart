@@ -128,7 +128,7 @@ abstract class Releaser {
   String get obfuscationMapPath => p.join(
     projectRoot.path,
     'build',
-    'shorebird',
+    'patchwing',
     'obfuscation_map.json',
   );
 
@@ -137,7 +137,7 @@ abstract class Releaser {
     if (useObfuscation &&
         !buildArgs.any((a) => a.startsWith('--split-debug-info'))) {
       buildArgs.add(
-        '--split-debug-info=${p.join('build', 'shorebird', 'symbols')}',
+        '--split-debug-info=${p.join('build', 'patchwing', 'symbols')}',
       );
     }
   }

@@ -430,7 +430,7 @@ To change the version of this release, change your app's version in your pubspec
             final mapPath = p.join(
               projectRoot.path,
               'build',
-              'shorebird',
+              'patchwing',
               'obfuscation_map.json',
             );
             File(mapPath)

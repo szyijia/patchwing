@@ -503,7 +503,7 @@ void main() {
               final mapPath = p.join(
                 projectRoot.path,
                 'build',
-                'shorebird',
+                'patchwing',
                 'obfuscation_map.json',
               );
               File(mapPath)
@@ -583,7 +583,7 @@ void main() {
       setUp(() {
         // Create the supplement directory as it would exist on disk.
         supplementDir = Directory(
-          p.join(projectRoot.path, 'build', 'android', 'shorebird'),
+          p.join(projectRoot.path, 'build', 'android', 'patchwing'),
         )..createSync(recursive: true);
 
         // Stub getReleaseSupplementDirectory to use the real directory.
@@ -612,7 +612,7 @@ void main() {
             p.join(
               projectRoot.path,
               'build',
-              'shorebird',
+              'patchwing',
               'obfuscation_map.json',
             ),
           )..createSync(recursive: true);
