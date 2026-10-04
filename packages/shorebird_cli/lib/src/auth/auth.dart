@@ -12,6 +12,7 @@ import 'package:mason_logger/mason_logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:scoped_deps/scoped_deps.dart';
 import 'package:shorebird_cli/src/auth/ci_token.dart';
+import 'package:shorebird_cli/src/auth/credential_store.dart';
 import 'package:shorebird_cli/src/auth/endpoints/endpoints.dart';
 import 'package:shorebird_cli/src/auth/shorebird_oauth.dart' as shorebird_oauth;
 import 'package:shorebird_cli/src/http_client/http_client.dart';
@@ -74,12 +75,14 @@ class AuthenticatedClient extends http.BaseClient {
     required Uri authServiceUri,
     OnRefreshCredentials? onRefreshCredentials,
     RefreshCredentials refreshCredentials = oauth2.refreshCredentials,
+    CredentialStore? credentialStore,
   }) : this._(
          httpClient: httpClient,
          onRefreshCredentials: onRefreshCredentials,
          credentials: credentials,
          authServiceUri: authServiceUri,
          refreshCredentials: refreshCredentials,
+         credentialStore: credentialStore,
        );
 
   /// Creates a new [AuthenticatedClient] with the given [httpClient] and
@@ -105,12 +108,14 @@ class AuthenticatedClient extends http.BaseClient {
     oauth2.AccessCredentials? credentials,
     CiToken? token,
     RefreshCredentials refreshCredentials = oauth2.refreshCredentials,
+    CredentialStore? credentialStore,
   }) : _baseClient = httpClient,
        _credentials = credentials,
        _onRefreshCredentials = onRefreshCredentials,
        _refreshCredentials = refreshCredentials,
        _authServiceUri = authServiceUri,
-       _token = token;
+       _token = token,
+       _credentialStore = credentialStore;
 
   final http.Client _baseClient;
   final OnRefreshCredentials? _onRefreshCredentials;
@@ -118,10 +123,25 @@ class AuthenticatedClient extends http.BaseClient {
   final Uri _authServiceUri;
   oauth2.AccessCredentials? _credentials;
   final CiToken? _token;
+  final CredentialStore? _credentialStore;
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
     var credentials = _credentials;
+
+    final credentialStore = _credentialStore;
+    if (credentials != null && credentialStore != null) {
+      credentials = await credentialStore.resolve(
+        credentials,
+        (latest) => _refreshForProvider(
+          Jwt.parse(latest.idToken!).authProvider,
+          latest,
+        ),
+      );
+      _credentials = credentials;
+      request.headers['Authorization'] = 'Bearer ${credentials.idToken}';
+      return _baseClient.send(request);
+    }
 
     if (credentials == null) {
       final token = _token!;
@@ -236,6 +256,8 @@ class Auth {
   final CodePushClientBuilder _buildCodePushClient;
   CiToken? _token;
   String? _apiKey;
+  bool _credentialsPersisted = false;
+  CredentialStore get _credentialStore => CredentialStore(credentialsFilePath);
 
   /// The path to the credentials file.
   String get credentialsFilePath {
@@ -262,6 +284,7 @@ class Auth {
         httpClient: _httpClient,
         authServiceUri: _authServiceUri,
         onRefreshCredentials: _flushCredentials,
+        credentialStore: _credentialsPersisted ? _credentialStore : null,
       );
     }
 
@@ -270,6 +293,17 @@ class Auth {
 
   /// Logs in the user via the Shorebird loopback OAuth flow.
   Future<void> login({required void Function(String) prompt}) async {
+    await _credentialStore.locked(() async {
+      if (File(credentialsFilePath).existsSync()) {
+        _credentials = _credentialStore.read();
+        _email = _credentials!.email;
+        _credentialsPersisted = true;
+      }
+      await _login(prompt: prompt);
+    });
+  }
+
+  Future<void> _login({required void Function(String) prompt}) async {
     if (isAuthenticated) {
       throw UserAlreadyLoggedInException(email: _email);
     }
@@ -305,8 +339,13 @@ class Auth {
   /// session before clearing local credentials. Local credentials are always
   /// cleared even if the server call fails.
   Future<void> logout() async {
-    await _revokeSession();
-    _clearCredentials();
+    await _credentialStore.locked(() async {
+      if (File(credentialsFilePath).existsSync()) {
+        _credentials = _credentialStore.read();
+      }
+      await _revokeSession();
+      _clearCredentials();
+    });
   }
 
   /// Sends the current refresh token to the auth service's logout endpoint
@@ -392,6 +431,7 @@ class Auth {
           json.decode(contents) as Map<String, dynamic>,
         );
         _email = _credentials?.email;
+        _credentialsPersisted = true;
       } on Exception {
         // Swallow json decode exceptions.
       }
@@ -399,14 +439,15 @@ class Auth {
   }
 
   void _flushCredentials(oauth2.AccessCredentials credentials) {
-    File(credentialsFilePath)
-      ..createSync(recursive: true)
-      ..writeAsStringSync(json.encode(credentials.toJson()));
+    _credentialStore.write(credentials);
+    _credentials = credentials;
+    _credentialsPersisted = true;
   }
 
   void _clearCredentials() {
     _credentials = null;
     _email = null;
+    _credentialsPersisted = false;
 
     final credentialsFile = File(credentialsFilePath);
     if (credentialsFile.existsSync()) {
