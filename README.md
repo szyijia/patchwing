@@ -1,92 +1,50 @@
-## Shorebird 🐦
+# Patchwing
 
-[![Discord](https://img.shields.io/discord/1030243211995791380?style=for-the-badge&logo=discord&color=blue)](https://discord.gg/shorebird)
-<a href="https://www.producthunt.com/posts/shorebird-code-push?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-shorebird&#0045;code&#0045;push" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=449946&theme=neutral" alt="Shorebird&#0032;Code&#0032;Push - Flutter&#0032;over&#0032;the&#0032;air&#0032;updates | Product Hunt" style="width: 128px; height: 27px;" width="128" height="27" /></a>
+Flutter 应用的 release 与静默 Dart patch 工具。安装入口：[patchwing.net](https://patchwing.net)；使用文档：[docs.patchwing.net](https://docs.patchwing.net)。
 
-[![shorebird ci](https://api.patchwing.net/api/v1/github/shorebirdtech/shorebird/badge.svg)](https://console.patchwing.net/ci)
-[![ci](https://github.com/shorebirdtech/shorebird/actions/workflows/main.yaml/badge.svg)](https://github.com/shorebirdtech/shorebird/actions/workflows/main.yaml)
-[![e2e](https://github.com/shorebirdtech/shorebird/actions/workflows/e2e.yaml/badge.svg)](https://github.com/shorebirdtech/shorebird/actions/workflows/e2e.yaml)
-[![codecov](https://codecov.io/gh/shorebirdtech/shorebird/branch/main/graph/badge.svg)](https://codecov.io/gh/shorebirdtech/shorebird)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE-MIT)
-[![License: Apache](https://img.shields.io/badge/license-Apache-orange.svg)](./LICENSE-APACHE)
+## 开发环境
 
-## Getting Started
+需要 Git、与项目约束兼容的 Flutter/Dart 开发环境，以及目标平台的正常原生工具链：Android SDK/JDK；iOS 使用 macOS、Xcode 和有效的开发者签名条件。CLI 下载配套的预编译 SDK，应用开发者不需要私有 Dart 源码或自行编译 engine。
 
-Visit https://docs.patchwing.net to get started.
+## 安装与标准流程
 
-## Packages
-
-This repository is a monorepo containing the following packages:
-
-| Package                                                                         | Description                                                                             |
-| ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| [shorebird_cli](packages/shorebird_cli/README.md)                               | Command-line which allows developers to interact with various Shorebird services        |
-| [shorebird_code_push_client](packages/shorebird_code_push_client/README.md)     | Dart library which allows Dart applications to interact with the Shorebird CodePush API |
-| [shorebird_code_push_protocol](packages/shorebird_code_push_protocol/README.md) | Dart library which contains common interfaces used by Shorebird CodePush                |
-| [artifact_proxy](packages/artifact_proxy/README.md)                             | Dart server which supports intercepting and proxying Flutter artifact requests          |
-| [discord_gcp_alerts](packages/discord_gcp_alerts/README.md)                     | Dart server which forwards GCP alerts to Discord                                        |
-| [flutter_version_resolver](packages/flutter_version_resolver/README.md)         | Command-line utility that determines which Flutter version should be used for a project |
-| [jwt](packages/jwt/README.md)                                                   | Dart library for verifying JSON Web Tokens                                              |
-| [redis_client](packages/redis_client/README.md)                                 | Dart library for interacting with Redis                                                 |
-| [scoped_deps](packages/scoped_deps/README.md)                                   | A simple dependency injection library built on Zones                                    |
-| [stripe_api](packages/stripe_api/README.md)                                     | Dart library for interacting with Stripe                                                |
-
-For more information, please refer to the documentation for each package.
-
-## Contributing
-
-If you're interested in contributing, please join us on
-[Discord](https://discord.gg/shorebird).
-
-### Environment setup
-
-Working on Shorebird requires Dart.
-
-`./scripts/bootstrap.sh` will run `pub get` all packages in the repository.
-
-### Running tests
-
-We don't yet have a script to run tests locally. For now, we recommend using
-`very_good test -r` in the packages directory to run all shorebird tests.
-
-(If you run it in the root, it will find packages in bin/cache/flutter and try
-to run tests there, some of which will fail.)
-
-To generate a coverage report install `lcov`:
-
-```
-brew install lcov
-```
-
-Then run tests with the `--coverage` flag:
-
-```
-very_good test -r --coverage
-genhtml coverage/lcov.info -o coverage
-```
-
-You can view the generated coverage report via:
-
-```
-open coverage/index.html
-```
-
-### Tracking coverage
-
-The following command will generate a coverage report for the Dart packages:
+从官网取得安装脚本并执行；脚本使用本仓库的公开默认分支：
 
 ```bash
-dart test --coverage=coverage && dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.dart_tool/package_config.json --check-ignore
+curl -fsSL https://patchwing.net/install.sh -o patchwing-install.sh
+bash patchwing-install.sh
+pw --version
+pw create my_app --org com.example --platforms android,ios
+cd my_app
+pw release --platforms=android --artifact=apk
+pw release --platforms=ios --export-method=development
 ```
 
-Coverage reports are uploaded to [Codecov](https://app.codecov.io/gh/shorebirdtech/shorebird).
+`development` 用于开发签名的 Release IPA，不代表 App Store 分发。正式分发须按对应平台的签名和发布要求配置。
 
-## License
+应用代码修改后，对已有 release 发布 patch：
 
-Shorebird projects are licensed for use under either Apache License, Version 2.0
-(LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0) MIT license
-(LICENSE-MIT or http://opensource.org/licenses/MIT) at your option.
+```bash
+pw patch --platforms=android --release-version=1.0.0+1
+pw patch --platforms=ios --release-version=1.0.0+1
+```
 
-See our license philosophy for more information on why we license files this
-way:
-https://docs.patchwing.net/engineering/#licensing-philosophy
+release-version 必须与实际基线相同。默认自动更新在原安装中检查和下载 patch，下一次正常冷启动激活；不得用安装一个新 APK/IPA 来代替 patch 验证。
+
+`pw help` 查看全部命令；`pw <command> --help` 查看具体参数。
+
+## 源码与贡献
+
+本仓库包含 CLI、服务客户端、协议和相关 Dart 工具。既有内部包目录名与接口保留，以避免改动运行逻辑。开发者入口是 `pw`。
+
+在兼容的 Dart SDK 环境中，按仓库锁定依赖运行对应包的测试：
+
+```bash
+dart pub get --enforce-lockfile
+cd packages/shorebird_cli
+dart test test/src/commands/init_command_test.dart
+```
+
+## 许可证
+
+代码遵循 [Apache-2.0](LICENSE-APACHE) 或 [MIT](LICENSE-MIT) 双许可证。原始许可证和源码版权声明保留。

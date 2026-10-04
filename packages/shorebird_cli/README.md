@@ -1,9 +1,9 @@
-# Shorebird CLI
+# Patchwing CLI
 
-The Shorebird command-line allows developers to interact with various Shorebird services.
+The Patchwing command-line lets developers create projects, publish releases, and publish Dart patches.
 
 See https://docs.patchwing.net for more information.
 
-`shorebird help` shows high-level help on available commands.
+`pw help` shows high-level help on available commands.
 
-`shorebird <command> --help` can show information about a specific command.
+`pw <command> --help` shows information about a specific command.

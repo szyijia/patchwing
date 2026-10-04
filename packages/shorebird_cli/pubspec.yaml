@@ -1,7 +1,7 @@
 name: shorebird_cli
-description: Command-line tool to interact with Shorebird's services.
+description: Command-line tool for Patchwing releases and Dart patches.
 version: 1.6.114
-repository: https://github.com/shorebirdtech/shorebird
+repository: https://github.com/szyijia/patchwing
 resolution: workspace
 
 publish_to: none
