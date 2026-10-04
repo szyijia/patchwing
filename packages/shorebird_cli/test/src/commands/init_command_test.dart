@@ -302,7 +302,14 @@ Please make sure you are running "pw init" from within your Flutter project.
       expect(exitCode, ExitCode.success.code);
       verify(
         () => shorebirdYamlFile.writeAsStringSync(
-          any(that: contains('app_id: $appId')),
+          any(
+            that: allOf(
+              contains('app_id: $appId'),
+              contains('manual updater API'),
+              isNot(contains('shorebird')),
+              isNot(contains('Shorebird')),
+            ),
+          ),
         ),
       ).called(1);
     });

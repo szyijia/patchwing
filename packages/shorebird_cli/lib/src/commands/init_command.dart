@@ -381,7 +381,7 @@ For more information about Patchwing, visit ${link(uri: Uri.parse('https://www.p
 app_id:
 
 # auto_update controls if Patchwing should automatically update in the background on launch.
-# If auto_update: false, you will need to use package:shorebird_code_push to trigger updates.
+# If auto_update: false, you will need to trigger updates using the manual updater API.
 # https://docs.patchwing.net/support
 # Uncomment the following line to disable automatic updates.
 # auto_update: false
